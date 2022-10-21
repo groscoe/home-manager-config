@@ -1,0 +1,150 @@
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias ls='ls -G'
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls'
+alias lh='ls -Ssh'
+
+# rsync aliases
+alias copy='rsync -aP'
+alias cp="rsync -ah --partial --inplace --info=progress2"
+
+# share current dir, default on port 8000 (CAUTION)
+webshare() {
+    python3 -m http.server ${1:-8000};
+}
+
+# search google in links via searchraw
+google() {
+  links "https://www.google.com/search?q=$@"
+}
+
+# search piratebay in links via searchraw
+alias piratebay='sr -t piratebay'
+
+# weather
+weatherbh(){
+    weather -m sbbh
+}
+
+# syntax highlighting in less
+less_colors() {
+    pygmentize -g -O style=colorful,linenos=1 $1 | less -R
+}
+
+# show date and power in command line
+dateandpower() {
+    date;
+    acpi;
+}
+
+# emacsclient
+alias ec='emacsclient -t'
+alias em='emacsclient -c'
+
+# weather
+wego() {
+    if [ $# -eq 0 ]
+    then
+        curl "wttr.in/plu"
+    else
+        value="$(perl -MURI::Escape -e 'print uri_escape(join(" ", @ARGV));' "$@")"
+        curl "wttr.in/$value"
+    fi
+}
+
+# show numeric color values
+#alias colors='for code in {0..255}; do echo -e "\e[38;05;${code}m $code: Test"; done'
+
+# use MacVim instead of the system vim
+# alias vim="/Applications/MacVim.app/Contents/MacOS/Vim"
+
+# ebook-convert() {
+#     /Applications/calibre.app/Contents/MacOS/ebook-convert "$@"
+# }
+
+# random integer generator
+dice() {
+    ${HOME}/Projects/pydice.py "$@"
+}
+
+# display alert in front-most application
+function show-alert () {
+  #osascript -e "tell application (path to frontmost application as text) to display dialog \"$*\" buttons {\"OK\"} with icon stop"
+  notify-send -i info "$*"
+}
+
+lambdabot() {
+    ~/.cabal/bin/lambdabot "$@"
+}
+
+@pl() {
+    echo "@pl $@" | ~/.cabal/bin/lambdabot -l CRITICAL
+}
+
+forward-buildserver-ports() {
+  ssh -L 27017:localhost:27017 -L 3306:localhost:3306 -L 7171:localhost:7171 -L 3002:localhost:3000 -fN remote-buildserver
+}
+
+recents() {
+  find "${HOME}/Downloads" -type f -printf "%T@ %Tc %p\n" | sort -nr | cut -d ' ' -f8- | head "$@"
+}
+
+alias first='head -1'
+
+battery() {
+  acpi
+}
+
+alias open=xdg-open
+alias cat=bat
+alias find=fd
+alias ls='lsd -v'
+alias ll='ls -alFv'
+alias la='ls -Av'
+alias l='ls'
+
+# sum a column of numbers
+sumcolumn() {
+  paste -sd+ $@ | bc
+}
+
+epub2mobi () {
+  filename=$(basename "$@" .epub)
+  ebook-convert "$filename.epub" "$filename.mobi"
+}
+
+pdfread() {
+  if command -v bat 2>/dev/null; then
+    pdftotext -raw "$@" - | sed '//d' | bat
+  else
+    pdftotext -raw "$@" - | sed '//d' | less
+  fi
+}
+
+start-coffee-break() {
+  bash ~/Projects/xdotool-scripts/teams-coffee-break-start.sh
+}
+
+end-coffee-break() {
+  bash ~/Projects/xdotool-scripts/teams-coffee-break-end.sh
+}
+
+urltrace() { # trace redirects from a base URL
+  URL="$@"
+  TRACE_RESULTS=$(http -f POST "https://wheregoes.com/retracer.php" "traceme=$URL" url="") # strange as it seems, the `url` argument should be left blank.
+  FORMATTED_TRACE=$(echo "$TRACE_RESULTS" | pup '.tracecontent json{}' | jq '.[].text | split(" ") | join(" \n\t> ")')
+  echo -e "$FORMATTED_TRACE"
+}
+
+urltrace-copy() { # copy last url redirect destination to clipboard
+	urltrace "$@" | tail -n 1 | rg --only-matching --max-columns=0 'http[^"]+' | xclip -selection clipboard
+}
+
+# # Several git aliases, from Prezto
+source "$HOME/.git_aliases.sh"
+

@@ -5,6 +5,22 @@ let
 
   # Configs go here. Don't forget to add to `unManagedConfigs`;
 
+  bash = {
+    files = {
+      ".bashrc" = ./bashrc;
+      ".bash_aliases" = ./bash_aliases;
+      ".fzf.bash" = ./bash-fzf.bash;
+    };
+  };
+
+  fish = {
+    files = {
+      ".config/fish/config.fish" = ./fish-config.fish;
+      ".config/fish/functions/fish_user_keybindings.fish" = ./fish-user-keybindings.fish;
+      ".config/fish/functions/rprompt.fish" = ./fish-rprompt.fish;
+    };
+  };
+
   git = {
     files = {
       ".gitconfig" = ./gitconfig;
@@ -32,12 +48,24 @@ let
     files = { ".config/polybar/config" = ./polybar; };
   };
 
+  ripgrep = {
+    files = {
+      ".ripgreprc" = ./ripgreprc;
+    };
+  };
+
   rofi = {
     # NOTE: Managed version doesn't find .desktop files that weren't installed
     # with nix.
     files = {
       ".config/rofi/config.rasi" = ./rofi.rasi;
       ".config/rofi/file-browser" = ./rofi-file-browser;
+    };
+  };
+
+  tmux = {
+    files = {
+      ".tmux.conf" = ./tmux.conf;
     };
   };
 
@@ -52,7 +80,19 @@ let
   wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
 
   # NOTE: Enabled configs must be added here!
-  unManagedConfigs = build [ git i3 nix-tools polybar rofi wallpaper vim ];
+  unManagedConfigs = build [
+    bash
+    fish
+    git
+    i3
+    nix-tools
+    polybar
+    ripgrep
+    rofi
+    tmux
+    wallpaper
+    vim
+  ];
 
   # ----------------------------------------------------------------------------
 
