@@ -21,6 +21,8 @@ let
 
   nix-tools = { packages = [ pkgs.nixfmt ]; };
 
+  wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
+
   # ----------------------------------------------------------------------------
 
   # Merge all configs together
@@ -36,7 +38,7 @@ let
         packages = [ ];
       } configs;
 
-  unManagedConfigs = build [ vim git nix-tools ];
+  unManagedConfigs = build [ vim git nix-tools wallpaper ];
 in {
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
