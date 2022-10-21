@@ -41,7 +41,10 @@ let
   rofi = {
     # NOTE: Managed version doesn't find .desktop files that weren't installed
     # with nix.
-    files = { ".config/rofi/config.rasi" = ./rofi.rasi; };
+    files = {
+      ".config/rofi/config.rasi" = ./rofi.rasi;
+      ".config/rofi/file-browser" = ./rofi-file-browser;
+    };
   };
 
   wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };

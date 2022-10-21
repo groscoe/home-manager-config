@@ -1,12 +1,12 @@
 configuration {
-	modes: "drun,run,window,file-browser-extended,calc";
+	modes: "combi,calc,file-browser-extended";
 	font: "Source Code Pro 24";
 	location: 0;
 	yoffset: 0;
 	xoffset: 0;
 /*	fixed-num-lines: true;*/
 /*	show-icons: false;*/
-/*	terminal: "rofi-sensible-terminal";*/
+	terminal: "alactritty";
 /*	ssh-client: "ssh";*/
 /*	ssh-command: "{terminal} -e {ssh-client} {host} [-p {port}]";*/
 /*	run-command: "{cmd}";*/
@@ -32,7 +32,7 @@ configuration {
 /*	auto-select: false;*/
 /*	parse-hosts: false;*/
 /*	parse-known-hosts: true;*/
-/*	combi-modes: "window,run";*/
+  combi-modes: "drun,window,run";
 /*	matching: "normal";*/
 /*	tokenize: true;*/
 /*	m: "-5";*/
@@ -154,7 +154,5 @@ configuration {
       parse-system: true;
       parse-user:   true;
   }
-  plugin {
-      path: "/nix/store/54yqgdih4wgrzzgddjnd9b2m8k99yp5q-rofi-1.7.5/lib/rofi";
-  }
 }
+@theme "/usr/share/rofi/themes/solarized_alternate.rasi"

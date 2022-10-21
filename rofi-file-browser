@@ -1,0 +1,3 @@
+# See: https://github.com/marvinkreis/rofi-file-browser-extended#configuration
+dir    /home/groscoe
+depth  3
