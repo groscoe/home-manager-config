@@ -19,17 +19,11 @@ let
     packages = [ pkgs.diff-so-fancy ];
   };
 
-  nix-tools = { packages = [ pkgs.nixfmt ]; };
-
-  rofi = {
-    files = {
-      "rofi.rasi" = {
-        source = ./rofi.rasi;
-        target = ".config/rofi/config.rasi";
-      };
-    };
-
-    # packages = [ pkgs.rofi ]; # currently not detecting the .desktop files
+  nix-tools = {
+    packages = [
+      pkgs.nixfmt # formatter
+      pkgs.cntr # container debugging tool
+    ];
   };
 
   wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
@@ -50,7 +44,7 @@ let
         packages = [ ];
       } configs;
 
-  unManagedConfigs = build [ vim git nix-tools wallpaper rofi ];
+  unManagedConfigs = build [ vim git nix-tools wallpaper ];
 in {
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
@@ -79,6 +73,33 @@ in {
   ##
   ## Managed configs
   ##
+
+  # Rofi (drun-style launcher)
+  programs.rofi = {
+    # See: https://github.com/nix-community/home-manager/blob/master/modules/programs/rofi.nix
+    enable = true;
+
+    plugins = [
+      pkgs.rofi-calc
+      pkgs.rofi-bluetooth
+      pkgs.rofi-file-browser
+      pkgs.rofi-power-menu
+      pkgs.rofi-pulse-select
+    ];
+
+    font = "Source Code Pro 24";
+
+    cycle = true; # cycle through the result list
+
+    theme = "solarized_alternate";
+
+    extraConfig = {
+      #modes = "drun,run,window,power-menu,bluetooth,pulse-select,file-browser-extended,calc";
+      modes = "drun,run,window,file-browser-extended,calc";
+      drun-use-desktop-cache = true;
+      drun-reload-desktop-cache = true;
+    };
+  };
 
   # Nix-related tools
   programs.direnv = {
