@@ -1,0 +1,78 @@
+# This is Git's per-user configuration file.
+[user]
+  # Please adapt and uncomment the following lines:
+	name = GRoscoe
+	email = gustavo@gustavoroscoe.com
+[alias]
+  unstage = reset -q HEAD --
+  discard = checkout --
+  last = log -1 HEAD --format=format:"%Cred%H"
+  graph = log --graph -500 --branches --remotes --tags --format=format:'%Cgreen%h %Creset• %<(75,trunc)%s (%cN, %ar) %Cred%d' --date-order
+  history = log -10 --format=format:'%Cgreen%h %Creset• %s (%aN, %ar)'
+  new-branch = checkout -b
+  rename-branch = branch -m
+  delete-branch = branch -D
+  recent-branches = branch -a --sort=committerdate
+  branches = branch -a
+  stashes = stash list
+  prestage = diff
+  precommit = diff --cached
+  unstash = stash pop
+
+  # Don't use diff-so-fancy for patches
+  addp = -c 'interactive.diffFilter=less' add -p
+
+  # Temporarily ignore files, won't be 
+  skip = !git update-index --assume-unchanged
+  unskip = !git update-index --no-assume-unchanged
+  skipped = !git ls-files -v | grep ^[a-z]
+[diff]
+  compactionHeuristic = true
+  indentHeuristic = true
+  ignoreAllSpace = true
+  algorithm = minimal
+	tool = ediffclient
+[difftool "ediffclient"]
+  cmd = emacsclient -t --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+[difftool "ediff"]
+  cmd = emacsclient --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+[interactive]
+  diffFilter = diff-so-fancy
+[pager]
+  diff = diff-so-fancy | less
+  log = diff-so-fancy | less
+  show = diff-so-fancy | less
+[blame]
+  date = relative
+[push]
+  default = current
+[core]
+  editor = vim
+  precomposeunicode = true
+  excludesfile = ~/.gitignore_global
+  untrackedCache = true
+[credential]
+	helper = cache --timeout 3600
+[merge]
+  conflictstyle = diff3
+[color]
+	ui = true
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+[color "diff"]
+	meta = yellow
+	frag = magenta bold
+	commit = yellow bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[pull]
+	rebase = false
