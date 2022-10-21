@@ -16,7 +16,8 @@ let
   fish = {
     files = {
       ".config/fish/config.fish" = ./fish-config.fish;
-      ".config/fish/functions/fish_user_keybindings.fish" = ./fish-user-keybindings.fish;
+      ".config/fish/functions/fish_user_keybindings.fish" =
+        ./fish-user-keybindings.fish;
       ".config/fish/functions/rprompt.fish" = ./fish-rprompt.fish;
     };
   };
@@ -30,6 +31,8 @@ let
     packages = [ pkgs.diff-so-fancy ];
   };
 
+  haskell = { files = { ".ghc/ghci.conf" = ./haskell-ghci.conf; }; };
+
   i3 = { files = { ".config/i3/config" = ./i3-config; }; };
 
   nix-tools = {
@@ -38,6 +41,8 @@ let
       pkgs.cntr # container debugging tool
     ];
   };
+
+  picom = { files = { ".config/picom/picom.conf" = ./picom.conf; }; };
 
   polybar = {
     # NOTE: weird inconsistencies.
@@ -48,11 +53,7 @@ let
     files = { ".config/polybar/config" = ./polybar; };
   };
 
-  ripgrep = {
-    files = {
-      ".ripgreprc" = ./ripgreprc;
-    };
-  };
+  ripgrep = { files = { ".ripgreprc" = ./ripgreprc; }; };
 
   rofi = {
     # NOTE: Managed version doesn't find .desktop files that weren't installed
@@ -63,11 +64,7 @@ let
     };
   };
 
-  tmux = {
-    files = {
-      ".tmux.conf" = ./tmux.conf;
-    };
-  };
+  tmux = { files = { ".tmux.conf" = ./tmux.conf; }; };
 
   vim = {
     files = {
@@ -84,8 +81,10 @@ let
     bash
     fish
     git
+    haskell
     i3
     nix-tools
+    picom
     polybar
     ripgrep
     rofi
