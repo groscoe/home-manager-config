@@ -21,13 +21,25 @@ let
 
   nix-tools = { packages = [ pkgs.nixfmt ]; };
 
+  rofi = {
+    files = {
+      "rofi.rasi" = {
+        source = ./rofi.rasi;
+        target = ".config/rofi/config.rasi";
+      };
+    };
+
+    # packages = [ pkgs.rofi ]; # currently not detecting the .desktop files
+  };
+
   wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
 
   # ----------------------------------------------------------------------------
 
-  # Merge all configs together
-  toSources = builtins.mapAttrs (_: file: { source = file; });
+  toSources = builtins.mapAttrs
+    (_: file: if builtins.isAttrs file then file else { source = file; });
 
+  # Merge all configs together
   build = configs:
     builtins.foldl' (acc:
       { files ? { }, packages ? [ ], ... }: {
@@ -38,7 +50,7 @@ let
         packages = [ ];
       } configs;
 
-  unManagedConfigs = build [ vim git nix-tools wallpaper ];
+  unManagedConfigs = build [ vim git nix-tools wallpaper rofi ];
 in {
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
