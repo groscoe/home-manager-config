@@ -5,14 +5,6 @@ let
 
   # Configs go here. Don't forget to add to `unManagedConfigs`;
 
-  vim = {
-    files = {
-      ".vimrc" = ./vimrc;
-      ".vim/coc-settings.json" = ./vim-coc-settings.json;
-    };
-    packages = [ pkgs.rnix-lsp ];
-  };
-
   git = {
     files = {
       ".gitconfig" = ./gitconfig;
@@ -21,6 +13,8 @@ let
 
     packages = [ pkgs.diff-so-fancy ];
   };
+
+  i3 = { files = { ".config/i3/config" = ./i3-config; }; };
 
   nix-tools = {
     packages = [
@@ -47,9 +41,18 @@ let
     };
   };
 
+  vim = {
+    files = {
+      ".vimrc" = ./vimrc;
+      ".vim/coc-settings.json" = ./vim-coc-settings.json;
+    };
+    packages = [ pkgs.rnix-lsp ];
+  };
+
   wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
 
-  unManagedConfigs = build [ vim git nix-tools polybar rofi wallpaper ];
+  # NOTE: Enabled configs must be added here!
+  unManagedConfigs = build [ git i3 nix-tools polybar rofi wallpaper vim ];
 
   # ----------------------------------------------------------------------------
 
