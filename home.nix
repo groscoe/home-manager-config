@@ -6,7 +6,10 @@ let
   # Configs go here. Don't forget to add to `unManagedConfigs`;
 
   vim = {
-    files = { ".vimrc" = ./vimrc; };
+    files = {
+      ".vimrc" = ./vimrc;
+      ".vim/coc-settings.json" = ./vim-coc-settings.json;
+    };
     packages = [ pkgs.rnix-lsp ];
   };
 
@@ -26,7 +29,24 @@ let
     ];
   };
 
+  polybar = {
+    # NOTE: weird inconsistencies.
+    # packages = [
+    #   pkgs.polybar
+    # ];
+
+    files = { ".config/polybar/config" = ./polybar; };
+  };
+
+  rofi = {
+    # NOTE: Managed version doesn't find .desktop files that weren't installed
+    # with nix.
+    files = { ".config/rofi/config.rasi" = ./rofi.rasi; };
+  };
+
   wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
+
+  unManagedConfigs = build [ vim git nix-tools polybar rofi wallpaper ];
 
   # ----------------------------------------------------------------------------
 
@@ -44,7 +64,6 @@ let
         packages = [ ];
       } configs;
 
-  unManagedConfigs = build [ vim git nix-tools wallpaper ];
 in {
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
@@ -74,32 +93,32 @@ in {
   ## Managed configs
   ##
 
-  # Rofi (drun-style launcher)
-  programs.rofi = {
-    # See: https://github.com/nix-community/home-manager/blob/master/modules/programs/rofi.nix
-    enable = true;
+  # # Rofi (drun-style launcher)
+  # programs.rofi = {
+  #   # See: https://github.com/nix-community/home-manager/blob/master/modules/programs/rofi.nix
+  #   enable = true;
 
-    plugins = [
-      pkgs.rofi-calc
-      pkgs.rofi-bluetooth
-      pkgs.rofi-file-browser
-      pkgs.rofi-power-menu
-      pkgs.rofi-pulse-select
-    ];
+  #   plugins = [
+  #     pkgs.rofi-calc
+  #     pkgs.rofi-bluetooth
+  #     pkgs.rofi-file-browser
+  #     pkgs.rofi-power-menu
+  #     pkgs.rofi-pulse-select
+  #   ];
 
-    font = "Source Code Pro 24";
+  #   font = "Source Code Pro 24";
 
-    cycle = true; # cycle through the result list
+  #   cycle = true; # cycle through the result list
 
-    theme = "solarized_alternate";
+  #   theme = "solarized_alternate";
 
-    extraConfig = {
-      #modes = "drun,run,window,power-menu,bluetooth,pulse-select,file-browser-extended,calc";
-      modes = "drun,run,window,file-browser-extended,calc";
-      drun-use-desktop-cache = true;
-      drun-reload-desktop-cache = true;
-    };
-  };
+  #   extraConfig = {
+  #     #modes = "drun,run,window,power-menu,bluetooth,pulse-select,file-browser-extended,calc";
+  #     modes = "drun,run,window,file-browser-extended,calc";
+  #     drun-use-desktop-cache = true;
+  #     drun-reload-desktop-cache = true;
+  #   };
+  # };
 
   # Nix-related tools
   programs.direnv = {
