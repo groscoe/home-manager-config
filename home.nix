@@ -16,7 +16,7 @@ let
   fish = {
     files = {
       ".config/fish/config.fish" = ./fish-config.fish;
-      ".config/fish/functions/fish_user_keybindings.fish" =
+      ".config/fish/functions/fish_user_key_bindings.fish" =
         ./fish-user-keybindings.fish;
       ".config/fish/functions/rprompt.fish" = ./fish-rprompt.fish;
     };
@@ -39,6 +39,7 @@ let
     packages = [
       pkgs.nixfmt # formatter
       pkgs.cntr # container debugging tool
+      pkgs.cachix # binary caches
     ];
   };
 
@@ -64,7 +65,11 @@ let
     };
   };
 
-  tmux = { files = { ".tmux.conf" = ./tmux.conf; }; };
+  terminals = {
+    files = { ".tmux.conf" = ./tmux.conf; };
+
+    packages = [ pkgs.guake ];
+  };
 
   vim = {
     files = {
@@ -88,7 +93,7 @@ let
     polybar
     ripgrep
     rofi
-    tmux
+    terminals
     wallpaper
     vim
   ];
