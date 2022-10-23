@@ -43,6 +43,13 @@ let
     ];
   };
 
+  notifications = {
+    files = {
+      ".config/deadd/deadd.conf" = ./deadd.conf;
+      ".config/deadd/deadd.css" = ./deadd.css;
+    };
+  };
+
   picom = { files = { ".config/picom/picom.conf" = ./picom.conf; }; };
 
   polybar = {
@@ -65,11 +72,7 @@ let
     };
   };
 
-  terminals = {
-    files = { ".tmux.conf" = ./tmux.conf; };
-
-    packages = [ pkgs.guake ];
-  };
+  terminals = { files = { ".tmux.conf" = ./tmux.conf; }; };
 
   vim = {
     files = {
@@ -89,6 +92,7 @@ let
     haskell
     i3
     nix-tools
+    notifications
     picom
     polybar
     ripgrep

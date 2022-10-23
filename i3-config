@@ -310,7 +310,7 @@ bindsym Ctrl+Print exec flameshot gui
 
 # Autostart apps (when not using KDE)
 exec_always --no-startup-id "picom --experimental-backends"
-exec_always --no-startup-id dunst
+exec_always --no-startup-id deadd-notification-center
 exec --no-startup-id dbus-launch xfce4-power-manager
 exec --no-startup-id guake
 exec --no-startup-id dbus-launch blueman-applet
