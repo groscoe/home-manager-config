@@ -284,8 +284,10 @@ gaps inner 15
 smart_gaps on
 
 # polybar
-exec_always --no-startup-id "killall polybar; polybar mainbar"
+# exec_always --no-startup-id "killall polybar; polybar mainbar"
 # exec_always --no-startup-id "killall polybar; dbus-launch bash ~/Projects/polybar-notebook.sh"
+exec --no-startup-id dbus-launch ~/.config/polybar/material/launch.sh
+# exec --no-startup-id dbus-launch ~/.config/polybar/material/scripts/pywal.sh ~/Pictures/wallpaper
 
 # Don’t treat Plasma pop-ups as full-sized windows
 for_window [class="plasmashell"] floating enable
@@ -310,13 +312,13 @@ bindsym Ctrl+Print exec flameshot gui
 
 # Autostart apps (when not using KDE)
 exec_always --no-startup-id "picom --experimental-backends"
+exec --no-startup-id "nitrogen --random --set-zoom-fill ~/Pictures/Wallpapers"
 exec_always --no-startup-id deadd-notification-center
 exec --no-startup-id dbus-launch xfce4-power-manager
 exec --no-startup-id guake
 exec --no-startup-id dbus-launch blueman-applet
 exec --no-startup-id dbus-launch nm-applet
-exec --no-startup-id "nitrogen --set-color"
-exec --no-startup-id dbus-launch variety
+# exec --no-startup-id dbus-launch variety
 exec --no-startup-id flameshot
 
 # Keyboard configs

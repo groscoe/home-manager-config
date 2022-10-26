@@ -40,6 +40,7 @@ let
       pkgs.nixfmt # formatter
       pkgs.cntr # container debugging tool
       pkgs.cachix # binary caches
+      pkgs.direnv # direnv
     ];
   };
 
@@ -52,14 +53,14 @@ let
 
   picom = { files = { ".config/picom/picom.conf" = ./picom.conf; }; };
 
-  polybar = {
-    # NOTE: weird inconsistencies.
-    # packages = [
-    #   pkgs.polybar
-    # ];
+  #polybar = {
+  #  # NOTE: weird inconsistencies.
+  #  # packages = [
+  #  #   pkgs.polybar
+  #  # ];
 
-    files = { ".config/polybar/config" = ./polybar; };
-  };
+  #  files = { ".config/polybar/config" = ./polybar; };
+  #};
 
   ripgrep = { files = { ".ripgreprc" = ./ripgreprc; }; };
 
@@ -72,7 +73,12 @@ let
     };
   };
 
-  terminals = { files = { ".tmux.conf" = ./tmux.conf; }; };
+  terminals = {
+    files = {
+      ".tmux.conf" = ./tmux.conf;
+      ".config/guake/guake.con" = ./guake.conf;
+    };
+  };
 
   vim = {
     files = {
@@ -94,7 +100,7 @@ let
     nix-tools
     notifications
     picom
-    polybar
+    # polybar
     ripgrep
     rofi
     terminals

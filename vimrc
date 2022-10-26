@@ -23,6 +23,9 @@ function! DefinePlugins()
   " Another nice color scheme
   Plug 'altercation/vim-colors-solarized'
 
+  " Dynamic colorscheme with pywal
+  Plug 'dylanaraps/wal.vim'
+
   " Search with fzf
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'junegunn/fzf.vim'
@@ -92,8 +95,9 @@ function! SetupVisuals()
   syntax enable
   set background=dark
   " let g:solarized_termcolors=256
-  let g:solarized_termtrans=1
-  colorscheme solarized
+  " let g:solarized_termtrans=1
+  " colorscheme solarized
+  colorscheme wal
 endfunction
 
 function! SetupEditor()
