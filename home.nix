@@ -184,9 +184,10 @@ in {
   programs.newsboat = {
     enable = true;
     urls = import ./newsboat-urls.nix;
+    autoReload = true;
     extraConfig = ''
       # unbind keys
-      unbind-key ENTER
+      # unbind-key ENTER
       unbind-key j
       unbind-key k
       unbind-key J
