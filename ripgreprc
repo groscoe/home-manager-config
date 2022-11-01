@@ -1,5 +1,5 @@
 # Don't let ripgrep vomit really long lines to my terminal.
---max-columns=120
+--max-columns=320
 
 # Add my 'web' type.
 --type-add

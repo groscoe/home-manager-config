@@ -35,12 +35,17 @@ let
 
   i3 = { files = { ".config/i3/config" = ./i3-config; }; };
 
+  networking-tools = {
+    packages = [ pkgs.lsof pkgs.speedtest-cli pkgs.nethogs ];
+  };
+
   nix-tools = {
     packages = [
       pkgs.nixfmt # formatter
       pkgs.cntr # container debugging tool
       pkgs.cachix # binary caches
       pkgs.direnv # direnv
+      pkgs.nix-output-monitor
     ];
   };
 
@@ -53,14 +58,16 @@ let
 
   picom = { files = { ".config/picom/picom.conf" = ./picom.conf; }; };
 
-  #polybar = {
-  #  # NOTE: weird inconsistencies.
-  #  # packages = [
-  #  #   pkgs.polybar
-  #  # ];
+  polybar = {
+    # NOTE: weird inconsistencies.
+    packages = [ pkgs.polybar ];
 
-  #  files = { ".config/polybar/config" = ./polybar; };
-  #};
+    files = { ".config/polybar/config" = ./polybar; };
+  };
+
+  programming-tools = {
+    packages = [ pkgs.comby pkgs.docker pkgs.pretty-simple ];
+  };
 
   ripgrep = { files = { ".ripgreprc" = ./ripgreprc; }; };
 
@@ -101,6 +108,7 @@ let
     notifications
     picom
     # polybar
+    programming-tools
     ripgrep
     rofi
     terminals
