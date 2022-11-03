@@ -81,9 +81,15 @@ let
   };
 
   terminals = {
+    packages = [
+      # pkgs.alacritty # NOTE: GPU acceleration issues
+      pkgs.tdrop
+    ];
+
     files = {
       ".tmux.conf" = ./tmux.conf;
       ".config/guake/guake.con" = ./guake.conf;
+      ".config/alacritty/alacritty.yml" = ./alacritty.yml;
     };
   };
 
