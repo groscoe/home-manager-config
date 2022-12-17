@@ -1,126 +1,104 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
-  # ---------------------------------------------------------------------------
-
   # Configs go here. Don't forget to add to `unManagedConfigs`;
-
-  bash = {
-    files = {
-      ".bashrc" = ./bashrc;
-      ".bash_aliases" = ./bash_aliases;
-      ".fzf.bash" = ./bash-fzf.bash;
-    };
-  };
-
-  fish = {
-    files = {
-      ".config/fish/config.fish" = ./fish-config.fish;
-      ".config/fish/functions/fish_user_key_bindings.fish" =
-        ./fish-user-keybindings.fish;
-      ".config/fish/functions/rprompt.fish" = ./fish-rprompt.fish;
-    };
-  };
-
-  git = {
-    files = {
-      ".gitconfig" = ./gitconfig;
-      ".git_aliases.sh" = ./git_aliases.sh;
+  unManagedConfigs = build (lib.attrValues {
+    bash = {
+      files = {
+        ".bashrc" = ./bashrc;
+        ".bash_aliases" = ./bash_aliases;
+        ".fzf.bash" = ./bash-fzf.bash;
+      };
     };
 
-    packages = [ pkgs.diff-so-fancy ];
-  };
+    deluge = { packages = [ pkgs.deluge ]; };
 
-  haskell = { files = { ".ghc/ghci.conf" = ./haskell-ghci.conf; }; };
+    fzf = { packages = [ pkgs.fzf pkgs.fd ]; };
 
-  i3 = { files = { ".config/i3/config" = ./i3-config; }; };
+    git = {
+      files = {
+        ".gitconfig" = ./gitconfig;
+        ".git_aliases.sh" = ./git_aliases.sh;
+      };
 
-  networking-tools = {
-    packages = [ pkgs.lsof pkgs.speedtest-cli pkgs.nethogs ];
-  };
-
-  nix-tools = {
-    packages = [
-      pkgs.nixfmt # formatter
-      pkgs.cntr # container debugging tool
-      pkgs.cachix # binary caches
-      pkgs.direnv # direnv
-      pkgs.nix-output-monitor
-    ];
-  };
-
-  notifications = {
-    files = {
-      ".config/deadd/deadd.conf" = ./deadd.conf;
-      ".config/deadd/deadd.css" = ./deadd.css;
+      packages = [ pkgs.diff-so-fancy ];
     };
-  };
 
-  picom = { files = { ".config/picom/picom.conf" = ./picom.conf; }; };
+    haskell = { files = { ".ghc/ghci.conf" = ./haskell-ghci.conf; }; };
 
-  polybar = {
-    # NOTE: weird inconsistencies.
-    packages = [ pkgs.polybar ];
+    i3 = { files = { ".config/i3/config" = ./i3-config; }; };
 
-    files = { ".config/polybar/config" = ./polybar; };
-  };
+    logseq = { packages = [ pkgs.logseq ]; };
 
-  programming-tools = {
-    packages = [ pkgs.comby pkgs.docker pkgs.pretty-simple ];
-  };
-
-  ripgrep = { files = { ".ripgreprc" = ./ripgreprc; }; };
-
-  rofi = {
-    # NOTE: Managed version doesn't find .desktop files that weren't installed
-    # with nix.
-    files = {
-      ".config/rofi/config.rasi" = ./rofi.rasi;
-      ".config/rofi/file-browser" = ./rofi-file-browser;
+    networking-tools = {
+      packages = [ pkgs.lsof pkgs.speedtest-cli pkgs.nethogs ];
     };
-  };
 
-  terminals = {
-    packages = [
-      # pkgs.alacritty # NOTE: GPU acceleration issues
-      pkgs.tdrop
-    ];
-
-    files = {
-      ".tmux.conf" = ./tmux.conf;
-      ".config/guake/guake.con" = ./guake.conf;
-      ".config/alacritty/alacritty.yml" = ./alacritty.yml;
+    nix-tools = {
+      packages = [
+        pkgs.nixfmt # formatter
+        pkgs.cntr # container debugging tool
+        pkgs.cachix # binary caches
+        pkgs.direnv # direnv
+        pkgs.nix-output-monitor
+      ];
     };
-  };
 
-  vim = {
-    files = {
-      ".vimrc" = ./vimrc;
-      ".vim/coc-settings.json" = ./vim-coc-settings.json;
+    notifications = {
+      files = {
+        ".config/deadd/deadd.conf" = ./deadd.conf;
+        ".config/deadd/deadd.css" = ./deadd.css;
+      };
     };
-    packages = [ pkgs.rnix-lsp ];
-  };
 
-  wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
+    picom = { files = { ".config/picom/picom.conf" = ./picom.conf; }; };
 
-  # NOTE: Enabled configs must be added here!
-  unManagedConfigs = build [
-    bash
-    fish
-    git
-    haskell
-    i3
-    nix-tools
-    notifications
-    picom
-    # polybar
-    programming-tools
-    ripgrep
-    rofi
-    terminals
-    wallpaper
-    vim
-  ];
+    # polybar = {
+    #   # NOTE: weird inconsistencies.
+    #   packages = [ pkgs.polybar ];
+
+    #   files = { ".config/polybar/config" = ./polybar; };
+    # };
+
+    programming-tools = { packages = [ pkgs.comby pkgs.pretty-simple ]; };
+
+    ripgrep = {
+      files = { ".ripgreprc" = ./ripgreprc; };
+      packages = [ pkgs.ripgrep ];
+    };
+
+    rofi = {
+      # NOTE: Managed version doesn't find .desktop files that weren't installed
+      # with nix.
+      files = {
+        ".config/rofi/config.rasi" = ./rofi.rasi;
+        ".config/rofi/file-browser" = ./rofi-file-browser;
+      };
+    };
+
+    terminals = {
+      packages = [
+        # pkgs.alacritty # NOTE: GPU acceleration issues
+        pkgs.tdrop
+      ];
+
+      files = {
+        ".tmux.conf" = ./tmux.conf;
+        ".config/guake/guake.con" = ./guake.conf;
+        ".config/alacritty/alacritty.yml" = ./alacritty.yml;
+      };
+    };
+
+    vim = {
+      files = {
+        ".vimrc" = ./vimrc;
+        ".vim/coc-settings.json" = ./vim-coc-settings.json;
+      };
+      packages = [ pkgs.rnix-lsp ];
+    };
+
+    wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
+  });
 
   # ----------------------------------------------------------------------------
 
@@ -158,12 +136,6 @@ in {
   programs.home-manager.enable = true;
 
   ##
-  ## Unmanaged configs
-  ##
-  home.file = unManagedConfigs.files;
-  home.packages = unManagedConfigs.packages;
-
-  ##
   ## Managed configs
   ##
 
@@ -194,6 +166,71 @@ in {
   #   };
   # };
 
+  programs.fish = {
+    enable = true;
+
+    plugins = [
+      {
+        name = "foreign-env";
+        src = pkgs.fetchFromGitHub {
+          owner = "oh-my-fish";
+          repo = "plugin-foreign-env";
+          rev = "master";
+          sha256 = "sha256-3h03WQrBZmTXZLkQh1oVyhv6zlyYsSDS7HTHr+7WjY8=";
+        };
+      }
+
+      {
+        name = "bass";
+        src = pkgs.fetchFromGitHub {
+          owner = "edc";
+          repo = "bass";
+          rev = "master";
+          sha256 = "sha256-fl4/Pgtkojk5AE52wpGDnuLajQxHoVqyphE90IIPYFU=";
+        };
+      }
+    ];
+
+    shellInit = ''
+      # Common variables
+      set -x PATH \
+      	$HOME/.cargo/bin \
+      	$HOME/.npm-packages/bin \
+      	$HOME/.local/bin \
+      	$HOME/.cabal/bin \
+      	$PATH
+
+      set -x EDITOR vim
+
+      # Nix
+      fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
+      set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
+      source (direnv hook fish | psub)
+    '';
+
+    interactiveShellInit = ''
+      # My custom, decade-old, function definitions
+      bass source ~/.bash_aliases
+
+      # FZF integration
+      set -x RIPGREP_CONFIG_PATH $HOME/.ripgreprc
+      set -x FZF_FIND_FILE_OPTS "--layout=reverse --bind='ctrl-t:toggle-preview' --preview='/home/groscoe/Projects/preview.sh {}' --height=100%"
+      set -x FZF_FIND_FILE_COMMAND "fd -L -H"
+    '';
+
+    functions = {
+      fish_right_prompt = ''
+        if test $CMD_DURATION
+            # Show duration of the last command in seconds
+            set duration (echo "$CMD_DURATION 1000" | awk '{printf "%.3fs", $1 / $2}')
+            echo $duration
+        end
+      '';
+
+      fish_user_key_bindings = "fzf_key_bindings";
+    };
+  };
+
   # Newsboat (RSS feed reader)
   programs.newsboat = {
     enable = true;
@@ -220,4 +257,10 @@ in {
     enable = true;
     nix-direnv.enable = true;
   };
+
+  ##
+  ## Unmanaged configs
+  ##
+  home.file = unManagedConfigs.files;
+  home.packages = unManagedConfigs.packages;
 }

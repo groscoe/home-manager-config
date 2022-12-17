@@ -17,15 +17,6 @@ function! DefinePlugins()
   " Better syntax highlighting
   Plug 'sheerun/vim-polyglot'
 
-  " Nice color scheme for dark backgrounds
-  Plug 'sonph/onehalf', {'rtp': 'vim'}
-
-  " Another nice color scheme
-  Plug 'altercation/vim-colors-solarized'
-
-  " Dynamic colorscheme with pywal
-  Plug 'dylanaraps/wal.vim'
-
   " Search with fzf
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'junegunn/fzf.vim'
@@ -35,6 +26,22 @@ function! DefinePlugins()
 
   " Smart commenting plugin
   Plug 'preservim/nerdcommenter'
+
+  "
+  " Nice colorschemes:
+  "
+  
+  " For dark backgrounds
+  Plug 'sonph/onehalf', {'rtp': 'vim'}
+
+  " Dynamic colorscheme with pywal
+  Plug 'dylanaraps/wal.vim'
+
+  " Solarized
+  Plug 'altercation/vim-colors-solarized'
+
+  "Nord theme
+  Plug 'arcticicestudio/nord-vim' 
 
   call plug#end()
 endfunction
@@ -69,7 +76,7 @@ endfunction
 function! SetCompletionMappings()
 	" Use K to show documentation in preview window.
 	nnoremap <silent> gh :call <SID>show_documentation()<CR>
-  nnoremap <silent> ga :CocAction<CR>
+  nnoremap <silent> ga <Plug>(coc-codeaction)
   nnoremap <silent> gd :call CocActionAsync('jumpDefinition')<CR>
   nnoremap <silent> gr <Plug>(coc-references)
 
@@ -93,11 +100,10 @@ function! SetupVisuals()
   " endif
 
   syntax enable
-  set background=dark
   " let g:solarized_termcolors=256
   " let g:solarized_termtrans=1
-  " colorscheme solarized
-  colorscheme wal
+  colorscheme nord
+  set background=light
 endfunction
 
 function! SetupEditor()
@@ -115,7 +121,6 @@ function! SetupEditor()
   " nnoremap <silent> <C-x> :bw<CR>
 
   " Some handy buffer navigation shortcuts
-  nnoremap <silent> <C-w> :bw<CR>
   nnoremap <silent> <C-n> :bn<CR>
   nnoremap <silent> <C-p> :bp<CR>
 endfunction

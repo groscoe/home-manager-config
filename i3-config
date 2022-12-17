@@ -281,6 +281,7 @@ bindsym Ctrl+Shift+space exec --no-startup-id rofi -show file-browser-extended
 bindsym Ctrl+g exec --no-startup-id \
   tdrop \
   -ma \
+  -r \
   -w 100% -h 50% -y 0 -x 0 \
   alacritty --class "DropDownAlacritty"
 
@@ -322,7 +323,7 @@ bindsym $mod+minus scratchpad show
 bindsym Ctrl+Print exec flameshot gui
 
 # Autostart apps (when not using KDE)
-exec_always --no-startup-id "picom --experimental-backends"
+exec_always --no-startup-id picom
 exec --no-startup-id "nitrogen --random --set-zoom-fill ~/Pictures/Wallpapers"
 exec_always --no-startup-id deadd-notification-center
 exec --no-startup-id dbus-launch xfce4-power-manager
