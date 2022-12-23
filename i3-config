@@ -293,7 +293,7 @@ for_window [class=".*"] border pixel 0
 gaps inner 15
 
 # outer gaps
-smart_gaps on
+# smart_gaps on
 
 # polybar
 # exec_always --no-startup-id "killall polybar; polybar mainbar"

@@ -3,6 +3,8 @@
 let
   # Configs go here. Don't forget to add to `unManagedConfigs`;
   unManagedConfigs = build (lib.attrValues {
+    acpi = { packages = [ pkgs.acpi ]; };
+
     bash = {
       files = {
         ".bashrc" = ./bashrc;
@@ -11,9 +13,12 @@ let
       };
     };
 
+
     deluge = { packages = [ pkgs.deluge ]; };
 
     fzf = { packages = [ pkgs.fzf pkgs.fd ]; };
+
+    fonts = { packages = [ pkgs.source-code-pro ]; };
 
     git = {
       files = {
@@ -26,9 +31,16 @@ let
 
     haskell = { files = { ".ghc/ghci.conf" = ./haskell-ghci.conf; }; };
 
-    i3 = { files = { ".config/i3/config" = ./i3-config; }; };
+    i3 = {
+      packages = [ pkgs.i3-gaps ];
+      files = { ".config/i3/config" = ./i3-config; };
+    };
 
     logseq = { packages = [ pkgs.logseq ]; };
+
+    media = {
+      packages = [ pkgs.vlc ];
+    };
 
     networking-tools = {
       packages = [ pkgs.lsof pkgs.speedtest-cli pkgs.nethogs ];
@@ -53,12 +65,12 @@ let
 
     picom = { files = { ".config/picom/picom.conf" = ./picom.conf; }; };
 
-    # polybar = {
-    #   # NOTE: weird inconsistencies.
-    #   packages = [ pkgs.polybar ];
+    polybar = {
+      # NOTE: weird inconsistencies.
+      # packages = [ pkgs.polybar ];
 
-    #   files = { ".config/polybar/config" = ./polybar; };
-    # };
+      files = { ".config/polybar" = ./polybar; };
+    };
 
     programming-tools = { packages = [ pkgs.comby pkgs.pretty-simple ]; };
 
@@ -74,6 +86,14 @@ let
         ".config/rofi/config.rasi" = ./rofi.rasi;
         ".config/rofi/file-browser" = ./rofi-file-browser;
       };
+    };
+
+    shell-utilities = {
+      packages = [
+        pkgs.bat
+        pkgs.lsd
+        pkgs.xclip
+      ];
     };
 
     terminals = {
@@ -138,6 +158,8 @@ in {
   ##
   ## Managed configs
   ##
+
+  fonts.fontconfig.enable = true;
 
   # # Rofi (drun-style launcher)
   # programs.rofi = {
