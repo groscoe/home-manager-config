@@ -137,6 +137,13 @@ let
         packages = [ ];
       } configs;
 
+
+  # ----------------------------------------------------------------------------
+
+  importModule = 
+    let args = {
+      inherit config pkgs lib;
+    }; in path: (import path args);
 in {
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
@@ -153,303 +160,57 @@ in {
   # changes in each release.
   home.stateVersion = "22.05";
 
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
-
   ##
   ## Managed configs
   ##
 
   fonts.fontconfig.enable = true;
 
-  # # Rofi (drun-style launcher)
-  # programs.rofi = {
-  #   # See: https://github.com/nix-community/home-manager/blob/master/modules/programs/rofi.nix
-  #   enable = true;
+  programs = {
+    # Let Home Manager install and manage itself.
+    home-manager.enable = true;
 
-  #   plugins = [
-  #     pkgs.rofi-calc
-  #     pkgs.rofi-bluetooth
-  #     pkgs.rofi-file-browser
-  #     pkgs.rofi-power-menu
-  #     pkgs.rofi-pulse-select
-  #   ];
+    # # Rofi (drun-style launcher)
+    # rofi = {
+    #   # See: https://github.com/nix-community/home-manager/blob/master/modules/programs/rofi.nix
+    #   enable = true;
 
-  #   font = "Source Code Pro 24";
+    #   plugins = [
+    #     pkgs.rofi-calc
+    #     pkgs.rofi-bluetooth
+    #     pkgs.rofi-file-browser
+    #     pkgs.rofi-power-menu
+    #     pkgs.rofi-pulse-select
+    #   ];
 
-  #   cycle = true; # cycle through the result list
+    #   font = "Source Code Pro 24";
 
-  #   theme = "solarized_alternate";
+    #   cycle = true; # cycle through the result list
 
-  #   extraConfig = {
-  #     #modes = "drun,run,window,power-menu,bluetooth,pulse-select,file-browser-extended,calc";
-  #     modes = "drun,run,window,file-browser-extended,calc";
-  #     drun-use-desktop-cache = true;
-  #     drun-reload-desktop-cache = true;
-  #   };
-  # };
+    #   theme = "solarized_alternate";
 
-  programs.fish = {
-    enable = true;
+    #   extraConfig = {
+    #     #modes = "drun,run,window,power-menu,bluetooth,pulse-select,file-browser-extended,calc";
+    #     modes = "drun,run,window,file-browser-extended,calc";
+    #     drun-use-desktop-cache = true;
+    #     drun-reload-desktop-cache = true;
+    #   };
+    # };
 
-    plugins = [
-      {
-        name = "foreign-env";
-        src = pkgs.fetchFromGitHub {
-          owner = "oh-my-fish";
-          repo = "plugin-foreign-env";
-          rev = "master";
-          sha256 = "sha256-3h03WQrBZmTXZLkQh1oVyhv6zlyYsSDS7HTHr+7WjY8=";
-        };
-      }
+    fish = importModule fish/fish.nix;
 
-      {
-        name = "bass";
-        src = pkgs.fetchFromGitHub {
-          owner = "edc";
-          repo = "bass";
-          rev = "master";
-          sha256 = "sha256-fl4/Pgtkojk5AE52wpGDnuLajQxHoVqyphE90IIPYFU=";
-        };
-      }
-    ];
+    # Newsboat (RSS feed reader)
+    newsboat = importModule newsboat/newsboat.nix;
 
-    shellInit = ''
-      # Common variables
-      set -x PATH \
-      	$HOME/.cargo/bin \
-      	$HOME/.npm-packages/bin \
-      	$HOME/.local/bin \
-      	$HOME/.cabal/bin \
-      	$PATH
+    vim = importModule vim/vim.nix;
 
-      set -x EDITOR vim
-
-      # Nix
-      fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
-      set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
-      source (direnv hook fish | psub)
-    '';
-
-    interactiveShellInit = ''
-      # My custom, decade-old, function definitions
-      bass source ~/.bash_aliases
-
-      # FZF integration
-      set -x RIPGREP_CONFIG_PATH $HOME/.ripgreprc
-      set -x FZF_FIND_FILE_OPTS "--layout=reverse --bind='ctrl-t:toggle-preview' --preview='/home/groscoe/Projects/preview.sh {}' --height=100%"
-      set -x FZF_FIND_FILE_COMMAND "fd -L -H"
-    '';
-
-    functions = {
-      fish_right_prompt = ''
-        if test $CMD_DURATION
-            # Show duration of the last command in seconds
-            set duration (echo "$CMD_DURATION 1000" | awk '{printf "%.3fs", $1 / $2}')
-            echo $duration
-        end
-      '';
-
-      fish_user_key_bindings = "fzf_key_bindings";
+    # Nix-related tools
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
     };
   };
 
-  # Newsboat (RSS feed reader)
-  programs.newsboat = {
-    enable = true;
-    urls = import ./newsboat/newsboat-urls.nix;
-    autoReload = true;
-    extraConfig = ''
-      # unbind keys
-      # unbind-key ENTER
-      unbind-key j
-      unbind-key k
-      unbind-key J
-      unbind-key K
-
-      # bind keys - vim style
-      bind-key j down
-      bind-key k up
-      bind-key l open
-      bind-key h quit
-    '';
-  };
-
-  programs.vim = {
-    enable = true;
-
-    plugins = with pkgs.vimPlugins; [
-      # Easier handling of delimiters
-      vim-surround
-
-      # Auto-complete/intellisense
-      coc-nvim
-      coc-rust-analyzer
-
-      # Better syntax highlighting
-      vim-polyglot
-
-      # Search with fzf
-      fzf-vim
-
-      # Improvements on netrw, see https://github.com/tpop/vim-vinegar
-      vim-vinegar
-
-      # Smart commenting plugin
-      nerdcommenter
-
-      ##
-      ## Nice colorschemes
-      ##
-
-      # For dark backgrounds
-      onehalf
-
-      # Dynamic colorscheme with pywal
-      wal-vim
-
-      # Solarized
-      vim-colors-solarized
-
-      # Nord theme
-      nord-vim
-    ];
-
-    settings = {
-      # From https://stackoverflow.com/questions/234564/tab-key-4-spaces-and-auto-indent-after-curly-braces-in-vim
-      tabstop = 2;
-      shiftwidth = 2;
-      expandtab = true;
-
-      # From https://jeffkreeftmeijer.com/vim-number/
-      number = true;
-      relativenumber = true;
-
-      # From https://stackoverflow.com/a/2288438
-      ignorecase = true;
-      smartcase = true;
-
-      # Persistent history
-      undodir = [ "~/.vimhistory" ];
-      undofile = true;
-
-      # Hide buffers in other windows, don't destroy them
-      hidden = true;
-
-      background = "light";
-    };
-
-    extraConfig = ''
-      ""
-      "" SetCompletionMappings()
-      ""
-
-      " From https://github.com/neoclide/coc.nvim#example-vim-configuration
-      " Use K to show documentation in preview window.
-      nnoremap <silent> gh :call <SID>show_documentation()<CR>
-      nnoremap <silent> ga <Plug>(coc-codeaction)
-      nnoremap <silent> gd :call CocActionAsync('jumpDefinition')<CR>
-      nnoremap <silent> gr <Plug>(coc-references)
-
-      function! s:show_documentation()
-        if (index(['vim','help'], &filetype) >= 0)
-          execute 'h '.expand('<cword>')
-        elseif (coc#rpc#ready())
-          call CocActionAsync('doHover')
-        else
-          execute '!' . &keywordprg . " " . expand('<cword>')
-        endif
-      endfunction  
-
-      ""
-      "" SetupVisuals()
-      ""
-
-      " From https://github.com/sonph/onehalf/tree/master/vim#true-colors
-      " if exists('+termguicolors')
-      "   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-      "   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-      "   set termguicolors
-      " endif
-
-      syntax enable
-      " let g:solarized_termcolors=256
-      " let g:solarized_termtrans=1
-      colorscheme nord
-      " set background=light
-
-      ""
-      "" SetupEditor()
-      ""
-
-      " When opening a file, change the current working dir
-      set autochdir
-
-      " Persistent history
-      " set undodir=~/.vimhistory
-      " set undofile
-
-      " Hide buffers in other windows, don't destroy them
-      " set hidden
-
-      " Close buffer with C-w
-      " nnoremap <silent> <C-x> :bw<CR>
-
-      " Some handy buffer navigation shortcuts
-      nnoremap <silent> <C-n> :bn<CR>
-      nnoremap <silent> <C-p> :bp<CR>
-
-
-      ""
-      "" SetupFZFBindings()
-      ""
-
-      " From https://dev.to/iggredible/how-to-search-faster-in-vim-with-fzf-vim-36ko
-      nnoremap <silent> <C-t> :GFiles<CR>
-      nnoremap <silent> <C-b> :Buffers<CR>
-
-      command! -bang -nargs=* GGrep
-        \ call fzf#vim#grep(
-        \   'git grep --line-number -- '.shellescape(<q-args>), 0,
-        \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
-
-      nnoremap <silent> <C-h> :GGrep<CR>
-
-      ""
-      "" SetupSpellChecking()
-      ""
-      augroup textWithSpellCheck
-        autocmd!
-        autocmd FileType latex,tex,md,rst,markdown,org,txt setlocal spell spelllang=en_gb
-        autocmd BufRead,BufNewFile *.md,*.org,*.txt setlocal spell spelllang=en_gb
-      augroup END
-
-
-
-      ""
-      "" HighlightTODOs()
-      ""
-
-      " Highlight TODO, FIXME, etc for every filetype
-      augroup higlightTODO
-        autocmd!
-        autocmd WinEnter,VimEnter * :silent! call matchadd('Todo', 'NOTE\|NB\|REVIEW\|TMP', -1)
-      augroup END
-
-      " call SetupVisuals()
-      " call SetCompletionMappings()
-      " call SetupSpellChecking()
-      " call SetupEditor()
-      " call SetupFZFBindings()
-      " call HighlightTODOs()
-    '';
-  };
-
-  # Nix-related tools
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
-  };
 
   ##
   ## Unmanaged configs
