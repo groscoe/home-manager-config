@@ -86,10 +86,6 @@ lambdabot() {
     echo "@pl $@" | ~/.cabal/bin/lambdabot -l CRITICAL
 }
 
-forward-buildserver-ports() {
-  ssh -L 27017:localhost:27017 -L 3306:localhost:3306 -L 7171:localhost:7171 -L 3002:localhost:3000 -fN remote-buildserver
-}
-
 recents() {
   find "${HOME}/Downloads" -type f -printf "%T@ %Tc %p\n" | sort -nr | cut -d ' ' -f8- | head "$@"
 }
@@ -147,4 +143,3 @@ urltrace-copy() { # copy last url redirect destination to clipboard
 
 # # Several git aliases, from Prezto
 source "$HOME/.git_aliases.sh"
-
