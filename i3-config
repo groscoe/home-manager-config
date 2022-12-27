@@ -282,7 +282,7 @@ bindsym Ctrl+g exec --no-startup-id \
   tdrop \
   -ma \
   -r \
-  -w 100% -h 50% -y 0 -x 0 \
+  -w 100% -h 95% -y 0 -x 0 \
   alacritty --class "DropDownAlacritty"
 
 # So that the dropdown terminal doesn't flicker on open
