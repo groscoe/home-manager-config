@@ -7,12 +7,19 @@ let
 
     bash = {
       files = {
-        ".bashrc" = ./bashrc;
-        ".bash_aliases" = ./bash_aliases;
-        ".fzf.bash" = ./bash-fzf.bash;
+        ".bashrc" = ./bash/bashrc;
+        ".bash_aliases" = ./bash/bash_aliases;
+        ".fzf.bash" = ./bash/fzf.bash;
       };
     };
 
+    # Notifications
+    deadd = {
+      files = {
+        ".config/deadd/deadd.conf" = ./deadd/config/deadd/deadd.conf;
+        ".config/deadd/deadd.css" = ./deadd/config/deadd/deadd.css;
+      };
+    };
 
     deluge = { packages = [ pkgs.deluge ]; };
 
@@ -22,18 +29,18 @@ let
 
     git = {
       files = {
-        ".gitconfig" = ./gitconfig;
-        ".git_aliases.sh" = ./git_aliases.sh;
+        ".gitconfig" = ./git/gitconfig;
+        ".git_aliases.sh" = ./git/git_aliases.sh;
       };
 
       packages = [ pkgs.diff-so-fancy ];
     };
 
-    haskell = { files = { ".ghc/ghci.conf" = ./haskell-ghci.conf; }; };
+    haskell = { files = { ".ghc/ghci.conf" = ./haskell/ghc/ghci.conf; }; };
 
     i3 = {
       packages = [ pkgs.i3-gaps ];
-      files = { ".config/i3/config" = ./i3-config; };
+      files = { ".config/i3/config" = ./i3/config/i3/config; };
     };
 
     logseq = { packages = [ pkgs.logseq ]; };
@@ -56,26 +63,19 @@ let
       ];
     };
 
-    notifications = {
-      files = {
-        ".config/deadd/deadd.conf" = ./deadd.conf;
-        ".config/deadd/deadd.css" = ./deadd.css;
-      };
-    };
-
-    picom = { files = { ".config/picom/picom.conf" = ./picom.conf; }; };
+    picom = { files = { ".config/picom/picom.conf" = ./picom/config/picom/picom.conf; }; };
 
     polybar = {
       # NOTE: weird inconsistencies.
       # packages = [ pkgs.polybar ];
 
-      files = { ".config/polybar" = ./polybar; };
+      files = { ".config/polybar" = ./polybar/config/polybar; };
     };
 
     programming-tools = { packages = [ pkgs.comby pkgs.pretty-simple ]; };
 
     ripgrep = {
-      files = { ".ripgreprc" = ./ripgreprc; };
+      files = { ".ripgreprc" = ./ripgrep/ripgreprc; };
       packages = [ pkgs.ripgrep ];
     };
 
@@ -83,8 +83,8 @@ let
       # NOTE: Managed version doesn't find .desktop files that weren't installed
       # with nix.
       files = {
-        ".config/rofi/config.rasi" = ./rofi.rasi;
-        ".config/rofi/file-browser" = ./rofi-file-browser;
+        ".config/rofi/config.rasi" = ./rofi/config/rofi/rofi.rasi;
+        ".config/rofi/file-browser" = ./rofi/config/rofi/rofi-file-browser;
       };
     };
 
@@ -104,16 +104,16 @@ let
       ];
 
       files = {
-        ".tmux.conf" = ./tmux.conf;
-        ".config/guake/guake.con" = ./guake.conf;
-        ".config/alacritty/alacritty.yml" = ./alacritty.yml;
+        ".tmux.conf" = ./terminals/tmux.conf;
+        ".config/guake/guake.con" = ./terminals/config/guake/guake.conf;
+        ".config/alacritty/alacritty.yml" = ./terminals/config/alacritty/alacritty.yml;
       };
     };
 
     vim = {
       files = {
-        # ".vimrc" = ./vimrc;
-        ".vim/coc-settings.json" = ./vim-coc-settings.json;
+        # ".vimrc" = ./vim/vimrc;
+        ".vim/coc-settings.json" = ./vim/vim/vim-coc-settings.json;
       };
       packages = [ pkgs.rnix-lsp ];
     };
@@ -257,7 +257,7 @@ in {
   # Newsboat (RSS feed reader)
   programs.newsboat = {
     enable = true;
-    urls = import ./newsboat-urls.nix;
+    urls = import ./newsboat/newsboat-urls.nix;
     autoReload = true;
     extraConfig = ''
       # unbind keys
