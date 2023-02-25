@@ -1,7 +1,14 @@
 { config, pkgs, lib, ... }:
 
 let
-  # Configs go here. Don't forget to add to `unManagedConfigs`;
+  # Other inputs
+  doom-emacs = pkgs.callPackage (builtins.fetchTarball {
+    url = https://github.com/nix-community/nix-doom-emacs/archive/master.tar.gz;
+  }) {
+    doomPrivateDir = ./doom.d;
+  };
+
+  # Configs go here.
   unManagedConfigs = build (lib.attrValues {
     acpi = { packages = [ pkgs.acpi ]; };
 
@@ -23,7 +30,19 @@ let
 
     deluge = { packages = [ pkgs.deluge ]; };
 
+    doom-emacs = {
+      packages = [ doom-emacs ];
+    };
+
     fzf = { packages = [ pkgs.fzf pkgs.fd ]; };
+
+    finance = {
+      packages = with pkgs; [
+        gnucash
+        hledger-ui
+        hledger-web
+      ];
+    };
 
     fonts = { packages = [ pkgs.source-code-pro ]; };
 
@@ -43,6 +62,8 @@ let
       files = { ".config/i3/config" = ./i3/config/i3/config; };
     };
 
+    hledger = { packages = [ pkgs.hledger ]; };
+
     logseq = { packages = [ pkgs.logseq ]; };
 
     media = {
@@ -54,12 +75,27 @@ let
     };
 
     nix-tools = {
-      packages = [
-        pkgs.nixfmt # formatter
-        pkgs.cntr # container debugging tool
-        pkgs.cachix # binary caches
-        pkgs.direnv # direnv
-        pkgs.nix-output-monitor
+      packages = with pkgs; [
+        nixfmt # formatter
+        cntr # container debugging tool
+        cachix # binary caches
+        direnv # direnv
+        nix-output-monitor
+      ];
+    };
+
+    peripherics-tools = {
+      packages = with pkgs; [
+        brightnessctl
+        pavucontrol
+        playerctl
+      ];
+    };
+
+    ebook-utilities = {
+      packages = with pkgs; [
+        poppler_utils
+        calibre
       ];
     };
 
@@ -72,7 +108,14 @@ let
       files = { ".config/polybar" = ./polybar/config/polybar; };
     };
 
-    programming-tools = { packages = [ pkgs.comby pkgs.pretty-simple ]; };
+    programming-tools = {
+      packages = with pkgs; [
+        comby
+        pretty-simple
+        nodejs
+        shellcheck
+        ];
+      };
 
     ripgrep = {
       files = { ".ripgreprc" = ./ripgrep/ripgreprc; };
@@ -89,12 +132,33 @@ let
     };
 
     shell-utilities = {
-      packages = [
-        pkgs.bat
-        pkgs.lsd
-        pkgs.xclip
+      packages = with pkgs; [
+        bat
+        gotop
+        gron
+        jq
+        lsd
+        parallel
+        rclone
+        tree
+        xclip
       ];
     };
+
+    # spacemacs = {
+    #   files = {
+    #     ".spacemacs" = ./spacemacs/spacemacs.el;
+    #     ".emacs.d" = {
+    #       source = builtins.fetchGit {
+    #         url = "https://github.com/syl20bnr/spacemacs";
+    #         ref = "develop";
+    #       };
+    #       # don't make the directory read only so that impure melpa can still
+    #       # happen.
+    #       recursive = true;
+    #     };
+    #   };
+    # };
 
     terminals = {
       packages = [
@@ -150,6 +214,8 @@ in {
   home.username = "groscoe";
   home.homeDirectory = "/home/groscoe";
 
+  manual.manpages.enable = false;
+
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
   # when a new Home Manager release introduces backwards
@@ -184,6 +250,67 @@ in {
     direnv = {
       enable = true;
       nix-direnv.enable = true;
+    };
+
+    # # emacs
+    # emacs = {
+    #   enable = true;
+    #   package = pkgs.emacsWithPackages (epkgs: with epkgs; [
+    #     zerodark-theme
+    #   ]);
+    #   extraPackages = epkgs: with epkgs; [
+    #     zerodark-theme
+    #     magit
+    #     org-download
+    #   ];
+    # };
+
+    zathura = {
+      enable = true;
+      options = {
+        # zathurarc-dark
+        notification-error-bg = "#586e75"; # base01  # seem not work
+        notification-error-fg = "#dc322f"; # red
+        notification-warning-bg = "#586e75"; # base01
+        notification-warning-fg = "#dc322f"; # red
+        notification-bg = "#586e75"; # base01
+        notification-fg = "#b58900"; # yellow
+
+        completion-group-bg = "#002b36"; # base03
+        completion-group-fg = "#839496"; # base0
+        completion-bg = "#073642"; # base02
+        completion-fg = "#93a1a1"; # base1
+        completion-highlight-bg = "#586e75"; # base01
+        completion-highlight-fg = "#eee8d5"; # base2
+
+        # Define the color in index mode
+        index-bg = "#073642"; # base02
+        index-fg = "#93a1a1"; # base1
+        index-active-bg = "#586e75"; # base01
+        index-active-fg = "#eee8d5"; # base2
+
+        inputbar-bg = "#586e75"; # base01
+        inputbar-fg = "#eee8d5"; # base2
+
+        statusbar-bg = "#073642"; # base02
+        statusbar-fg = "#93a1a1"; # base1
+
+        highlight-color = "#657b83"; # base00  # hightlight match when search keyword(vim's /)
+        highlight-active-color = "#268bd2"; # blue
+
+        # default-bg = "#073642"; # base02
+        default-bg = "#000000"; # base02
+        default-fg = "#93a1a1"; # base1
+        # render-loading = true
+        # render-loading-fg = "#073642"; # base02
+        # render-loading-bg = "#073642"; # base02
+
+        # Recolor book content's color
+        recolor = true;
+        recolor-lightcolor = "#073642"; # base02
+        recolor-darkcolor = "#93a1a1"; # base1
+        # recolor-keephue = true      # keep original color
+      };
     };
   };
 

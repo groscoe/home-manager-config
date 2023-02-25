@@ -44,5 +44,7 @@
   "diagnostic.virtualText": true,
   "diagnostic.virtualTextCurrentLineOnly": false,
   "diagnostic.virtualTextLines": 1,
-  "diagnostic.virtualTextPrefix": " -- "
+  "diagnostic.virtualTextPrefix": " -- ",
+
+  "rust-analyzer.cargo.features": ["unstable"]
 }

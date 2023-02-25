@@ -100,7 +100,7 @@
       " let g:solarized_termcolors=256
       " let g:solarized_termtrans=1
       colorscheme nord
-      " set background=light
+      set background=light
 
       ""
       "" SetupEditor()
@@ -122,6 +122,9 @@
       " Some handy buffer navigation shortcuts
       nnoremap <silent> <C-n> :bn<CR>
       nnoremap <silent> <C-p> :bp<CR>
+
+      " Add a space after commenting with NERDCommenter
+      let g:NERDSpaceDelims = 1
 
 
       ""

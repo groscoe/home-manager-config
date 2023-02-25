@@ -10,7 +10,7 @@ fi
 
 # Key bindings
 # ------------
-source "/usr/share/fzf/key-bindings.bash"
+# source "/usr/share/fzf/key-bindings.bash"
 
 #
 # Custom bindings below

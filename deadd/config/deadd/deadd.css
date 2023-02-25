@@ -13,27 +13,27 @@
 
 .title {
     font-weight: bold;
-    font-size: 160px;
+    font-size: 40px;
 }
 
 .appname {
-    font-size: 120px;
+    font-size: 30px;
 }
 
 .time {
-    font-size: 120px;
+    font-size: 30px;
 }
 
 .blurredBG.notification {
-    background:  rgba(0, 255, 255, 0.4);
+    background:  rgba(255, 255, 255, 0.4);
 }
 
 .blurredBG.notification.critical {
-    background: rgba(255, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .notificationInCenter.critical {
-    background: rgba(155, 0, 20, 0.5);
+    background: rgba(255, 255, 255, 0.5);
 }
 
 /* Labels */
