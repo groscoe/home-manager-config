@@ -1,13 +1,6 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, pkgs-stable, ... }:
 
 let
-  # Other inputs
-  doom-emacs = pkgs.callPackage (builtins.fetchTarball {
-    url = https://github.com/nix-community/nix-doom-emacs/archive/master.tar.gz;
-  }) {
-    doomPrivateDir = ./doom.d;
-  };
-
   # Configs go here.
   unManagedConfigs = build (lib.attrValues {
     acpi = { packages = [ pkgs.acpi ]; };
@@ -30,9 +23,9 @@ let
 
     deluge = { packages = [ pkgs.deluge ]; };
 
-    doom-emacs = {
-      packages = [ doom-emacs ];
-    };
+    # doom-emacs = {
+      # packages = [ doom-emacs ];
+    # };
 
     fzf = { packages = [ pkgs.fzf pkgs.fd ]; };
 
@@ -114,6 +107,10 @@ let
         pretty-simple
         nodejs
         shellcheck
+        pkgs-stable.httpie
+        cmake
+        visidata
+        pup
         ];
       };
 
@@ -267,6 +264,12 @@ in {
 
     zathura = {
       enable = true;
+
+      mappings = {
+        h = "navigate previous";
+        l = "navigate next";
+      };
+
       options = {
         # zathurarc-dark
         notification-error-bg = "#586e75"; # base01  # seem not work
@@ -306,7 +309,7 @@ in {
         # render-loading-bg = "#073642"; # base02
 
         # Recolor book content's color
-        recolor = true;
+        # recolor = true;
         recolor-lightcolor = "#073642"; # base02
         recolor-darkcolor = "#93a1a1"; # base1
         # recolor-keephue = true      # keep original color

@@ -334,8 +334,7 @@ exec --no-startup-id dbus-launch nm-applet
 exec --no-startup-id flameshot
 
 # Keyboard configs
-exec_always --no-startup-id "setxkbmap -layout br -option caps:escape"
-exec_always --no-startup-id "xmodmap -e 'keycode 20 = minus underscore minus underscore backslash bar backslash'"
+exec_always --no-startup-id "/home/groscoe/Projects/x-settings.sh"
 
 # Screen brightness
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
