@@ -72,8 +72,9 @@ let
         nixfmt # formatter
         cntr # container debugging tool
         cachix # binary caches
-        direnv # direnv
+        direnv
         nix-output-monitor
+        nil
       ];
     };
 

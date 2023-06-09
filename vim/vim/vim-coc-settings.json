@@ -2,8 +2,11 @@
   "hover.floatMaxWidth": 300,
   "languageserver": {
     "nix": {
-      "command": "rnix-lsp",
-      "filetypes": ["nix"]
+      // "command": "rnix-lsp",
+      // "filetypes": ["nix"]
+      "command": "nil",
+      "filetypes": ["nix"],
+      "rootPatterns": ["flake.nix"]
     },
     "haskell": {
       "command": "haskell-language-server",

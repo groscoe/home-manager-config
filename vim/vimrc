@@ -74,11 +74,17 @@ endfunction
 
 " From https://github.com/neoclide/coc.nvim#example-vim-configuration
 function! SetCompletionMappings()
-	" Use K to show documentation in preview window.
+	" Use gh to show documentation in a popup window.
 	nnoremap <silent> gh :call <SID>show_documentation()<CR>
+  " Code actions with g-a
   nnoremap <silent> ga <Plug>(coc-codeaction)
+  " Jump to definition with g-d
   nnoremap <silent> gd :call CocActionAsync('jumpDefinition')<CR>
+  " Open all references to a symbol in a preview buffer
   nnoremap <silent> gr <Plug>(coc-references)
+  " Open a menu with the highlighted code lens actions or execute if there's
+  " only a single one
+  nnoremap <silent> gl <Plug>(coc-codelens-action)
 
 	function! s:show_documentation()
 		if (index(['vim','help'], &filetype) >= 0)
