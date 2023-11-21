@@ -61,5 +61,20 @@
       '';
 
       fish_user_key_bindings = "fzf_key_bindings";
+
+      wrap-notify = ''
+        # Execute the command and its arguments
+        $argv
+
+        # Send a notification
+        notify-send "finished"
+      '';
+
+      wrap-notify-pgrep = ''
+        # Wait for the argument to be finished
+        pwait -f $args
+
+        notify-send "finished"
+      '';
     };
   }

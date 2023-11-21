@@ -37,6 +37,9 @@
 
       # Nord theme
       nord-vim
+
+      # Lean4 support
+      lean-nvim
     ];
 
     settings = {

@@ -13,7 +13,14 @@
       "args": [
         "--lsp"
       ],
-      "rootPatterns": ["*.cabal", "stack.yaml", "cabal.config", "cabal.project", "package.yaml", "hie.yaml"],
+      "rootPatterns": [
+        "*.cabal",
+        "stack.yaml",
+        "cabal.config",
+        "cabal.project",
+        "package.yaml",
+        "hie.yaml"
+      ],
       "filetypes": ["hs", "hls", "haskell", "lhaskell"],
       "settings": {
         "haskell.formattingProvider": "fourmolu",
@@ -36,7 +43,12 @@
 					// etc
 				}
 			}
-		}
+		},
+    "graphql": {
+      "command": "graphql-lsp",
+      "args": ["server", "-m", "stream"],
+      "filetypes": ["typescript", "typescript-react", "graphql"]
+    }
   },
   "codeLens.enable": true,
   "coc.preferences.enableMarkdown": true,

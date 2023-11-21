@@ -104,15 +104,21 @@ let
 
     programming-tools = {
       packages = with pkgs; [
-        comby
-        pretty-simple
-        nodejs
-        shellcheck
-        pkgs-stable.httpie
+        cloc
         cmake
-        visidata
+        comby
+        nodejs
+        pkgs-stable.httpie
+        pretty-simple
         pup
-        ];
+        shellcheck
+        visidata
+
+        (google-cloud-sdk.withExtraComponents [google-cloud-sdk.components.gke-gcloud-auth-plugin])
+
+        ] ++ (with pkgs.nodePackages; [
+          graphql-language-service-cli
+        ]);
       };
 
     ripgrep = {
@@ -132,6 +138,7 @@ let
     shell-utilities = {
       packages = with pkgs; [
         bat
+        gcal
         gotop
         gron
         jq
@@ -243,6 +250,7 @@ in {
     newsboat = importModule newsboat/newsboat.nix;
 
     vim = importModule vim/vim.nix;
+    neovim = importModule vim/nvim.nix;
 
     # Nix-related tools
     direnv = {

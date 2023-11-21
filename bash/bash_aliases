@@ -99,14 +99,15 @@ battery() {
 alias open=xdg-open
 alias cat=bat
 alias find=fd
+alias cal=gcal
 alias ls='lsd -v'
 alias ll='ls -alFv'
 alias la='ls -Av'
 alias l='ls'
 
 # sum a column of numbers
-sumcolumn() {
-  paste -sd+ $@ | bc
+sum-column() {
+  paste -sd+ | bc
 }
 
 epub2mobi () {
@@ -141,5 +142,13 @@ urltrace-copy() { # copy last url redirect destination to clipboard
 	urltrace "$@" | tail -n 1 | rg --only-matching --max-columns=0 'http[^"]+' | xclip -selection clipboard
 }
 
-# # Several git aliases, from Prezto
+wrap-notify() {
+    # Execute the command and its arguments
+    "$@"
+
+    # Send a notification
+    notify-send "finished"
+}
+
+# Several git aliases, from Prezto
 source "$HOME/.git_aliases.sh"
