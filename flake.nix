@@ -14,7 +14,15 @@
   outputs = { nixpkgs, nixpkgs-stable, home-manager, ... }:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          (import (builtins.fetchTarball {
+            url = "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
+            sha256 = "1b8a5jkwb43apmipiph1yg10hwlxwdjyzdaimksnsnc7zjh1vlrg";
+          }))
+        ];
+      };
       pkgs-stable = nixpkgs-stable.legacyPackages.${system};
     in {
       homeConfigurations."groscoe" = home-manager.lib.homeManagerConfiguration {

@@ -1,4 +1,4 @@
-args@{ config, pkgs, lib, ... }:
+args@{ lib, ... }:
   let
     vimConfigs = import ./vim.nix args;
 

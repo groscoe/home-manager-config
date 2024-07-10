@@ -8,7 +8,7 @@ function! DefinePlugins()
 
   " Plug plugins go here
 
-  " Easier handling of delimiters 
+  " Easier handling of delimiters
   Plug 'tpope/vim-surround'
 
   " Auto-complete/intellisense
@@ -30,7 +30,7 @@ function! DefinePlugins()
   "
   " Nice colorschemes:
   "
-  
+
   " For dark backgrounds
   Plug 'sonph/onehalf', {'rtp': 'vim'}
 
@@ -41,7 +41,7 @@ function! DefinePlugins()
   Plug 'altercation/vim-colors-solarized'
 
   "Nord theme
-  Plug 'arcticicestudio/nord-vim' 
+  Plug 'arcticicestudio/nord-vim'
 
   call plug#end()
 endfunction
@@ -55,7 +55,7 @@ function! ConfigIndentation()
   " when indenting with '>', use 4 spaces width
   set shiftwidth=2
   " On pressing tab, insert 4 spaces
-  set expandtab 
+  set expandtab
 endfunction
 
 
@@ -94,7 +94,7 @@ function! SetCompletionMappings()
 		else
 			execute '!' . &keywordprg . " " . expand('<cword>')
 		endif
-	endfunction  
+	endfunction
 endfunction
 
 function! SetupVisuals()

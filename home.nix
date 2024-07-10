@@ -1,4 +1,4 @@
-{ config, pkgs, lib, pkgs-stable, ... }:
+{ config, pkgs, lib, ...}: # pkgs-stable, ... }:
 
 let
   # Configs go here.
@@ -13,8 +13,18 @@ let
       };
     };
 
+    backup-tools = {
+      packages = with pkgs; [
+        restic
+        rclone
+      ];
+    };
+
     # Notifications
     deadd = {
+      packages = with pkgs; [
+        deadd-notification-center
+      ];
       files = {
         ".config/deadd/deadd.conf" = ./deadd/config/deadd/deadd.conf;
         ".config/deadd/deadd.css" = ./deadd/config/deadd/deadd.css;
@@ -37,7 +47,12 @@ let
       ];
     };
 
-    fonts = { packages = [ pkgs.source-code-pro ]; };
+    fonts = {
+      packages = with pkgs; [
+        source-code-pro
+        nerdfonts
+      ];
+    };
 
     git = {
       files = {
@@ -48,7 +63,12 @@ let
       packages = [ pkgs.diff-so-fancy ];
     };
 
-    haskell = { files = { ".ghc/ghci.conf" = ./haskell/ghc/ghci.conf; }; };
+    haskell = {
+      files = {
+        ".ghc/ghci.conf" = ./haskell/ghc/ghci.conf;
+        ".haskeline" = ./haskell/ghc/haskeline;
+      };
+    };
 
     i3 = {
       packages = [ pkgs.i3-gaps ];
@@ -56,8 +76,6 @@ let
     };
 
     hledger = { packages = [ pkgs.hledger ]; };
-
-    logseq = { packages = [ pkgs.logseq ]; };
 
     media = {
       packages = [ pkgs.vlc ];
@@ -69,7 +87,7 @@ let
 
     nix-tools = {
       packages = with pkgs; [
-        nixfmt # formatter
+        nixfmt-rfc-style # formatter
         cntr # container debugging tool
         cachix # binary caches
         direnv
@@ -88,6 +106,7 @@ let
 
     ebook-utilities = {
       packages = with pkgs; [
+        xournalpp
         poppler_utils
         calibre
       ];
@@ -108,7 +127,7 @@ let
         cmake
         comby
         nodejs
-        pkgs-stable.httpie
+        # pkgs-stable.httpie
         pretty-simple
         pup
         shellcheck
@@ -147,6 +166,7 @@ let
         rclone
         tree
         xclip
+        xsel
       ];
     };
 
@@ -175,7 +195,7 @@ let
       files = {
         ".tmux.conf" = ./terminals/tmux.conf;
         ".config/guake/guake.con" = ./terminals/config/guake/guake.conf;
-        ".config/alacritty/alacritty.yml" = ./terminals/config/alacritty/alacritty.yml;
+        ".config/alacritty/alacritty.toml" = ./terminals/config/alacritty/alacritty.toml;
       };
     };
 
@@ -184,7 +204,7 @@ let
         # ".vimrc" = ./vim/vimrc;
         ".vim/coc-settings.json" = ./vim/vim/vim-coc-settings.json;
       };
-      packages = [ pkgs.rnix-lsp ];
+      # packages = [ pkgs.rnix-lsp ];
     };
 
     wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
@@ -209,7 +229,7 @@ let
 
   # ----------------------------------------------------------------------------
 
-  importModule = 
+  importModule =
     let args = {
       inherit config pkgs lib;
     }; in path: (import path args);
@@ -246,6 +266,19 @@ in {
 
     fish = importModule fish/fish.nix;
 
+    # Smarter shell history search
+    atuin = {
+      enable = true;
+      enableFishIntegration = true;
+      enableBashIntegration = true;
+
+      settings = {
+        dialect = "uk";
+        style = "compact";
+        secrets_filter = "false";
+      };
+    };
+
     # Newsboat (RSS feed reader)
     newsboat = importModule newsboat/newsboat.nix;
 
@@ -258,18 +291,18 @@ in {
       nix-direnv.enable = true;
     };
 
-    # # emacs
-    # emacs = {
-    #   enable = true;
-    #   package = pkgs.emacsWithPackages (epkgs: with epkgs; [
-    #     zerodark-theme
-    #   ]);
-    #   extraPackages = epkgs: with epkgs; [
-    #     zerodark-theme
-    #     magit
-    #     org-download
-    #   ];
-    # };
+    # emacs
+    emacs = {
+      enable = true;
+      package = pkgs.emacsWithPackages (epkgs: with epkgs; [
+        zerodark-theme
+      ]);
+      extraPackages = epkgs: with epkgs; [
+        zerodark-theme
+        magit
+        org-download
+      ];
+    };
 
     zathura = {
       enable = true;

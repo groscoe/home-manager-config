@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
   {
     enable = true;
 
@@ -64,6 +64,8 @@
       hidden = true;
 
       background = "light";
+
+      mouse = "a";
     };
 
     extraConfig = ''
@@ -128,6 +130,10 @@
 
       " Add a space after commenting with NERDCommenter
       let g:NERDSpaceDelims = 1
+
+      " Highlight trailing spaces
+      highlight TrailingSpace ctermbg=red guibg=red
+      autocmd BufRead,BufNewFile * match TrailingSpace /\s\+$/
 
 
       ""

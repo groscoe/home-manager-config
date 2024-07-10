@@ -3,6 +3,9 @@
   # Please adapt and uncomment the following lines:
 	name = GRoscoe
 	email = gustavo@gustavoroscoe.com
+  signingKey = 3DA9A84A8AD76286
+[commit]
+  gpgsign = true
 [alias]
   unstage = reset -q HEAD --
   discard = checkout --

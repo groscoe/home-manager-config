@@ -206,7 +206,7 @@ client.urgent           $urgent-bg-color   $urgent-bg-color   $text-color       
 # 	font pango:DejaVu Sans Mono, FontAwesome 12
 #   # tray_output eDP-1
 #   tray_output HDMI-1
-#         
+#
 # 	colors {
 # 		background $bg-color
 #     separator #757575
@@ -271,14 +271,14 @@ bindsym XF86AudioPause exec playerctl pause
 
 ##
 ## End of auto-generated config
-## 
+##
 
 # Open rofi, a dmenu substitute
 bindsym Ctrl+space exec --no-startup-id rofi -show combi
 bindsym Ctrl+Shift+space exec --no-startup-id rofi -show file-browser-extended
 
-# Drop a terminal with Ctrl+g, using tdrop
-bindsym Ctrl+g exec --no-startup-id \
+# Drop a terminal with $mod+g, using tdrop
+bindsym $mod+g exec --no-startup-id \
   tdrop \
   -ma \
   -r \
