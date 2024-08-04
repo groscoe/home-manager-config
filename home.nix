@@ -1,9 +1,12 @@
-{ config, pkgs, lib, ...}: # pkgs-stable, ... }:
+{ config, pkgs, lib, pkgs-stable, ... }:
 
 let
+  isDarwin = pkgs.stdenv.isDarwin;
+  ifNotDarwin = cfg: if isDarwin then {} else cfg;
+  ifNotDarwin' = cfg: if isDarwin then [] else cfg;
   # Configs go here.
   unManagedConfigs = build (lib.attrValues {
-    acpi = { packages = [ pkgs.acpi ]; };
+    acpi = ifNotDarwin { packages = [ pkgs.acpi ]; };
 
     bash = {
       files = {
@@ -21,7 +24,7 @@ let
     };
 
     # Notifications
-    deadd = {
+    deadd = ifNotDarwin {
       packages = with pkgs; [
         deadd-notification-center
       ];
@@ -41,10 +44,9 @@ let
 
     finance = {
       packages = with pkgs; [
-        gnucash
         hledger-ui
         hledger-web
-      ];
+      ] ++ ifNotDarwin' [ pkgs.gnucash ];
     };
 
     fonts = {
@@ -70,33 +72,35 @@ let
       };
     };
 
-    i3 = {
+    i3 = ifNotDarwin {
       packages = [ pkgs.i3-gaps ];
       files = { ".config/i3/config" = ./i3/config/i3/config; };
     };
 
     hledger = { packages = [ pkgs.hledger ]; };
 
-    media = {
+    media = ifNotDarwin {
       packages = [ pkgs.vlc ];
     };
 
     networking-tools = {
-      packages = [ pkgs.lsof pkgs.speedtest-cli pkgs.nethogs ];
+      packages = with pkgs; [
+        lsof
+        speedtest-cli
+      ] ++ ifNotDarwin' [ pkgs.nethogs ];
     };
 
     nix-tools = {
       packages = with pkgs; [
         nixfmt-rfc-style # formatter
-        cntr # container debugging tool
         cachix # binary caches
         direnv
         nix-output-monitor
         nil
-      ];
+      ] ++ ifNotDarwin' [ pkgs.cntr ];
     };
 
-    peripherics-tools = {
+    peripherics-tools = ifNotDarwin {
       packages = with pkgs; [
         brightnessctl
         pavucontrol
@@ -108,13 +112,12 @@ let
       packages = with pkgs; [
         xournalpp
         poppler_utils
-        calibre
-      ];
+      ] ++ ifNotDarwin' [ pkgs.calibre ];
     };
 
-    picom = { files = { ".config/picom/picom.conf" = ./picom/config/picom/picom.conf; }; };
+    picom = ifNotDarwin { files = { ".config/picom/picom.conf" = ./picom/config/picom/picom.conf; }; };
 
-    polybar = {
+    polybar = ifNotDarwin {
       # NOTE: weird inconsistencies.
       # packages = [ pkgs.polybar ];
 
@@ -145,7 +148,7 @@ let
       packages = [ pkgs.ripgrep ];
     };
 
-    rofi = {
+    rofi = ifNotDarwin {
       # NOTE: Managed version doesn't find .desktop files that weren't installed
       # with nix.
       files = {
@@ -186,15 +189,14 @@ let
     # };
 
     terminals = {
-      packages = [
-        # pkgs.alacritty # NOTE: GPU acceleration issues
-        pkgs.tdrop
-        pkgs.tmux
-      ];
+      packages = with pkgs; [
+        # alacritty # NOTE: GPU acceleration issues
+        tmux
+      ] ++ ifNotDarwin' [ pkgs.tdrop ];
 
       files = {
         ".tmux.conf" = ./terminals/tmux.conf;
-        ".config/guake/guake.con" = ./terminals/config/guake/guake.conf;
+        ".config/guake/guake.conf" = ./terminals/config/guake/guake.conf;
         ".config/alacritty/alacritty.toml" = ./terminals/config/alacritty/alacritty.toml;
       };
     };
@@ -207,7 +209,11 @@ let
       # packages = [ pkgs.rnix-lsp ];
     };
 
-    wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
+    wallpaper = ifNotDarwin { packages = [ pkgs.variety pkgs.nitrogen ]; };
+
+    macos = if isDarwin then {
+      packages = [ pkgs.iterm2 ];
+    } else {};
   });
 
   # ----------------------------------------------------------------------------
@@ -231,13 +237,13 @@ let
 
   importModule =
     let args = {
-      inherit config pkgs lib;
+      inherit config pkgs lib isDarwin;
     }; in path: (import path args);
 in {
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
   home.username = "groscoe";
-  home.homeDirectory = "/home/groscoe";
+  home.homeDirectory = if isDarwin then "/Users/groscoe" else "/home/groscoe";
 
   manual.manpages.enable = false;
 
