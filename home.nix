@@ -204,6 +204,7 @@ let
       ] ++ ifNotDarwin' [ pkgs.tdrop ];
 
       files = {
+        ".tmux" = ./terminals/tmux;
         ".tmux.conf" = ./terminals/tmux.conf;
         ".config/guake/guake.conf" = ./terminals/config/guake/guake.conf;
         ".config/alacritty/alacritty.toml" = ./terminals/config/alacritty/alacritty.toml;
