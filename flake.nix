@@ -14,20 +14,21 @@
   outputs = { nixpkgs, nixpkgs-stable, home-manager, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-darwin" ];
+      forAllSystems = nixpkgs.lib.genAttrs systems;
       pkgsFor = system: import nixpkgs {
         inherit system;
         overlays = [
           (import (builtins.fetchTarball {
             url = "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
-            sha256 = "1v259z2cx63fwcvpma1i076lsnj8g7yh9f4xzx6nsf2764zlvrl1";
+            sha256 = "1lb4zldxvrmcl9mclvwmmlm13x7jdjz9rfa5xgbjjymr9qqmszk8";
           }))
         ];
       };
       pkgsStableFor = system: nixpkgs-stable.legacyPackages.${system};
-      configurationFor = system: 
-        let 
+      configurationFor = system:
+        let
           pkgs = pkgsFor "${system}";
-          pkgs-stable = pkgsStableFor "${system}"; 
+          pkgs-stable = pkgsStableFor "${system}";
         in home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
 
@@ -40,6 +41,8 @@
           extraSpecialArgs = { inherit pkgs-stable; is-darwin = pkgs.stdenv.isDarwin; };
         };
     in {
-      homeConfigurations."groscoe" = configurationFor "aarch64-darwin";
+      packages = forAllSystems (system: {
+        homeConfigurations.groscoe= configurationFor "${system}";
+      });
     };
 }
