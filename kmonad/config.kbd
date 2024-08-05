@@ -1,0 +1,13 @@
+(defcfg
+  input (device-file "/dev/input/by-id/usb-Logitech_Gaming_Keyboard_G610_167536553138-event-kbd")
+  output (uinput-sink "KMonad - G610 keyboard")
+  fallthrough true
+)
+
+(defsrc
+  caps
+)
+
+(deflayer caps-to-esc
+  esc
+)

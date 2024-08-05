@@ -36,7 +36,8 @@
       set -x EDITOR vim
 
       # Nix
-      fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
+      # fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
+      fenv source /etc/profile.d/nix.sh
       set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
       source (direnv hook fish | psub)
     '';

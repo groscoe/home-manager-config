@@ -22,38 +22,29 @@
   precommit = diff --cached
   unstash = stash pop
 
-  # Don't use diff-so-fancy for patches
+  # Don't use delta (a diff pretty-printer) for patches
   addp = -c 'interactive.diffFilter=less' add -p
-
-  # Temporarily ignore files, won't be 
-  skip = !git update-index --assume-unchanged
-  unskip = !git update-index --no-assume-unchanged
-  skipped = !git ls-files -v | grep ^[a-z]
 [diff]
   compactionHeuristic = true
   indentHeuristic = true
   ignoreAllSpace = true
   algorithm = minimal
-	tool = ediffclient
-[difftool "ediffclient"]
-  cmd = emacsclient -t --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
-[difftool "ediff"]
-  cmd = emacsclient --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+  colorMoved = default
 [interactive]
-  diffFilter = diff-so-fancy
-[pager]
-  diff = diff-so-fancy | less
-  log = diff-so-fancy | less
-  show = diff-so-fancy | less
+  diffFilter = delta --colors-only
 [blame]
   date = relative
 [push]
   default = current
 [core]
+  pager = delta
   editor = vim
   precomposeunicode = true
   excludesfile = ~/.gitignore_global
   untrackedCache = true
+[delta]
+  navigate = true
+  dark=true
 [credential]
 	helper = cache --timeout 3600
 [merge]

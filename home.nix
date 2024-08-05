@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ...}: # pkgs-stable, ... }:
+{ config, pkgs, lib, pkgs-stable, ... }:
 
 let
   # Configs go here.
@@ -37,11 +37,11 @@ let
       # packages = [ doom-emacs ];
     # };
 
-    fzf = { packages = [ pkgs.fzf pkgs.fd ]; };
+    fzf = { packages = [ pkgs.fzf ]; };
 
     finance = {
       packages = with pkgs; [
-        gnucash
+        # gnucash
         hledger-ui
         hledger-web
       ];
@@ -60,7 +60,10 @@ let
         ".git_aliases.sh" = ./git/git_aliases.sh;
       };
 
-      packages = [ pkgs.diff-so-fancy ];
+      packages = with pkgs; [
+        diff-so-fancy
+        delta
+      ];
     };
 
     haskell = {
@@ -69,6 +72,10 @@ let
         ".haskeline" = ./haskell/ghc/haskeline;
       };
     };
+
+    # kmonad = {
+    #   packages = [ pkgs.kmonad ];
+    # };
 
     i3 = {
       packages = [ pkgs.i3-gaps ];
@@ -99,8 +106,10 @@ let
     peripherics-tools = {
       packages = with pkgs; [
         brightnessctl
+        blueman
         pavucontrol
         playerctl
+        xcape
       ];
     };
 
@@ -131,7 +140,7 @@ let
         pretty-simple
         pup
         shellcheck
-        visidata
+        # pkgs-stable.visidata
 
         (google-cloud-sdk.withExtraComponents [google-cloud-sdk.components.gke-gcloud-auth-plugin])
 
@@ -207,7 +216,13 @@ let
       # packages = [ pkgs.rnix-lsp ];
     };
 
-    wallpaper = { packages = [ pkgs.variety pkgs.nitrogen ]; };
+    wallpaper = {
+      packages = with pkgs; [
+        feh
+        nitrogen
+        variety
+      ];
+    };
   });
 
   # ----------------------------------------------------------------------------
@@ -302,6 +317,11 @@ in {
         magit
         org-download
       ];
+    };
+
+    # fd - an alternative to `find`
+    fd = {
+      enable = true;
     };
 
     zathura = {

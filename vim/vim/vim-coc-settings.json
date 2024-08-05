@@ -28,7 +28,7 @@
         "haskell.plugin.haddockComments.hover": true,
         "haskell.plugin.haddockComments.completion": true
       }
-    }, 
+    },
 		"purescript": {
 			"command": "purescript-language-server",
 			"args": ["--stdio"],
@@ -48,6 +48,11 @@
       "command": "graphql-lsp",
       "args": ["server", "-m", "stream"],
       "filetypes": ["typescript", "typescript-react", "graphql"]
+    },
+    "rust-analyzer": {
+      "command": "rust-analyzer",
+      "filetypes": ["rust"],
+      "rootPatterns": ["Cargo.toml"]
     }
   },
   "codeLens.enable": true,
