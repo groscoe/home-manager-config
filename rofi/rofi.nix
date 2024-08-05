@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, isDarwin, ... }:
   {
       # See: https://github.com/nix-community/home-manager/blob/master/modules/programs/rofi.nix
-      enable = true;
+      enable = !isDarwin;
 
       plugins = with pkgs; [
         rofi-calc

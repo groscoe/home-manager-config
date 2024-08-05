@@ -27,6 +27,7 @@
     shellInit = ''
       # Common variables
       set -x PATH \
+        $HOME/.nix-profile/bin \
       	$HOME/.cargo/bin \
       	$HOME/.npm-packages/bin \
       	$HOME/.local/bin \
@@ -36,8 +37,15 @@
       set -x EDITOR vim
 
       # Nix
-      # fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
-      fenv source /etc/profile.d/nix.sh
+      if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]
+        fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
+      elif [ -e /etc/profile.d/nix.sh ]
+        fenv source /etc/profile.d/nix.sh
+      else
+        set -x PATH \
+          /nix/var/nix/profiles/default/bin \
+          $PATH
+      end
       set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
       source (direnv hook fish | psub)
     '';
