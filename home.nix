@@ -201,6 +201,7 @@ let
       packages = with pkgs; [
         # alacritty # NOTE: GPU acceleration issues
         tmux
+        mosh
       ] ++ ifNotDarwin' [ pkgs.tdrop ];
 
       files = {
@@ -333,6 +334,8 @@ in {
 
     zathura = {
       enable = true;
+
+      package = pkgs.zathuraPkgs.zathuraWrapper;
 
       mappings = {
         h = "navigate previous";

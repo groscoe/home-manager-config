@@ -48,6 +48,11 @@
       end
       set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
       source (direnv hook fish | psub)
+
+      # Homebrew
+      if [ -e /opt/homebrew/bin/brew ]
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+      end
     '';
 
     interactiveShellInit = ''
@@ -205,6 +210,8 @@
           end
 
         end
+
+        fzf_key_bindings
       '';
 
       wrap-notify = ''

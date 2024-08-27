@@ -96,7 +96,9 @@ battery() {
   acpi
 }
 
-alias open=xdg-open
+if [ "$(uname)" != "Darwin" ]; then
+  alias open=xdg-open
+fi
 alias cat=bat
 alias find=fd
 alias cal=gcal
