@@ -53,6 +53,11 @@
       if [ -e /opt/homebrew/bin/brew ]
         eval "$(/opt/homebrew/bin/brew shellenv)"
       end
+
+      # Avoid opening a popup for GPG
+      if [ -e /usr/bin/gpg ]
+        set -x GPG_TTY (tty)
+      end
     '';
 
     interactiveShellInit = ''
