@@ -31,7 +31,7 @@
   algorithm = minimal
   colorMoved = default
 [interactive]
-  diffFilter = delta --colors-only
+  diffFilter = delta --color-only
 [blame]
   date = relative
 [push]
