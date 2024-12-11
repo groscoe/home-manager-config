@@ -171,6 +171,7 @@ let
         bat
         gcal
         gotop
+        gnupg
         gron
         jq
         lsd
