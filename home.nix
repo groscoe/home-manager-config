@@ -143,7 +143,7 @@ let
         pretty-simple
         pup
         shellcheck
-        # pkgs-stable.visidata
+        visidata
 
         (google-cloud-sdk.withExtraComponents [google-cloud-sdk.components.gke-gcloud-auth-plugin])
 
@@ -316,7 +316,7 @@ in {
     };
 
     # emacs
-    emacs = {
+    emacs = ifNotDarwin {
       enable = true;
       package = pkgs.emacsWithPackages (epkgs: with epkgs; [
         zerodark-theme

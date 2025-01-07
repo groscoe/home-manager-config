@@ -26,6 +26,9 @@
 
     shellInit = ''
       # Common variables
+      set -x LANG en_US.UTF-8
+      set -x LC_ALL en_US.UTF-8
+
       set -x PATH \
         $HOME/.nix-profile/bin \
       	$HOME/.cargo/bin \
@@ -70,6 +73,13 @@
       # Avoid opening a popup for GPG
       if [ -e /usr/bin/gpg ]
         set -x GPG_TTY (tty)
+      end
+
+      # Auto start the SSH agent ont linux
+      if test (uname) = "Linux"
+          if not set -q SSH_AUTH_SOCK
+              eval (ssh-agent -c) > /dev/null
+          end
       end
     '';
 

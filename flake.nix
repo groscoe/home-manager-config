@@ -17,10 +17,11 @@
       forAllSystems = nixpkgs.lib.genAttrs systems;
       pkgsFor = system: import nixpkgs {
         inherit system;
+        config = { allowUnfree = true; };
         overlays = [
           (import (builtins.fetchTarball {
             url = "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
-            sha256 = "1lb4zldxvrmcl9mclvwmmlm13x7jdjz9rfa5xgbjjymr9qqmszk8";
+            sha256 = "07605a2b7fkvdlb053gxv09a7s1qrhqyb4v986km3l9hvzncd42l";
           }))
         ];
       };
