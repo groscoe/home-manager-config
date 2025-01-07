@@ -52,8 +52,10 @@ let
     fonts = {
       packages = with pkgs; [
         source-code-pro
-        nerdfonts
-      ];
+      ] ++ (
+        # Install all subpackages from nerd-fonts
+        builtins.filter lib.attrsets.isDerivation (builtins.attrValues nerd-fonts)
+      );
     };
 
     git = {
@@ -318,7 +320,7 @@ in {
     # emacs
     emacs = ifNotDarwin {
       enable = true;
-      package = pkgs.emacsWithPackages (epkgs: with epkgs; [
+      package = pkgs.emacs.pkgs.withPackages (epkgs: with epkgs; [
         zerodark-theme
       ]);
       extraPackages = epkgs: with epkgs; [
