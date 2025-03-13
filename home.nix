@@ -106,6 +106,7 @@ let
         direnv
         nix-output-monitor
         nil
+        nix-search
       ] ++ ifNotDarwin' [ pkgs.cntr ];
     };
 
@@ -149,9 +150,11 @@ let
 
         (google-cloud-sdk.withExtraComponents [google-cloud-sdk.components.gke-gcloud-auth-plugin])
 
-        ] ++ (with pkgs.nodePackages; [
-          graphql-language-service-cli
-        ]);
+      ]
+        # ++ (with pkgs.nodePackages; [
+          # graphql-language-service-cli
+        # ])
+        ;
       };
 
     ripgrep = {
