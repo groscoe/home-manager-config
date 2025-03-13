@@ -2,8 +2,9 @@
 
 let
   isDarwin = pkgs.stdenv.isDarwin;
-  ifNotDarwin = cfg: if isDarwin then {} else cfg;
-  ifNotDarwin' = cfg: if isDarwin then [] else cfg;
+  ifNotDarwin = cfg:
+    let empty = if builtins.isAttrs cfg then {} else [];
+    in if isDarwin then empty else cfg;
   # Configs go here.
   unManagedConfigs = build (lib.attrValues {
     acpi = ifNotDarwin { packages = [ pkgs.acpi ]; };
@@ -46,7 +47,7 @@ let
       packages = with pkgs; [
         hledger-ui
         hledger-web
-      ] ++ ifNotDarwin' [ pkgs.gnucash ];
+      ] ++ ifNotDarwin [ pkgs.gnucash ];
     };
 
     fonts = {
@@ -96,7 +97,16 @@ let
       packages = with pkgs; [
         lsof
         speedtest-cli
-      ] ++ ifNotDarwin' [ pkgs.nethogs ];
+        wireshark
+      ] ++ ifNotDarwin [ pkgs.nethogs ];
+
+      activationScripts = {
+        wireshark = lib.hm.dag.entryAfter ["writeBoundry"] ''
+          $DRY_RUN_CMD [ -f ~/Applications/Wireshark.app ] && rm -rf ~/Applications/Wireshark.app
+          $DRY_RUN_CMD cp -r ${pkgs.wireshark}/Applications/Wireshark.app ~/Applications
+          $DRY_RUN_CMD chmod -R 755 ~/Applications/Wireshark.app
+        '';
+      };
     };
 
     nix-tools = {
@@ -106,7 +116,7 @@ let
         direnv
         nix-output-monitor
         nil
-      ] ++ ifNotDarwin' [ pkgs.cntr ];
+      ] ++ ifNotDarwin [ pkgs.cntr ];
     };
 
     peripherics-tools = ifNotDarwin {
@@ -123,7 +133,7 @@ let
       packages = with pkgs; [
         xournalpp
         poppler_utils
-      ] ++ ifNotDarwin' [ pkgs.calibre ];
+      ] ++ ifNotDarwin [ pkgs.calibre ];
     };
 
     picom = ifNotDarwin { files = { ".config/picom/picom.conf" = ./picom/config/picom/picom.conf; }; };
@@ -139,7 +149,6 @@ let
       packages = with pkgs; [
         cloc
         cmake
-        comby
         nodejs
         # pkgs-stable.httpie
         pretty-simple
@@ -149,6 +158,8 @@ let
 
         (google-cloud-sdk.withExtraComponents [google-cloud-sdk.components.gke-gcloud-auth-plugin])
 
+        ] ++ ifNotDarwin [
+          comby
         ] ++ (with pkgs.nodePackages; [
           graphql-language-service-cli
         ]);
@@ -205,7 +216,7 @@ let
         # alacritty # NOTE: GPU acceleration issues
         tmux
         mosh
-      ] ++ ifNotDarwin' [ pkgs.tdrop ];
+      ] ++ ifNotDarwin [ pkgs.tdrop ];
 
       files = {
         ".tmux" = ./terminals/tmux;
@@ -244,12 +255,14 @@ let
   # Merge all configs together
   build = configs:
     builtins.foldl' (acc:
-      { files ? { }, packages ? [ ], ... }: {
+      { files ? { }, packages ? [ ], activationScripts ? { }, ... }: {
         files = acc.files // toSources files;
         packages = acc.packages ++ packages;
+        activationScripts = acc.activationScripts // activationScripts;
       }) {
         files = { };
         packages = [ ];
+        activationScripts = { };
       } configs;
 
 
@@ -397,4 +410,5 @@ in {
   ##
   home.file = unManagedConfigs.files;
   home.packages = unManagedConfigs.packages;
+  home.activation = unManagedConfigs.activationScripts;
 }
