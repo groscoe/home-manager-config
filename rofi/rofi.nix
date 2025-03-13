@@ -6,7 +6,7 @@
       plugins = with pkgs; [
         rofi-calc
         rofi-bluetooth
-        # rofi-file-browser
+        rofi-file-browser
         rofi-power-menu
         rofi-pulse-select
       ];

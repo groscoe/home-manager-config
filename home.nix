@@ -116,6 +116,7 @@ let
         direnv
         nix-output-monitor
         nil
+        nix-search
       ] ++ ifNotDarwin [ pkgs.cntr ];
     };
 
@@ -160,9 +161,10 @@ let
 
         ] ++ ifNotDarwin [
           comby
-        ] ++ (with pkgs.nodePackages; [
-          graphql-language-service-cli
-        ]);
+        ];
+        # ] ++ (with pkgs.nodePackages; [
+          # graphql-language-service-cli
+        # ]);
       };
 
     ripgrep = {

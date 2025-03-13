@@ -44,15 +44,27 @@
 				}
 			}
 		},
-    "graphql": {
-      "command": "graphql-lsp",
-      "args": ["server", "-m", "stream"],
-      "filetypes": ["typescript", "typescript-react", "graphql"]
-    },
+    // "graphql": {
+    //   "command": "graphql-lsp",
+    //   "args": ["server", "-m", "stream"],
+    //   "filetypes": ["typescript", "typescript-react", "graphql"]
+    // },
     "rust-analyzer": {
       "command": "rust-analyzer",
       "filetypes": ["rust"],
       "rootPatterns": ["Cargo.toml"]
+    },
+    "aiken": {
+      "args": [
+        "lsp"
+      ],
+      "command": "aiken",
+      "filetypes": [
+        "aiken"
+      ],
+      "rootPatterns": [
+        "aiken.toml"
+      ]
     }
   },
   "codeLens.enable": true,
