@@ -21,7 +21,6 @@
   prestage = diff
   precommit = diff --cached
   unstash = stash pop
-
   # Don't use delta (a diff pretty-printer) for patches
   addp = -c 'interactive.diffFilter=less' add -p
 [diff]
@@ -70,3 +69,5 @@
 	process = git-lfs filter-process
 [pull]
 	rebase = false
+[init]
+  defaultBranch = main

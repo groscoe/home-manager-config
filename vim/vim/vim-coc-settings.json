@@ -44,15 +44,12 @@
 				}
 			}
 		},
-    // "graphql": {
-    //   "command": "graphql-lsp",
-    //   "args": ["server", "-m", "stream"],
-    //   "filetypes": ["typescript", "typescript-react", "graphql"]
-    // },
     "rust-analyzer": {
       "command": "rust-analyzer",
       "filetypes": ["rust"],
-      "rootPatterns": ["Cargo.toml"]
+      "rootPatterns": ["Cargo.toml"],
+      "check.command": "clippy",
+      "diagnostics.clippy_linter": "on"
     },
     "aiken": {
       "args": [
