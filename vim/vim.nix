@@ -21,6 +21,7 @@
     # Auto-complete/intellisense
     coc-nvim
     coc-rust-analyzer
+    coc-tsserver
 
     # Better syntax highlighting
     vim-polyglot
