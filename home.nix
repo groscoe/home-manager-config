@@ -29,9 +29,7 @@ let
 
     # Notifications
     deadd = ifNotDarwin {
-      packages = with pkgs; [
-        deadd-notification-center
-      ];
+      packages = [ ];
       files = {
         ".config/deadd/deadd.conf" = ./deadd/config/deadd/deadd.conf;
         ".config/deadd/deadd.css" = ./deadd/config/deadd/deadd.css;
@@ -165,8 +163,6 @@ let
 
         (google-cloud-sdk.withExtraComponents [google-cloud-sdk.components.gke-gcloud-auth-plugin])
 
-        ] ++ ifNotDarwin [
-          comby
         ];
         # ] ++ (with pkgs.nodePackages; [
           # graphql-language-service-cli
