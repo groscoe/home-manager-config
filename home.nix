@@ -2,6 +2,9 @@
 
 let
   isDarwin = pkgs.stdenv.isDarwin;
+  ifDarwin = cfg:
+    let empty = if builtins.isAttrs cfg then {} else [];
+    in if isDarwin then cfg else empty;
   ifNotDarwin = cfg:
     let empty = if builtins.isAttrs cfg then {} else [];
     in if isDarwin then empty else cfg;
@@ -158,6 +161,7 @@ let
         pup
         shellcheck
         visidata
+        spek
 
         (google-cloud-sdk.withExtraComponents [google-cloud-sdk.components.gke-gcloud-auth-plugin])
 
@@ -232,10 +236,8 @@ let
 
     vim = {
       files = {
-        # ".vimrc" = ./vim/vimrc;
         ".vim/coc-settings.json" = ./vim/vim/vim-coc-settings.json;
       };
-      # packages = [ pkgs.rnix-lsp ];
     };
 
     wallpaper = ifNotDarwin {
@@ -246,9 +248,58 @@ let
       ];
     };
 
-    macos = if isDarwin then {
+    macos = ifDarwin {
       packages = [ pkgs.iterm2 ];
-    } else {};
+    };
+
+    copyNixApps = ifDarwin {
+      activationScripts = {
+        copyNixApps = lib.hm.dag.entryAfter ["linkGeneration"] ''
+          # Create directory for the applications
+          mkdir -p "$HOME/Applications/Nix-Apps"
+          # Remove old entries
+          rm -rf "$HOME/Applications/Nix-Apps"/*
+          # Get the target of the symlink
+          NIXAPPS=$(readlink -f "$HOME/.nix-profile/Applications")
+          # For each application
+          for app_source in "$NIXAPPS"/*; do
+            if [ -d "$app_source" ] || [ -L "$app_source" ]; then
+                appname=$(basename "$app_source")
+                target="$HOME/Applications/Nix-Apps/$appname"
+
+                # Create the basic structure
+                mkdir -p "$target"
+                mkdir -p "$target/Contents"
+
+                # Copy the Info.plist file
+                if [ -f "$app_source/Contents/Info.plist" ]; then
+                  mkdir -p "$target/Contents"
+                  cp -f "$app_source/Contents/Info.plist" "$target/Contents/"
+                fi
+
+                # Copy icon files
+                if [ -d "$app_source/Contents/Resources" ]; then
+                  mkdir -p "$target/Contents/Resources"
+                  find "$app_source/Contents/Resources" -name "*.icns" -exec cp -f {} "$target/Contents/Resources/" \;
+                fi
+
+                # Symlink the MacOS directory (contains the actual binary)
+                if [ -d "$app_source/Contents/MacOS" ]; then
+                  ln -sfn "$app_source/Contents/MacOS" "$target/Contents/MacOS"
+                fi
+
+                # Symlink other directories
+                for dir in "$app_source/Contents"/*; do
+                  dirname=$(basename "$dir")
+                  if [ "$dirname" != "Info.plist" ] && [ "$dirname" != "Resources" ] && [ "$dirname" != "MacOS" ]; then
+                    ln -sfn "$dir" "$target/Contents/$dirname"
+                  fi
+                done
+            fi
+          done
+      '';
+      };
+    };
   });
 
   # ----------------------------------------------------------------------------
@@ -276,11 +327,13 @@ let
     let args = {
       inherit config pkgs lib isDarwin;
     }; in path: (import path args);
+  
+  username = "groscoe";
 in {
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
-  home.username = "groscoe";
-  home.homeDirectory = if isDarwin then "/Users/groscoe" else "/home/groscoe";
+  home.username = username;
+  home.homeDirectory = if isDarwin then "/Users/${username}" else "/home/${username}";
 
   manual.manpages.enable = false;
 
