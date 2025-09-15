@@ -151,6 +151,8 @@ let
         cloc
         cmake
         nodejs
+        rust-analyzer
+        typescript-language-server
         # pkgs-stable.httpie
         pretty-simple
         pup
