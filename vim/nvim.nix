@@ -36,6 +36,7 @@ args@{ lib, pkgs, ... }:
       friendly-snippets
       lean-nvim
       aiken-integration
+      zen-mode-nvim
     ];
 
     neovimPlugins = common.plugins ++ neovimExtraPlugins;
