@@ -100,14 +100,6 @@ let
         speedtest-cli
         wireshark
       ] ++ ifNotDarwin [ pkgs.nethogs ];
-
-      activationScripts = {
-        wireshark = lib.hm.dag.entryAfter ["writeBoundry"] ''
-          $DRY_RUN_CMD [ -f ~/Applications/Wireshark.app ] && rm -rf ~/Applications/Wireshark.app
-          $DRY_RUN_CMD cp -r ${pkgs.wireshark}/Applications/Wireshark.app ~/Applications
-          $DRY_RUN_CMD chmod -R 755 ~/Applications/Wireshark.app
-        '';
-      };
     };
 
     nix-tools = {
