@@ -60,11 +60,12 @@ args@{ lib, pkgs, ... }:
           end
           map('gh', vim.lsp.buf.hover)
           map('ga', vim.lsp.buf.code_action)
+          map('ge', vim.diagnostic.open_float)
           map('gd', vim.lsp.buf.definition)
           map('gr', vim.lsp.buf.references)
         end
 
-        local servers = { 'rust_analyzer', 'ts_ls', 'nil_ls' }
+        local servers = { 'rust_analyzer', 'ts_ls', 'nil_ls', 'aiken', 'pyright' }
         for _, server in ipairs(servers) do
           if lspconfig[server] then
             lspconfig[server].setup({
@@ -74,6 +75,7 @@ args@{ lib, pkgs, ... }:
           end
         end
       end
+
       -- Global fallbacks so mappings work even before LSP attaches
       vim.keymap.set('n', 'gh', function()
         if vim.lsp.buf.hover then vim.lsp.buf.hover() end
@@ -87,6 +89,9 @@ args@{ lib, pkgs, ... }:
       vim.keymap.set('n', 'gr', function()
         if vim.lsp.buf.references then vim.lsp.buf.references() end
       end, { silent = true })
+      vim.diagnostic.config({
+        virtual_text = true,
+      })
       EOF
     '';
   in {
