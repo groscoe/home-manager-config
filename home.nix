@@ -42,6 +42,8 @@ let
       # packages = [ doom-emacs ];
     # };
 
+    codex = importModule codex/codex.nix;
+
     fzf = { packages = [ pkgs.fzf ]; };
 
     finance = {

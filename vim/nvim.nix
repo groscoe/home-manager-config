@@ -1,4 +1,4 @@
-args@{ lib, pkgs, ... }:
+{ lib, pkgs, ... }:
   let
     common = import ./common.nix { inherit lib pkgs; };
 
@@ -37,6 +37,8 @@ args@{ lib, pkgs, ... }:
       lean-nvim
       aiken-integration
       zen-mode-nvim
+      gitsigns-nvim
+      diffview-nvim
     ];
 
     neovimPlugins = common.plugins ++ neovimExtraPlugins;
