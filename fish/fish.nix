@@ -49,7 +49,9 @@
           /nix/var/nix/profiles/default/bin \
           $PATH
       end
-      set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
+      if test (uname) = "Linux"
+        set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
+      end
       source (direnv hook fish | psub)
 
       # Homebrew
@@ -71,16 +73,10 @@
       end
 
       # Avoid opening a popup for GPG
-      if [ -e /usr/bin/gpg ]
+      if type -q gpg
         set -x GPG_TTY (tty)
       end
 
-      # Auto start the SSH agent ont linux
-      if test (uname) = "Linux"
-          if not set -q SSH_AUTH_SOCK
-              eval (ssh-agent -c) > /dev/null
-          end
-      end
     '';
 
     interactiveShellInit = ''
@@ -89,7 +85,7 @@
 
       # FZF integration
       set -x RIPGREP_CONFIG_PATH $HOME/.ripgreprc
-      set -x FZF_FIND_FILE_OPTS "--layout=reverse --bind='ctrl-t:toggle-preview' --preview='/home/groscoe/Projects/preview.sh {}' --height=100%"
+      set -x FZF_FIND_FILE_OPTS "--layout=reverse --bind='ctrl-t:toggle-preview' --preview='$HOME/Projects/preview.sh {}' --height=100%"
       set -x FZF_FIND_FILE_COMMAND "fd -L -H"
     '';
 

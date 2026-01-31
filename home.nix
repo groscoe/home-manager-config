@@ -8,6 +8,7 @@ let
   ifNotDarwin = cfg:
     let empty = if builtins.isAttrs cfg then {} else [];
     in if isDarwin then empty else cfg;
+  codexModule = import ./codex/codex.nix { inherit pkgs lib; };
   # Configs go here.
   unManagedConfigs = build (lib.attrValues {
     acpi = ifNotDarwin { packages = [ pkgs.acpi ]; };
@@ -41,8 +42,6 @@ let
     # doom-emacs = {
       # packages = [ doom-emacs ];
     # };
-
-    codex = importModule codex/codex.nix;
 
     fzf = { packages = [ pkgs.fzf ]; };
 
@@ -152,7 +151,6 @@ let
         pretty-simple
         pup
         shellcheck
-        visidata
         spek
 
         (google-cloud-sdk.withExtraComponents [google-cloud-sdk.components.gke-gcloud-auth-plugin])
@@ -165,7 +163,6 @@ let
 
     ripgrep = {
       files = { ".ripgreprc" = ./ripgrep/ripgreprc; };
-      packages = [ pkgs.ripgrep ];
     };
 
     rofi = ifNotDarwin {
@@ -189,9 +186,7 @@ let
         parallel
         rclone
         tree
-        xclip
-        xsel
-      ];
+      ] ++ ifNotDarwin [ pkgs.xclip pkgs.xsel ];
     };
 
     # spacemacs = {
@@ -219,8 +214,9 @@ let
       files = {
         ".tmux" = ./terminals/tmux;
         ".tmux.conf" = ./terminals/tmux.conf;
-        ".config/guake/guake.conf" = ./terminals/config/guake/guake.conf;
         ".config/alacritty/alacritty.toml" = ./terminals/config/alacritty/alacritty.toml;
+      } // ifNotDarwin {
+        ".config/guake/guake.conf" = ./terminals/config/guake/guake.conf;
       };
     };
 
@@ -250,7 +246,7 @@ let
           # Remove old entries
           rm -rf "$HOME/Applications/Nix-Apps"/*
           # Get the target of the symlink
-          NIXAPPS=$(readlink -f "$HOME/.nix-profile/Applications")
+          NIXAPPS=$(${pkgs.coreutils}/bin/readlink -f "$HOME/.nix-profile/Applications")
           # For each application
           for app_source in "$NIXAPPS"/*; do
             if [ -d "$app_source" ] || [ -L "$app_source" ]; then
@@ -352,6 +348,11 @@ in {
 
     fish = importModule fish/fish.nix;
 
+    codex = {
+      enable = true;
+      package = codexModule.codexPackage;
+    };
+
     # Smarter shell history search
     atuin = {
       enable = true;
@@ -375,6 +376,14 @@ in {
     direnv = {
       enable = true;
       nix-direnv.enable = true;
+    };
+
+    ripgrep = {
+      enable = true;
+    };
+
+    visidata = {
+      enable = true;
     };
 
     # emacs
@@ -450,6 +459,10 @@ in {
         # recolor-keephue = true      # keep original color
       };
     };
+  };
+
+  services.ssh-agent = ifNotDarwin {
+    enable = true;
   };
 
   ##

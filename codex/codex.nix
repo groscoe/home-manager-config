@@ -40,5 +40,5 @@ let
     };
   };
 in {
-  packages = [ codexPackage ];
+  codexPackage = codexPackage;
 }
