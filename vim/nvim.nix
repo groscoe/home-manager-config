@@ -68,7 +68,32 @@
           map('gr', vim.lsp.buf.references)
         end
 
-        local servers = { 'rust_analyzer', 'ts_ls', 'nil_ls', 'aiken', 'pyright' }
+        local rust_check_command = vim.env.NVIM_RUST_CHECK_COMMAND
+        if not rust_check_command or rust_check_command == "" then
+          rust_check_command = 'clippy'
+        end
+
+        local rust_check_extra_args = {}
+        if vim.env.NVIM_RUST_PEDANTIC ~= '0' then
+          rust_check_extra_args = { '--', '-W', 'clippy::pedantic' }
+        end
+
+        if lspconfig.rust_analyzer then
+          lspconfig.rust_analyzer.setup({
+            capabilities = capabilities,
+            on_attach = on_attach,
+            settings = {
+              ['rust-analyzer'] = {
+                check = {
+                  command = rust_check_command,
+                  extraArgs = rust_check_extra_args,
+                },
+              },
+            },
+          })
+        end
+
+        local servers = { 'ts_ls', 'nil_ls', 'aiken', 'pyright' }
         for _, server in ipairs(servers) do
           if lspconfig[server] then
             lspconfig[server].setup({
