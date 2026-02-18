@@ -1,0 +1,7 @@
+# Shared config managed by Home Manager.
+[include]
+  path = shared.gitconfig
+
+# Optional per-machine overrides; intentionally unmanaged.
+[include]
+  path = local.gitconfig

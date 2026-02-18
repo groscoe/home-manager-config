@@ -39,7 +39,7 @@
   pager = delta
   editor = nvim
   precomposeunicode = true
-  excludesfile = ~/.gitignore_global
+  excludesfile = ~/.config/git/ignore
   untrackedCache = true
 [delta]
   navigate = true

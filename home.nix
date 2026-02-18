@@ -63,13 +63,16 @@ let
 
     git = {
       files = {
-        ".gitconfig" = ./git/gitconfig;
+        ".config/git/config" = ./git/config;
+        ".config/git/ignore" = ./git/ignore;
+        ".config/git/shared.gitconfig" = ./git/shared.gitconfig;
         ".git_aliases.sh" = ./git/git_aliases.sh;
       };
 
       packages = with pkgs; [
         diff-so-fancy
         delta
+        gh
       ];
     };
 
