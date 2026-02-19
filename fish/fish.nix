@@ -52,11 +52,16 @@
       if test (uname) = "Linux"
         set -x LOCALE_ARCHIVE /usr/lib/locale/locale-archive
       end
-      source (direnv hook fish | psub)
+      if type -q direnv
+        source (direnv hook fish | psub)
+      end
 
       # Homebrew
       if [ -e /opt/homebrew/bin/brew ]
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+        eval "$(/opt/homebrew/bin/brew shellenv fish)"
+        if [ -d /opt/homebrew/share/google-cloud-sdk/bin ]
+          fish_add_path /opt/homebrew/share/google-cloud-sdk/bin
+        end
 
         # >>> conda initialize >>>
         # !! Contents within this block are managed by 'conda init' !!
@@ -77,9 +82,50 @@
         set -x GPG_TTY (tty)
       end
 
+      # Some fish helpers call `fish_indent`; make it resolvable even during profile churn.
+      if not type -q fish_indent
+        set -l fish_bin_dir (dirname (status fish-path))
+        if test -x "$fish_bin_dir/fish_indent"
+          function fish_indent
+            "$fish_bin_dir/fish_indent" $argv
+          end
+        end
+      end
+
     '';
 
     interactiveShellInit = ''
+      # Avoid startup failures during activation windows where atuin may not be on PATH yet.
+      if type -q atuin
+        atuin init fish | source
+
+        # `darwin-rebuild`/HM can transiently swap profile symlinks; guard hook commands.
+        if functions -q _atuin_preexec
+          functions --erase _atuin_preexec
+          function _atuin_preexec --on-event fish_preexec
+            if not test -n "$fish_private_mode"
+              if type -q atuin
+                set -g ATUIN_HISTORY_ID (atuin history start -- "$argv[1]")
+              end
+            end
+          end
+        end
+
+        if functions -q _atuin_postexec
+          functions --erase _atuin_postexec
+          function _atuin_postexec --on-event fish_postexec
+            set -l s $status
+            if test -n "$ATUIN_HISTORY_ID"
+              if type -q atuin
+                ATUIN_LOG=error atuin history end --exit $s -- $ATUIN_HISTORY_ID &>/dev/null &
+                disown
+              end
+            end
+            set --erase ATUIN_HISTORY_ID
+          end
+        end
+      end
+
       # My custom, decade-old, function definitions
       bass source ~/.bash_aliases
 

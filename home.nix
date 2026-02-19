@@ -102,8 +102,7 @@ let
       packages = with pkgs; [
         lsof
         speedtest-cli
-        wireshark
-      ] ++ ifNotDarwin [ pkgs.nethogs ];
+      ] ++ ifNotDarwin [ pkgs.nethogs pkgs.wireshark ];
     };
 
     nix-tools = {
@@ -155,10 +154,8 @@ let
         pup
         shellcheck
         spek
-
         (google-cloud-sdk.withExtraComponents [google-cloud-sdk.components.gke-gcloud-auth-plugin])
-
-        ];
+      ];
         # ] ++ (with pkgs.nodePackages; [
           # graphql-language-service-cli
         # ]);
@@ -211,8 +208,7 @@ let
       packages = with pkgs; [
         # alacritty # NOTE: GPU acceleration issues
         tmux
-        mosh
-      ] ++ ifNotDarwin [ pkgs.tdrop ];
+      ] ++ ifNotDarwin [ pkgs.mosh pkgs.tdrop ];
 
       files = {
         ".tmux" = ./terminals/tmux;
@@ -235,10 +231,6 @@ let
         nitrogen
         variety
       ];
-    };
-
-    macos = ifDarwin {
-      packages = [ pkgs.iterm2 ];
     };
 
     copyNixApps = ifDarwin {
@@ -359,7 +351,7 @@ in {
     # Smarter shell history search
     atuin = {
       enable = true;
-      enableFishIntegration = true;
+      enableFishIntegration = false;
       enableBashIntegration = true;
 
       settings = {
