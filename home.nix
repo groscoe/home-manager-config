@@ -343,7 +343,7 @@ in {
 
     fish = importModule fish/fish.nix;
 
-    codex = {
+    codex = ifNotDarwin {
       enable = true;
       package = codexModule.codexPackage;
     };

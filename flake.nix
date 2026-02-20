@@ -100,8 +100,21 @@
                 upgrade = true;
                 cleanup = "none";
               };
-              brews = [ "mosh" ];
-              casks = [ "iterm2" "wireshark" ];
+              brews = [
+                "aria2"
+                "mosh"
+                "podman"
+                "typst"
+                "yt-dlp"
+              ];
+              casks = [
+                "anki"
+                "codex"
+                "cursor"
+                "iterm2"
+                "skim"
+                "wireshark-app"
+              ];
             };
 
             # mosh-server is spawned via ssh on demand, not as a long-lived daemon.

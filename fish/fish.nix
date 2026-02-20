@@ -29,7 +29,10 @@
       set -x LANG en_US.UTF-8
       set -x LC_ALL en_US.UTF-8
 
+      set -l hm_user (id -un)
       set -x PATH \
+        /etc/profiles/per-user/$hm_user/bin \
+        /run/current-system/sw/bin \
         $HOME/.nix-profile/bin \
       	$HOME/.cargo/bin \
       	$HOME/.npm-packages/bin \
