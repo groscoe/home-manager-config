@@ -117,6 +117,21 @@
       vim.keymap.set('n', 'gr', function()
         if vim.lsp.buf.references then vim.lsp.buf.references() end
       end, { silent = true })
+
+      vim.keymap.set('n', '<leader>dt', function()
+        if vim.fn.exists(':DiffviewOpen') ~= 2 or vim.fn.exists(':DiffviewClose') ~= 2 then
+          vim.notify('Diffview is not available', vim.log.levels.WARN)
+          return
+        end
+
+        local ok, lib = pcall(require, 'diffview.lib')
+        local view = ok and lib.get_current_view and lib.get_current_view() or nil
+        if view then
+          vim.cmd('DiffviewClose')
+        else
+          vim.cmd('DiffviewOpen')
+        end
+      end, { silent = true, desc = 'Toggle Diffview' })
       vim.diagnostic.config({
         virtual_text = true,
       })

@@ -57,6 +57,10 @@ args@{ lib, pkgs, ... }:
     nnoremap <silent> <C-n> :bn<CR>
     nnoremap <silent> <C-p> :bp<CR>
 
+    " Use space as leader in both Vim and Neovim
+    let mapleader = " "
+    let maplocalleader = " "
+
     " Add a space after commenting with NERDCommenter
     let g:NERDSpaceDelims = 1
 
@@ -98,5 +102,3 @@ args@{ lib, pkgs, ... }:
     augroup END
   '';
 }
-
-
