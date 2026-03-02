@@ -39,6 +39,8 @@
       zen-mode-nvim
       gitsigns-nvim
       diffview-nvim
+      plenary-nvim
+      telescope-nvim
     ];
 
     neovimPlugins = common.plugins ++ neovimExtraPlugins;
@@ -48,6 +50,33 @@
       local blink_ok, blink = pcall(require, 'blink.cmp')
       if blink_ok then
         blink.setup({})
+      end
+
+      local telescope_ok, telescope = pcall(require, 'telescope')
+      local telescope_builtin_ok, telescope_builtin = pcall(require, 'telescope.builtin')
+      if telescope_ok then
+        telescope.setup({})
+      end
+
+      local function run_telescope(picker, opts)
+        if not telescope_builtin_ok then
+          vim.notify('Telescope is not available', vim.log.levels.WARN)
+          return
+        end
+        local fn = telescope_builtin[picker]
+        if type(fn) ~= 'function' then
+          vim.notify('Telescope picker is not available: ' .. picker, vim.log.levels.WARN)
+          return
+        end
+        fn(opts or {})
+      end
+
+      local function git_root()
+        local root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+        if vim.v.shell_error == 0 and root and root ~= "" then
+          return root
+        end
+        return nil
       end
 
       local lspconfig_ok, lspconfig = pcall(require, 'lspconfig')
@@ -117,6 +146,23 @@
       vim.keymap.set('n', 'gr', function()
         if vim.lsp.buf.references then vim.lsp.buf.references() end
       end, { silent = true })
+
+      vim.keymap.set('n', '<C-t>', function()
+        if not telescope_builtin_ok then
+          vim.notify('Telescope is not available', vim.log.levels.WARN)
+          return
+        end
+        local ok = pcall(telescope_builtin.git_files, { show_untracked = true })
+        if not ok then
+          telescope_builtin.find_files()
+        end
+      end, { silent = true, desc = 'Find files' })
+      vim.keymap.set('n', '<C-b>', function()
+        run_telescope('buffers')
+      end, { silent = true, desc = 'List buffers' })
+      vim.keymap.set('n', '<C-h>', function()
+        run_telescope('live_grep', { cwd = git_root() })
+      end, { silent = true, desc = 'Live grep in git root' })
 
       vim.keymap.set('n', '<leader>dt', function()
         if vim.fn.exists(':DiffviewOpen') ~= 2 or vim.fn.exists(':DiffviewClose') ~= 2 then

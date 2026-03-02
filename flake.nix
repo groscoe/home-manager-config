@@ -112,6 +112,7 @@
                 "codex"
                 "cursor"
                 "iterm2"
+                "maccy"
                 "skim"
                 "wireshark-app"
               ];
