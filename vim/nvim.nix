@@ -38,6 +38,7 @@
       aiken-integration
       zen-mode-nvim
       gitsigns-nvim
+      nvim-web-devicons
       diffview-nvim
       plenary-nvim
       telescope-nvim
@@ -164,6 +165,48 @@
         run_telescope('live_grep', { cwd = git_root() })
       end, { silent = true, desc = 'Live grep in git root' })
 
+      local function current_diffview_file(view)
+        local current_buf = vim.api.nvim_buf_get_name(0)
+        if current_buf ~= "" and vim.fn.filereadable(current_buf) == 1 then
+          return vim.fn.fnamemodify(current_buf, ':p')
+        end
+
+        if not view or type(view.cur_entry) ~= 'function' then
+          return nil
+        end
+
+        local ok_entry, entry = pcall(view.cur_entry, view)
+        if not ok_entry or not entry then
+          return nil
+        end
+
+        local git_root = view.adapter and view.adapter.ctx and view.adapter.ctx.toplevel or nil
+        local candidates = {
+          entry.absolute_path,
+          entry.path,
+          entry.left and entry.left.absolute_path or nil,
+          entry.left and entry.left.path or nil,
+          entry.right and entry.right.absolute_path or nil,
+          entry.right and entry.right.path or nil,
+        }
+
+        for _, candidate in ipairs(candidates) do
+          if type(candidate) == 'string' and candidate ~= "" then
+            if vim.fn.filereadable(candidate) == 1 then
+              return vim.fn.fnamemodify(candidate, ':p')
+            end
+            if git_root then
+              local rooted_candidate = git_root .. '/' .. candidate
+              if vim.fn.filereadable(rooted_candidate) == 1 then
+                return vim.fn.fnamemodify(rooted_candidate, ':p')
+              end
+            end
+          end
+        end
+
+        return nil
+      end
+
       vim.keymap.set('n', '<leader>dt', function()
         if vim.fn.exists(':DiffviewOpen') ~= 2 or vim.fn.exists(':DiffviewClose') ~= 2 then
           vim.notify('Diffview is not available', vim.log.levels.WARN)
@@ -173,11 +216,34 @@
         local ok, lib = pcall(require, 'diffview.lib')
         local view = ok and lib.get_current_view and lib.get_current_view() or nil
         if view then
+          local file_to_open = current_diffview_file(view)
           vim.cmd('DiffviewClose')
+          if file_to_open then
+            vim.cmd('edit ' .. vim.fn.fnameescape(file_to_open))
+          end
         else
-          vim.cmd('DiffviewOpen')
+          local file_to_focus = current_diffview_file(nil)
+          if file_to_focus then
+            vim.cmd('DiffviewOpen --selected-file=' .. vim.fn.fnameescape(file_to_focus))
+          else
+            vim.cmd('DiffviewOpen')
+          end
         end
       end, { silent = true, desc = 'Toggle Diffview' })
+
+      vim.keymap.set('n', '<leader>dT', function()
+        if vim.fn.exists(':DiffviewOpen') ~= 2 then
+          vim.notify('Diffview is not available', vim.log.levels.WARN)
+          return
+        end
+
+        local file_to_focus = current_diffview_file(nil)
+        if file_to_focus then
+          vim.cmd('DiffviewOpen origin/main --selected-file=' .. vim.fn.fnameescape(file_to_focus))
+        else
+          vim.cmd('DiffviewOpen origin/main')
+        end
+      end, { silent = true, desc = 'Diffview against origin/main (focus current file)' })
       vim.diagnostic.config({
         virtual_text = true,
       })

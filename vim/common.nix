@@ -50,6 +50,21 @@ args@{ lib, pkgs, ... }:
     colorscheme nord
     set termguicolors
 
+    " Keep language syntax colors visible inside diff hunks.
+    function! s:diff_syntax_foreground() abort
+      " Preserve syntax foreground, but enforce high-contrast diff backgrounds.
+      highlight DiffAdd cterm=NONE gui=NONE ctermfg=NONE ctermbg=22 guifg=NONE guibg=#1f3d2b
+      highlight DiffDelete cterm=NONE gui=NONE ctermfg=NONE ctermbg=52 guifg=NONE guibg=#4a1f24
+      highlight DiffChange cterm=NONE gui=NONE ctermfg=NONE ctermbg=17 guifg=NONE guibg=#22324f
+      highlight DiffText cterm=bold gui=bold ctermfg=NONE ctermbg=24 guifg=NONE guibg=#2f4f7a
+    endfunction
+
+    augroup DiffSyntaxForeground
+      autocmd!
+      autocmd ColorScheme * call s:diff_syntax_foreground()
+    augroup END
+    call s:diff_syntax_foreground()
+
     " When opening a file, change the current working dir
     set autochdir
 
