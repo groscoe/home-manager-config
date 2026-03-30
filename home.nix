@@ -342,6 +342,7 @@ in {
     rofi = importModule rofi/rofi.nix;
 
     fish = importModule fish/fish.nix;
+    zsh = importModule zsh/zsh.nix;
 
     codex = ifNotDarwin {
       enable = true;
@@ -352,7 +353,8 @@ in {
     atuin = {
       enable = true;
       enableFishIntegration = false;
-      enableBashIntegration = true;
+      enableBashIntegration = false;
+      enableZshIntegration = false;
 
       settings = {
         dialect = "uk";

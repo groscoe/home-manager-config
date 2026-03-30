@@ -13,11 +13,20 @@ if [ -e ~/.bashrc.aliases ] ; then
 fi
 # >>> Added by cnchi installer
 BROWSER=/usr/bin/chromium
-EDITOR=/usr/bin/vim
+if command -v nvim >/dev/null 2>&1; then
+  EDITOR=nvim
+else
+  EDITOR=vim
+fi
+export EDITOR
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init bash)"
+fi
 
 
 . $HOME/.fzf.bash

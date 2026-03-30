@@ -40,7 +40,11 @@
       	$HOME/.cabal/bin \
       	$PATH
 
-      set -x EDITOR vim
+      if type -q nvim
+        set -x EDITOR nvim
+      else
+        set -x EDITOR vim
+      end
 
       # Nix
       if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]
@@ -130,7 +134,16 @@
       end
 
       # My custom, decade-old, function definitions
-      bass source ~/.bash_aliases
+      if test -f ~/.bash_aliases; and type -q bash
+        # Import bash aliases without env-translation plugins (fenv/bass), which
+        # can fail on odd GUI-inherited env vars.
+        bash -lc 'source ~/.bash_aliases >/dev/null 2>&1; alias -p' 2>/dev/null | while read -l line
+          set -l match (string match -r "^alias[[:space:]]+([^=]+)='(.*)'\$" -- $line)
+          if test (count $match) -ge 3
+            alias -- $match[2]="$match[3]"
+          end
+        end
+      end
 
       # FZF integration
       set -x RIPGREP_CONFIG_PATH $HOME/.ripgreprc
