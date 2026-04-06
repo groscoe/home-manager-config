@@ -88,7 +88,7 @@ let
     # };
 
     i3 = ifNotDarwin {
-      packages = [ pkgs.i3-gaps ];
+      packages = [ pkgs.i3 ];
       files = { ".config/i3/config" = ./i3/config/i3/config; };
     };
 
@@ -129,7 +129,7 @@ let
     ebook-utilities = {
       packages = with pkgs; [
         xournalpp
-        poppler_utils
+        poppler-utils
       ] ++ ifNotDarwin [ pkgs.calibre ];
     };
 
@@ -177,7 +177,6 @@ let
     shell-utilities = {
       packages = with pkgs; [
         bat
-        gcal
         gotop
         gnupg
         gron
@@ -187,6 +186,12 @@ let
         rclone
         tree
       ] ++ ifNotDarwin [ pkgs.xclip pkgs.xsel ];
+    };
+
+    # markdown renderer
+    glow = {
+      packages = [ pkgs.glow ];
+      files = { ".config/glow/glow.yml" = ./glow/glow.yml; };
     };
 
     # spacemacs = {
@@ -311,6 +316,10 @@ let
   
   username = "groscoe";
 in {
+  imports = [
+    ./vim/nvim.nix
+  ];
+
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
   home.username = username;
@@ -367,7 +376,6 @@ in {
     newsboat = importModule newsboat/newsboat.nix;
 
     vim = importModule vim/vim.nix;
-    neovim = importModule vim/nvim.nix;
 
     # Nix-related tools
     direnv = {

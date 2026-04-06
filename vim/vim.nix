@@ -9,7 +9,7 @@ in {
       # Auto-complete/intellisense (Vim-only)
       coc-nvim
       coc-rust-analyzer
-      coc-tsserver
+      # coc-tsserver -- deprecated
     ];
 
   settings = common.settings;
