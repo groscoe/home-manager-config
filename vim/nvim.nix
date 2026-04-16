@@ -79,8 +79,16 @@ let
       ++ lib.optional needsPython3Provider "vim.g.python3_host_prog = '${python3Env}/bin/python3'"
     );
 
-  luaLspConfig = ''
-    lua << EOF
+  vimscriptConfig = ''
+    set packpath^=${packDir}
+    set runtimepath^=${packDir}
+  ''
+  + "\n"
+  + vimSettings
+  + "\n"
+  + common.extraConfig;
+
+  luaConfig = ''
     local blink_ok, blink = pcall(require, 'blink.cmp')
     if blink_ok then
       blink.setup({})
@@ -113,58 +121,67 @@ let
       return nil
     end
 
-    local lspconfig_ok, lspconfig = pcall(require, 'lspconfig')
-    if lspconfig_ok then
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      if blink_ok and blink.get_lsp_capabilities then
-        capabilities = vim.tbl_deep_extend('force', capabilities, blink.get_lsp_capabilities())
-      end
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    if blink_ok and blink.get_lsp_capabilities then
+      capabilities = vim.tbl_deep_extend('force', capabilities, blink.get_lsp_capabilities())
+    end
 
-      local function on_attach(_, bufnr)
-        local function map(lhs, rhs)
-          vim.keymap.set('n', lhs, rhs, { buffer = bufnr, silent = true })
-        end
-        map('gh', vim.lsp.buf.hover)
-        map('ga', vim.lsp.buf.code_action)
-        map('ge', vim.diagnostic.open_float)
-        map('gd', vim.lsp.buf.definition)
-        map('gr', vim.lsp.buf.references)
+    local function on_attach(bufnr)
+      local function map(lhs, rhs)
+        vim.keymap.set('n', lhs, rhs, { buffer = bufnr, silent = true })
       end
+      map('gh', vim.lsp.buf.hover)
+      map('ga', vim.lsp.buf.code_action)
+      map('ge', vim.diagnostic.open_float)
+      map('gd', vim.lsp.buf.definition)
+      map('gr', vim.lsp.buf.references)
+    end
 
-      local rust_check_command = vim.env.NVIM_RUST_CHECK_COMMAND
-      if not rust_check_command or rust_check_command == "" then
-        rust_check_command = 'clippy'
-      end
+    vim.api.nvim_create_autocmd('LspAttach', {
+      callback = function(args)
+        on_attach(args.buf)
+      end,
+    })
 
-      local rust_check_extra_args = {}
-      if vim.env.NVIM_RUST_PEDANTIC ~= '0' then
-        rust_check_extra_args = { '--', '-W', 'clippy::pedantic' }
-      end
+    local rust_check_command = vim.env.NVIM_RUST_CHECK_COMMAND
+    if not rust_check_command or rust_check_command == "" then
+      rust_check_command = 'clippy'
+    end
 
-      if lspconfig.rust_analyzer then
-        lspconfig.rust_analyzer.setup({
-          capabilities = capabilities,
-          on_attach = on_attach,
-          settings = {
-            ['rust-analyzer'] = {
-              check = {
-                command = rust_check_command,
-                extraArgs = rust_check_extra_args,
-              },
-            },
+    local rust_check_extra_args = {}
+    if vim.env.NVIM_RUST_PEDANTIC ~= '0' then
+      rust_check_extra_args = { '--', '-W', 'clippy::pedantic' }
+    end
+
+    local enabled_servers = {}
+
+    local rust_ok, _ = pcall(vim.lsp.config, 'rust_analyzer', {
+      capabilities = capabilities,
+      settings = {
+        ['rust-analyzer'] = {
+          check = {
+            command = rust_check_command,
+            extraArgs = rust_check_extra_args,
           },
-        })
-      end
+        },
+      },
+    })
+    if rust_ok then
+      table.insert(enabled_servers, 'rust_analyzer')
+    end
 
-      local servers = { 'ts_ls', 'nil_ls', 'aiken', 'pyright' }
-      for _, server in ipairs(servers) do
-        if lspconfig[server] then
-          lspconfig[server].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-          })
-        end
+    local servers = { 'ts_ls', 'nil_ls', 'aiken', 'pyright' }
+    for _, server in ipairs(servers) do
+      local ok, _ = pcall(vim.lsp.config, server, {
+        capabilities = capabilities,
+      })
+      if ok then
+        table.insert(enabled_servers, server)
       end
+    end
+
+    for _, server in ipairs(enabled_servers) do
+      pcall(vim.lsp.enable, server)
     end
 
     -- Global fallbacks so mappings work even before LSP attaches
@@ -280,26 +297,19 @@ let
     vim.diagnostic.config({
       virtual_text = true,
     })
-    EOF
   '';
-
-  initVimContent = ''
-    set packpath^=${packDir}
-    set runtimepath^=${packDir}
-  ''
-  + "\n"
-  + vimSettings
-  + "\n"
-  + common.extraConfig
-  + "\n"
-  + luaLspConfig;
 
   initLuaContent =
     lib.concatStringsSep "\n\n" (
       lib.optional (luaDeps != [ ]) luaPathLuaRc
       ++ [ providerLuaRc ]
       ++ [
-        "vim.cmd.source(vim.fn.stdpath('config') .. '/init.vim')"
+        ''
+          vim.cmd([==[
+          ${vimscriptConfig}
+          ]==])
+        ''
+        luaConfig
       ]
       ++ pluginInfo.pluginAdvisedLua
     );
@@ -315,5 +325,4 @@ in
   home.shellAliases.vimdiff = "nvim -d";
 
   xdg.configFile."nvim/init.lua".text = initLuaContent;
-  xdg.configFile."nvim/init.vim".text = initVimContent;
 }

@@ -7,6 +7,7 @@ args@{ lib, pkgs, ... }:
     fzf-vim
     vim-vinegar
     nerdcommenter
+    vim-jdaddy
 
     # Colorschemes
     onehalf
