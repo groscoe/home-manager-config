@@ -1,6 +1,7 @@
-{pkgs, ...}:
+{pkgs, pkgs-stable, isDarwin, ...}:
   {
     enable = true;
+    package = if isDarwin then pkgs-stable.fish else pkgs.fish;
 
     plugins = [
       {

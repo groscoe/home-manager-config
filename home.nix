@@ -311,7 +311,7 @@ let
 
   importModule =
     let args = {
-      inherit config pkgs lib isDarwin;
+      inherit config pkgs pkgs-stable lib isDarwin;
     }; in path: (import path args);
   
   username = "groscoe";

@@ -45,7 +45,19 @@ let
   ];
 
   neovimPlugins = common.plugins ++ neovimExtraPlugins;
-  pluginInfo = pkgs.neovimUtils.makeVimPackageInfo neovimPlugins;
+  normalizedPlugins = pkgs.neovimUtils.normalizePlugins neovimPlugins;
+  vimPackage = pkgs.neovimUtils.normalizedPluginsToVimPackage normalizedPlugins;
+  requiredPlugins = pkgs.vimUtils.requiredPluginsForPackage vimPackage;
+  getDeps = attrname: map (plugin: plugin.${attrname} or (_: [ ])) requiredPlugins;
+  pluginInfo = {
+    inherit vimPackage;
+    pluginPython3Packages = getDeps "python3Dependencies";
+    luaDependencies = lib.concatMap (plugin: plugin.requiredLuaModules or [ ]) requiredPlugins;
+    pluginAdvisedLua = lib.concatMap
+      (plugin: lib.optional (plugin.passthru ? initLua) plugin.passthru.initLua)
+      requiredPlugins;
+    runtimeDeps = lib.concatMap (plugin: plugin.runtimeDeps or [ ]) requiredPlugins;
+  };
   packDir = pkgs.neovimUtils.packDir {
     myNeovimPackages = pluginInfo.vimPackage;
   };
