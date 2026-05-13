@@ -9,6 +9,7 @@ let
     let empty = if builtins.isAttrs cfg then {} else [];
     in if isDarwin then empty else cfg;
   codexModule = import ./codex/codex.nix { inherit pkgs lib; };
+  atuinModule = import ./atuin/atuin.nix { inherit pkgs lib; };
   # Configs go here.
   unManagedConfigs = build (lib.attrValues {
     acpi = ifNotDarwin { packages = [ pkgs.acpi ]; };
@@ -361,6 +362,7 @@ in {
     # Smarter shell history search
     atuin = {
       enable = true;
+      package = atuinModule.atuinPackage;
       enableFishIntegration = false;
       enableBashIntegration = false;
       enableZshIntegration = false;
@@ -368,7 +370,7 @@ in {
       settings = {
         dialect = "uk";
         style = "compact";
-        secrets_filter = "false";
+        secrets_filter = false;
       };
     };
 
