@@ -8,7 +8,6 @@ let
   ifNotDarwin = cfg:
     let empty = if builtins.isAttrs cfg then {} else [];
     in if isDarwin then empty else cfg;
-  codexModule = import ./codex/codex.nix { inherit pkgs lib; };
   atuinModule = import ./atuin/atuin.nix { inherit pkgs lib; };
   # Configs go here.
   unManagedConfigs = build (lib.attrValues {
@@ -353,11 +352,6 @@ in {
 
     fish = importModule fish/fish.nix;
     zsh = importModule zsh/zsh.nix;
-
-    codex = ifNotDarwin {
-      enable = true;
-      package = codexModule.codexPackage;
-    };
 
     # Smarter shell history search
     atuin = {

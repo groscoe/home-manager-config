@@ -37,6 +37,7 @@
         $HOME/.nix-profile/bin \
       	$HOME/.cargo/bin \
       	$HOME/.npm-packages/bin \
+      	$HOME/.npm/bin \
       	$HOME/.local/bin \
       	$HOME/.cabal/bin \
       	$PATH
