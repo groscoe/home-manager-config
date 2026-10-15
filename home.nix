@@ -52,6 +52,9 @@ let
       ] ++ ifNotDarwin [ pkgs.gnucash ];
     };
 
+    # Install the browser without taking ownership of existing browser data.
+    firefox = ifNotDarwin { packages = [ pkgs.firefox ]; };
+
     fonts = {
       packages = with pkgs; [
         source-code-pro

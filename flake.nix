@@ -4,6 +4,8 @@
   inputs = {
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
+    # Select newer packages independently of the desktop pin.
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-stable.url = "flake:nixpkgs";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
@@ -15,7 +17,7 @@
     };
   };
 
-  outputs = { nixpkgs, nixpkgs-stable, home-manager, darwin, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, nixpkgs-stable, home-manager, darwin, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -25,6 +27,9 @@
       });
       overlays = [
         emacsOverlay
+        (_final: prev: prev.lib.optionalAttrs prev.stdenv.hostPlatform.isLinux {
+          firefox = nixpkgs-unstable.legacyPackages.${prev.stdenv.hostPlatform.system}.firefox;
+        })
         (final: prev: {
           direnv = prev.direnv.overrideAttrs (old: {
             doCheck = old.doCheck or true && !prev.stdenv.hostPlatform.isDarwin;
