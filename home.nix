@@ -9,6 +9,16 @@ let
     let empty = if builtins.isAttrs cfg then {} else [];
     in if isDarwin then empty else cfg;
   atuinModule = import ./atuin/atuin.nix { inherit pkgs lib; };
+  # Publish one HiDPI policy for X11, GTK and Qt; keep the panel native.
+  hiDpiScript = pkgs.writeShellScriptBin "xps-apply-hidpi" ''
+    set -eu
+    [ -n "''${DISPLAY:-}" ] || exit 0
+    ${pkgs.xorg.xrdb}/bin/xrdb -merge ${config.xresources.path}
+    ${pkgs.xorg.xsetroot}/bin/xsetroot -xcf \
+      ${config.home.pointerCursor.package}/share/icons/breeze_cursors/cursors/left_ptr 48
+    ${config.systemd.user.systemctlPath} --user import-environment DISPLAY XAUTHORITY
+    ${config.systemd.user.systemctlPath} --user start xsettingsd.service
+  '';
   # Configs go here.
   unManagedConfigs = build (lib.attrValues {
     acpi = ifNotDarwin { packages = [ pkgs.acpi ]; };
@@ -26,15 +36,6 @@ let
         restic
         rclone
       ];
-    };
-
-    # Notifications
-    deadd = ifNotDarwin {
-      packages = [ ];
-      files = {
-        ".config/deadd/deadd.conf" = ./deadd/config/deadd/deadd.conf;
-        ".config/deadd/deadd.css" = ./deadd/config/deadd/deadd.css;
-      };
     };
 
     deluge = { packages = [ pkgs.deluge ]; };
@@ -91,7 +92,7 @@ let
     # };
 
     i3 = ifNotDarwin {
-      packages = [ pkgs.i3 ];
+      packages = [ pkgs.i3 pkgs.xss-lock hiDpiScript ];
       files = { ".config/i3/config" = ./i3/config/i3/config; };
     };
 
@@ -144,6 +145,8 @@ let
 
       files = { ".config/polybar" = ./polybar/config/polybar; };
     };
+
+    vscodium = ifNotDarwin { packages = [ pkgs.vscodium ]; };
 
     programming-tools = {
       packages = with pkgs; [
@@ -223,6 +226,8 @@ let
         ".tmux.conf" = ./terminals/tmux.conf;
         ".config/alacritty/alacritty.toml" = ./terminals/config/alacritty/alacritty.toml;
       } // ifNotDarwin {
+        ".config/tmux/client-prefix.py" = ./terminals/client-prefix.py;
+        ".config/tmux/client-prefix.conf" = ./terminals/client-prefix.conf;
         ".config/guake/guake.conf" = ./terminals/config/guake/guake.conf;
       };
     };
@@ -321,6 +326,7 @@ let
 in {
   imports = [
     ./vim/nvim.nix
+    ./clamav-scan
   ];
 
   # Home Manager needs a bit of information about you and the
@@ -345,6 +351,32 @@ in {
   ##
 
   fonts.fontconfig.enable = true;
+
+  home.pointerCursor = lib.mkIf (!isDarwin) {
+    package = pkgs.kdePackages.breeze;
+    name = "breeze_cursors";
+    size = 48;
+    x11.enable = true;
+  };
+
+  home.sessionVariables = ifNotDarwin {
+    QT_ENABLE_HIGHDPI_SCALING = "1";
+  };
+
+  xresources.properties = lib.mkIf (!isDarwin) {
+    "Xft.dpi" = 192;
+  };
+
+  services.xsettingsd = ifNotDarwin {
+    enable = true;
+    settings = {
+      "Gdk/WindowScalingFactor" = 2;
+      "Gdk/UnscaledDPI" = 96 * 1024;
+      "Xft/DPI" = 192 * 1024;
+      "Gtk/CursorThemeName" = "breeze_cursors";
+      "Gtk/CursorThemeSize" = 48;
+    };
+  };
 
   programs = {
     # Let Home Manager install and manage itself.
@@ -465,6 +497,28 @@ in {
     };
   };
 
+  # Use the host client to match Ubuntu's running systemd manager.
+  systemd.user.systemctlPath = lib.mkIf (!isDarwin) "/usr/bin/systemctl";
+
+  services.dunst = ifNotDarwin {
+    enable = true;
+    settings = {
+      global = {
+        # Match the desktop's 200% scaling.
+        font = "Noto Sans 10";
+        scale = 2;
+        width = 300;
+        offset = "(10,50)";
+        padding = 8;
+        horizontal_padding = 8;
+        frame_width = 2;
+        min_icon_size = 32;
+        max_icon_size = 32;
+      };
+      urgency_normal.timeout = 8;
+    };
+  };
+
   services.ssh-agent = ifNotDarwin {
     enable = true;
   };
@@ -472,7 +526,21 @@ in {
   ##
   ## Unmanaged configs
   ##
-  home.file = unManagedConfigs.files;
+  home.file = unManagedConfigs.files // lib.optionalAttrs (!isDarwin) {
+    ".xsessionrc".text = ''
+      . "${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh"
+      # Toolkit overrides would multiply the shared X11 scaling policy.
+      unset GDK_SCALE GDK_DPI_SCALE QT_SCALE_FACTOR QT_SCREEN_SCALE_FACTORS QT_FONT_DPI
+      ${hiDpiScript}/bin/xps-apply-hidpi
+    '';
+  };
   home.packages = unManagedConfigs.packages;
-  home.activation = unManagedConfigs.activationScripts;
+  home.activation = unManagedConfigs.activationScripts // lib.optionalAttrs (!isDarwin) {
+    applyHiDpi = lib.hm.dag.entryAfter [ "reloadSystemd" ] ''
+      if [ -n "''${DISPLAY:-}" ]; then
+        ${hiDpiScript}/bin/xps-apply-hidpi
+        ${config.systemd.user.systemctlPath} --user restart xsettingsd.service
+      fi
+    '';
+  };
 }
