@@ -60,7 +60,7 @@
 
     # FZF integration (aligned with fish defaults)
     export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
-    export FZF_FIND_FILE_OPTS="--layout=reverse --bind='ctrl-t:toggle-preview' --preview='$HOME/Projects/preview.sh {}' --height=100%"
+    export FZF_FIND_FILE_OPTS="--layout=reverse --bind='ctrl-t:toggle-preview' --preview='file-preview {}' --height=100%"
     export FZF_FIND_FILE_COMMAND="fd -L -H"
 
     # Reuse existing aliases/functions with minimal churn.

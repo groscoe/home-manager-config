@@ -11,7 +11,16 @@ let
     text = builtins.readFile ./x-settings.sh;
   };
 in {
+  imports = [ ../../helpers/cursor-shims.nix ];
   home.packages = [ xSettings ];
+  home.file.".xprofile".text = ''
+    # HiDPI is applied centrally by .xsessionrc. Reuse the persistent agent.
+    if [ -z "''${SSH_AUTH_SOCK:-}" ] || [ ! -S "$SSH_AUTH_SOCK" ]; then
+      if [ -n "''${XDG_RUNTIME_DIR:-}" ] && [ -S "$XDG_RUNTIME_DIR/ssh-agent" ]; then
+        export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent"
+      fi
+    fi
+  '';
   home.file.".config/i3/config".source = pkgs.replaceVars ../../i3/config/i3/config {
     xpsXSettings = "${xSettings}/bin/xps-x-settings";
   };

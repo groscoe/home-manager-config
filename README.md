@@ -24,6 +24,31 @@ The Fish hook preserves a working forwarded agent and falls back to the local
 agent only when its socket is missing. SSH keys and agent identities remain state
 outside the repository.
 
+## SSH and personal helpers
+
+`ssh/` enables Home Manager's SSH configuration without replacing the OS client.
+The host modules retain the Mac's Keychain/Ed25519 defaults and agent forwarding
+to xps, and xps's GitHub alias/RSA key selection. Only key paths are declared;
+private keys, known-host history, agent identities and credentials remain outside
+the Nix store and must be restored separately.
+
+`helpers/` packages `file-preview` and `dice`, including their interpreters and
+preview dependencies. Fish and Zsh's file search and the Bash/Zsh dice function
+use these commands without requiring files in `~/Projects`. `file-preview`
+handles directory trees, images, the first ten PDF pages and text. `dice` accepts
+no arguments (1–6), one upper bound, or an inclusive lower/upper bound.
+
+The xps profile also manages the existing `agent` and `cursor` launchers and its
+`.xprofile`. Cursor's vendor-updated `~/.local/bin/cursor-agent` installation and
+login state require separate restoration. The login hook reuses the persistent
+SSH agent; scaling is owned by `.xsessionrc`. The old duplicate scaling setting,
+per-login agent spawning and unavailable `wal` command are retired.
+
+Older standalone desktop automations and the third-party Python CLI entrypoints
+in `~/.local/bin` remain outside this migration. Their application environments
+and obsolete hardware/UI assumptions need individual review. The originals are
+retained; the SSH/helper migration does not run those automations.
+
 ## Package pins
 
 The consolidation preserves the previously different package sets:

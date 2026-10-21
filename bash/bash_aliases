@@ -69,7 +69,7 @@ wego() {
 
 # random integer generator
 dice() {
-    ${HOME}/Projects/pydice.py "$@"
+    command dice "$@"
 }
 
 # display alert in front-most application

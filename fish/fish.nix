@@ -148,7 +148,7 @@
 
       # FZF integration
       set -x RIPGREP_CONFIG_PATH $HOME/.ripgreprc
-      set -x FZF_FIND_FILE_OPTS "--layout=reverse --bind='ctrl-t:toggle-preview' --preview='$HOME/Projects/preview.sh {}' --height=100%"
+      set -x FZF_FIND_FILE_OPTS "--layout=reverse --bind='ctrl-t:toggle-preview' --preview='file-preview {}' --height=100%"
       set -x FZF_FIND_FILE_COMMAND "fd -L -H"
     '';
 

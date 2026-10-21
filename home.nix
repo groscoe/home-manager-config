@@ -315,6 +315,8 @@ let
   username = "groscoe";
 in {
   imports = [
+    ./ssh
+    ./helpers
     ./xps-desktop
     ./restic-backup
     ./vim/nvim.nix

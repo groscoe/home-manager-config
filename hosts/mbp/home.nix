@@ -1,4 +1,5 @@
 { config, pkgs, ... }: {
+  imports = [ ./ssh.nix ];
   assertions = [{
     assertion = pkgs.stdenv.hostPlatform.system == "aarch64-darwin";
     message = "The mbp profile requires aarch64-darwin.";
