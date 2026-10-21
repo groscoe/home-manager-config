@@ -14,6 +14,16 @@ owns the Mac backup scope and XPS Desktop launcher settings;
 `hosts/mbp/system.nix` contains its existing nix-darwin and Homebrew configuration.
 The XPS-specific Fish key bindings are kept in its host directory.
 
+`hosts/xps/session.nix` also owns the persistent SSH-agent Fish hook and packages
+`xps-x-settings`, which i3 runs at login/reload. The keyboard policy retains the
+ABNT-2 layout, Caps→Escape and the existing keycode-20 override. Attached Wacom
+styluses retain their counterclockwise rotation and tablet area; no tablet is
+required. The command declares its X11/Wacom tools through Nix rather than relying
+on a separate `~/Projects/x-settings.sh` or Ubuntu-installed client utilities.
+The Fish hook preserves a working forwarded agent and falls back to the local
+agent only when its socket is missing. SSH keys and agent identities remain state
+outside the repository.
+
 ## Package pins
 
 The consolidation preserves the previously different package sets:

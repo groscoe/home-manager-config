@@ -82,7 +82,6 @@ let
 
     i3 = ifNotDarwin {
       packages = [ pkgs.i3 ];
-      files = { ".config/i3/config" = ./i3/config/i3/config; };
     };
 
     hledger = { packages = [ pkgs.hledger ]; };

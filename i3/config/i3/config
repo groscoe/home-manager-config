@@ -199,7 +199,7 @@ exec --no-startup-id "feh --bg-scale ~/Pictures/Wallpapers/japan-temple-ultrawid
 # Start after the graphical environment is imported; D-Bus can also activate it.
 exec --no-startup-id systemctl --user start dunst.service
 exec --no-startup-id blueman-applet
-exec_always --no-startup-id "/home/groscoe/Projects/x-settings.sh"
+exec_always --no-startup-id "@xpsXSettings@"
 
 # Screen brightness
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
