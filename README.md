@@ -44,10 +44,11 @@ login state require separate restoration. The login hook reuses the persistent
 SSH agent; scaling is owned by `.xsessionrc`. The old duplicate scaling setting,
 per-login agent spawning and unavailable `wal` command are retired.
 
-Older standalone desktop automations and the third-party Python CLI entrypoints
-in `~/.local/bin` remain outside this migration. Their application environments
-and obsolete hardware/UI assumptions need individual review. The originals are
-retained; the SSH/helper migration does not run those automations.
+The unused Teams coffee-break automation and old audio, webcam, speech,
+mouse-movement and lock/suspend helpers were retired after private backups.
+Their Teams shell shortcuts are removed as well. Third-party Python CLI
+entrypoints in `~/.local/bin` and separate project-specific scripts still need
+individual application/environment review.
 
 ## Package pins
 

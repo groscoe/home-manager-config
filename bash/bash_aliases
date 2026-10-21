@@ -125,14 +125,6 @@ pdfread() {
   fi
 }
 
-start-coffee-break() {
-  bash ~/Projects/xdotool-scripts/teams-coffee-break-start.sh
-}
-
-end-coffee-break() {
-  bash ~/Projects/xdotool-scripts/teams-coffee-break-end.sh
-}
-
 urltrace() { # trace redirects from a base URL
   URL="$@"
   TRACE_RESULTS=$(http -f POST "https://wheregoes.com/retracer.php" "traceme=$URL" url="") # strange as it seems, the `url` argument should be left blank.
