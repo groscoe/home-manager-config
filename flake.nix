@@ -1,10 +1,9 @@
 {
-  description = "Home Manager configuration of groscoe";
-
+  description = "Shared Home Manager configuration with explicit xps and mbp profiles";
   inputs = {
-    # Specify the source of Home Manager and Nixpkgs.
+    # Preserve each machine's existing package revisions during consolidation.
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
-    # Select newer packages independently of the desktop pin.
+    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-stable.url = "flake:nixpkgs";
     home-manager = {
@@ -13,154 +12,73 @@
     };
     darwin = {
       url = "github:LnL7/nix-darwin/nix-darwin-25.11";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
   };
-
-  outputs = { nixpkgs, nixpkgs-unstable, nixpkgs-stable, home-manager, darwin, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-darwin, nixpkgs-stable, nixpkgs-unstable, home-manager, darwin, ... }:
     let
-      systems = [ "x86_64-linux" "aarch64-darwin" ];
-      forAllSystems = nixpkgs.lib.genAttrs systems;
-      emacsOverlay = import (builtins.fetchTarball {
-        url = "https://github.com/nix-community/emacs-overlay/archive/c4b02b4be54b35b6bf0cd6b33ef01e33b5a041af.tar.gz";
-        sha256 = "0ngikjszmi2rdjdasbhj04h3cj6waq8f9ijmawz34188pk32lmy4";
-      });
-      overlays = [
-        emacsOverlay
-        (_final: prev: prev.lib.optionalAttrs prev.stdenv.hostPlatform.isLinux {
-          firefox = nixpkgs-unstable.legacyPackages.${prev.stdenv.hostPlatform.system}.firefox;
-          # Nixpkgs still ships 1.126; pin the current verified upstream archive.
-          # Remove this override once nixpkgs-unstable catches up.
-          vscodium = let
-            unstable = nixpkgs-unstable.legacyPackages.${prev.stdenv.hostPlatform.system};
-          in (unstable.vscodium.override {
-            commandLineArgs = "--force-device-scale-factor=2";
-          }).overrideAttrs (old: {
-            version = "1.140.06880";
-            src = unstable.fetchurl {
-              url = "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/VSCodium-linux-x64-1.140.06880.tar.gz";
-              hash = "sha256-YSI7dPnkCDQRcxHsQXfLOG0JuEwark+eZ0yWWAVpzvM=";
-            };
-            passthru = old.passthru // { vscodeVersion = "1.140.0"; };
-            meta = old.meta // {
-              changelog = "https://github.com/VSCodium/vscodium/releases/tag/1.140.06880";
-            };
-          });
-        })
-        (final: prev: {
-          direnv = prev.direnv.overrideAttrs (old: {
-            doCheck = old.doCheck or true && !prev.stdenv.hostPlatform.isDarwin;
-          });
-        })
-      ];
-      pkgsFor = system: import nixpkgs {
-        inherit system;
-        config = { allowUnfree = true; };
-        inherit overlays;
-      };
-      pkgsStableFor = system: nixpkgs-stable.legacyPackages.${system};
-      configurationFor = system:
-        let
-          pkgs = pkgsFor "${system}";
-          pkgs-stable = pkgsStableFor "${system}";
-        in home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-
-          # Specify your home configuration modules here, for example,
-          # the path to your home.nix.
-          modules = [ ./home.nix ];
-
-          # Optionally use extraSpecialArgs
-          # to pass through arguments to home.nix
-          extraSpecialArgs = { inherit pkgs-stable; };
+      sharedOverlays = import ./overlays;
+      hosts = {
+        xps = {
+          system = "x86_64-linux";
+          source = nixpkgs;
+          overlays = [ (import ./hosts/xps/overlay.nix { inherit nixpkgs-unstable; }) ];
         };
-    in {
-      homeConfigurations = {
-        groscoe = configurationFor "x86_64-linux";
-        groscoe-linux = configurationFor "x86_64-linux";
-        groscoe-darwin = configurationFor "aarch64-darwin";
+        mbp = {
+          system = "aarch64-darwin";
+          source = nixpkgs-darwin;
+          overlays = [ ];
+        };
       };
-
-      packages = forAllSystems (system: {
-        default = (configurationFor "${system}").activationPackage;
-        home-manager-activation = (configurationFor "${system}").activationPackage;
-      });
-
-      darwinConfigurations.groscoe-macos = darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
+      pkgsFor = host: import hosts.${host}.source {
+        inherit (hosts.${host}) system;
+        config.allowUnfree = true;
+        overlays = sharedOverlays ++ hosts.${host}.overlays;
+      };
+      argsFor = host: {
+        hostName = host;
+        pkgs-stable = nixpkgs-stable.legacyPackages.${hosts.${host}.system};
+      };
+      modulesFor = host: [ ./home.nix (./hosts + "/${host}/home.nix") ];
+      homeFor = host: home-manager.lib.homeManagerConfiguration {
+        pkgs = pkgsFor host;
+        modules = modulesFor host;
+        extraSpecialArgs = argsFor host;
+      };
+      homeProfiles = { xps = homeFor "xps"; mbp = homeFor "mbp"; };
+      macSystem = darwin.lib.darwinSystem {
+        system = hosts.mbp.system;
         modules = [
           home-manager.darwinModules.home-manager
+          ./hosts/mbp/system.nix
           {
-            nixpkgs = {
-              config.allowUnfree = true;
-              inherit overlays;
-            };
-
-            system = {
-              stateVersion = 6;
-              primaryUser = "groscoe";
-            };
-            ids.gids.nixbld = 30000;
-
-            users.users.groscoe.home = "/Users/groscoe";
-
-            nix.optimise.automatic = true;
-            nix.settings = {
-              "experimental-features" = [ "nix-command" "flakes" ];
-              "build-users-group" = "nixbld";
-              "trusted-public-keys" = [
-                "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-                "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
-                "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-              ];
-              substituters = [
-                "https://cache.nixos.org"
-                "https://cache.iog.io"
-              ];
-              "allow-import-from-derivation" = true;
-              "max-jobs" = "auto";
-              "keep-failed" = false;
-              "keep-going" = true;
-            };
-
-            homebrew = {
-              enable = true;
-              onActivation = {
-                autoUpdate = true;
-                upgrade = true;
-                cleanup = "none";
-              };
-              brews = [
-                "aria2"
-                "mosh"
-                "podman"
-                "typst"
-                "yt-dlp"
-              ];
-              casks = [
-                "anki"
-                "codex"
-                "cursor"
-                "iterm2"
-                "maccy"
-                "skim"
-                "wireshark-app"
-              ];
-            };
-
-            # mosh-server is spawned via ssh on demand, not as a long-lived daemon.
-            services.openssh.enable = true;
-
+            nixpkgs.pkgs = pkgsFor "mbp";
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              extraSpecialArgs = {
-                pkgs-stable = pkgsStableFor "aarch64-darwin";
-              };
-              users.groscoe = import ./home.nix;
+              extraSpecialArgs = argsFor "mbp";
+              users.groscoe.imports = modulesFor "mbp";
             };
           }
         ];
+      };
+    in {
+      homeConfigurations = homeProfiles // {
+        # Keep existing commands working while making the host names canonical.
+        groscoe = homeProfiles.xps;
+        groscoe-linux = homeProfiles.xps;
+        groscoe-darwin = homeProfiles.mbp;
+      };
+      darwinConfigurations = { mbp = macSystem; groscoe-macos = macSystem; };
+      packages = {
+        x86_64-linux = {
+          default = homeProfiles.xps.activationPackage;
+          home-manager-activation = homeProfiles.xps.activationPackage;
+        };
+        aarch64-darwin = {
+          default = homeProfiles.mbp.activationPackage;
+          home-manager-activation = homeProfiles.mbp.activationPackage;
+        };
       };
     };
 }

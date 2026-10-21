@@ -1,74 +1,99 @@
-# Home Manager Config
+# Home Manager configuration
 
-Declarative user and system configuration for:
+One source tree serves two explicit hosts:
 
-- macOS (`aarch64-darwin`) via `nix-darwin` + Home Manager
-- Linux (`x86_64-linux`) via Home Manager
+| Host | Platform | Home profile | System profile |
+| --- | --- | --- | --- |
+| `xps` | `x86_64-linux` (Ubuntu) | `homeConfigurations.xps` | Existing Ubuntu configuration, outside this flake |
+| `mbp` | `aarch64-darwin` | `homeConfigurations.mbp` | `darwinConfigurations.mbp` |
 
-## Flake Targets
+`home.nix` contains shared user settings. `hosts/xps/home.nix` owns the XPS
+scaling, Linux services, backup roots and protected exports. Its overlay retains
+the selected Firefox, VSCodium and signature-tool packages. `hosts/mbp/home.nix`
+owns the Mac backup scope and XPS Desktop launcher settings;
+`hosts/mbp/system.nix` contains its existing nix-darwin and Homebrew configuration.
+The XPS-specific Fish key bindings are kept in its host directory.
 
-- macOS system: `.#darwinConfigurations.groscoe-macos`
-- Linux home config: `.#homeConfigurations.groscoe`
+## Package pins
 
-## Prerequisites
+The consolidation preserves the previously different package sets:
 
-- Nix with flakes enabled (`nix-command` + `flakes`)
-- `git`
+- `nixpkgs`: XPS base revision `3f05c8657c7016fb8cfec9ca06dac066cdeddb91`.
+- `nixpkgs-darwin`: Mac base revision `0921fdb3e13e40fe25fbc52b89661a9d6d32ac68`.
+- `nixpkgs-unstable`: the existing selected Linux packages.
+- `nixpkgs-stable`: the existing auxiliary package set, including Fish on macOS.
 
-Clone:
+All are pinned in the single `flake.lock`. Update a particular input intentionally
+with `nix flake update INPUT`; consolidating the sources does not update packages.
+The Mac's full Homebrew list is retained. The Codex package source in `codex/`
+is preserved from the Mac checkout, but is not re-enabled on Linux.
 
-```bash
-git clone <your-fork-or-repo-url>
-cd home-manager-config
-```
+## Apply on xps
 
-## macOS
+Install Nix with flakes enabled and clone this repository, then:
 
-### First Install (bootstrap)
-
-```bash
-sudo -H nix run github:LnL7/nix-darwin/nix-darwin-25.11#darwin-rebuild -- \
-  switch --flake /Users/groscoe/Projects/home-manager-config#groscoe-macos
-```
-
-After first activation, use the installed binary for future updates.
-
-### Update / Re-apply
-
-```bash
-sudo -H /run/current-system/sw/bin/darwin-rebuild switch \
-  --flake /Users/groscoe/Projects/home-manager-config#groscoe-macos
-```
-
-## Linux
-
-### Install / Update
-
-This works whether or not the `home-manager` CLI is already installed:
-
-```bash
-nix build .#homeConfigurations.groscoe.activationPackage
+```sh
+nix build .#homeConfigurations.xps.activationPackage
 ./result/activate
 ```
 
-Alternative (if `home-manager` is installed):
+An installed Home Manager CLI can instead use:
 
-```bash
-home-manager switch --flake .#groscoe
+```sh
+home-manager switch --flake .#xps
 ```
 
-## Typical Update Workflow
+This assumes the existing Ubuntu prerequisites. It does not install the OS,
+configure mounts, PAM/SDDM, firewall rules or the separate Liqwid tailnet services.
+The backlight-access and protected-export installers described in their modules
+remain explicit one-time root setup steps.
 
-```bash
-git pull
+## Apply on mbp
+
+For the existing nix-darwin installation:
+
+```sh
+sudo -H /run/current-system/sw/bin/darwin-rebuild switch \
+  --flake /Users/groscoe/Projects/home-manager-config#mbp
 ```
 
-Then run platform apply command:
+For first bootstrap after installing Nix:
 
-- macOS: `darwin-rebuild switch --flake ...#groscoe-macos`
-- Linux: `nix build .#homeConfigurations.groscoe.activationPackage && ./result/activate`
+```sh
+sudo -H nix run github:LnL7/nix-darwin/nix-darwin-25.11#darwin-rebuild -- \
+  switch --flake /Users/groscoe/Projects/home-manager-config#mbp
+```
 
-## Notes
+The standalone home profile is also available as
+`.#homeConfigurations.mbp.activationPackage`; it does not apply system/Homebrew
+settings. Choose the intended scope rather than alternating the two methods
+without checking the active profile.
 
-- Homebrew packages on macOS are managed declaratively via `homebrew.*` in `flake.nix`.
-- Linux remains unaffected by macOS-only `darwinConfigurations` settings.
+## Validate without activating
+
+```sh
+nix eval .#homeConfigurations.xps.activationPackage.drvPath
+nix eval .#homeConfigurations.mbp.activationPackage.drvPath
+nix eval .#darwinConfigurations.mbp.system.drvPath
+```
+
+Build the appropriate home activation package on its native host before applying
+it. Building produces an artifact; only activation changes the running setup.
+
+Legacy targets `groscoe`, `groscoe-linux`, `groscoe-darwin` and `groscoe-macos`
+remain aliases for compatibility. The per-platform default packages remain.
+New documentation and scripts should use the host names.
+
+## Source and recovery
+
+Commit changes from either machine to this same repository, then pull them on the
+other. Put shared preferences in the common modules and machine-specific policy
+in its host profile; do not maintain different `home.nix` or lock files per clone.
+Private keys, passwords, application databases and device enrollment remain
+outside the Nix source and need their documented recovery paths. See
+`restic-backup/README.md` and `xps-desktop/README.md` for those modules' setup/state.
+
+The 2026-10-21 consolidation retains XPS's existing commit history and both
+working trees' changes. Full pre-consolidation source/Git snapshots and the
+comparison results are kept outside this repository in the Codex audit workspace.
+Neither system is activated merely by synchronizing this source tree.

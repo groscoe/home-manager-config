@@ -1,0 +1,90 @@
+# Specific home-folder omissions; hidden files are eligible unless matched below.
+/Users/groscoe/code
+/Users/groscoe/Library
+/Users/groscoe/Applications
+/Users/groscoe/Creative Cloud Files
+/Users/groscoe/Public
+/Users/groscoe/Users
+/Users/groscoe/Downloads/torrent
+.git
+.cabal
+.cargo
+plutus-apps
+.ollama
+.config/chromium
+.dropbox
+.dropbox-dist
+*.safetensors
+
+# Installed dependencies and disposable virtual environments, at any depth.
+node_modules
+.node_modules
+bower_components
+.venv
+venv
+.tox
+.nox
+
+# Generated build output, including Lean .lake/build and Rust target trees.
+build
+dist
+target
+.lake/build
+.stack-work
+dist-newstyle
+.next
+.nuxt
+.svelte-kit
+.angular/cache
+.gradle
+.cxx
+coverage
+.nyc_output
+.direnv
+result
+
+# Rebuildable caches and Python bytecode.
+.cache
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.hypothesis
+.parcel-cache
+.turbo
+
+# Reinstallable home-level toolchains and package caches.
+/Users/groscoe/.elan/toolchains
+/Users/groscoe/.rustup/toolchains
+/Users/groscoe/.npm
+/Users/groscoe/.bun/install/cache
+
+# Discarded files and Finder metadata.
+/Users/groscoe/.Trash
+.DS_Store
+# Root-owned Vim history for a temporary generated Nix configuration file.
+/Users/groscoe/.vimhistory/%private%etc%nix%nix.conf.tmp
+
+# Podman VM disks and compressed disk-image cache entries.
+/Users/groscoe/.local/share/containers/podman/machine/**/*.raw
+/Users/groscoe/.local/share/containers/podman/machine/**/*.raw.zst
+/Users/groscoe/.local/share/containers/podman/machine/**/*.qcow2
+/Users/groscoe/.local/share/containers/podman/machine/**/*.qcow2.zst
+
+# Remote media mounts and the observed generated plex-debrid log.
+# The command also uses --one-file-system to avoid crossing into mounted volumes.
+debrid-mountpoint
+/Users/groscoe/mnt
+/Users/groscoe/Projects/plex-debrid/mount.log
+
+# Downloaded installers in Desktop/Downloads; preserve personal archives elsewhere.
+/Users/groscoe/Desktop/*.dmg
+/Users/groscoe/Desktop/*.pkg
+/Users/groscoe/Downloads/*.dmg
+/Users/groscoe/Downloads/*.pkg
+/Users/groscoe/Desktop/Microsoft Office Professional Plus*.7z
+
+# Regenerable CSV inventories produced while inspecting the repository.
+/Users/groscoe/Projects/backblaze-inventory

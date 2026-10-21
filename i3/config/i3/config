@@ -194,7 +194,7 @@ bindsym $mod+minus scratchpad show
 bindsym Ctrl+Print exec --no-startup-id /usr/bin/gnome-screenshot --interactive
 
 # Autostart applications
-exec_always --no-startup-id picom
+exec_always --no-startup-id picom --dbus
 exec --no-startup-id "feh --bg-scale ~/Pictures/Wallpapers/japan-temple-ultrawide.jpg"
 # Start after the graphical environment is imported; D-Bus can also activate it.
 exec --no-startup-id systemctl --user start dunst.service
