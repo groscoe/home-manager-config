@@ -38,6 +38,11 @@
       argsFor = host: {
         hostName = host;
         pkgs-stable = nixpkgs-stable.legacyPackages.${hosts.${host}.system};
+      } // nixpkgs.lib.optionalAttrs (host == "xps") {
+        pkgs-unstable = import nixpkgs-unstable {
+          system = hosts.xps.system;
+          config.allowUnfree = true;
+        };
       };
       modulesFor = host: [ ./home.nix (./hosts + "/${host}/home.nix") ];
       homeFor = host: home-manager.lib.homeManagerConfiguration {

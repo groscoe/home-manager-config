@@ -39,8 +39,8 @@ handles directory trees, images, the first ten PDF pages and text. `dice` accept
 no arguments (1–6), one upper bound, or an inclusive lower/upper bound.
 
 The xps profile also manages the existing `agent` and `cursor` launchers and its
-`.xprofile`. Cursor's vendor-updated `~/.local/bin/cursor-agent` installation and
-login state require separate restoration. The login hook reuses the persistent
+`.xprofile`. The xps application module also supplies `cursor-agent` from the
+pinned package; Cursor's login state requires separate restoration. The login hook reuses the persistent
 SSH agent; scaling is owned by `.xsessionrc`. The old duplicate scaling setting,
 per-login agent spawning and unavailable `wal` command are retired.
 
@@ -49,6 +49,42 @@ mouse-movement and lock/suspend helpers were retired after private backups.
 Their Teams shell shortcuts are removed as well. Third-party Python CLI
 entrypoints in `~/.local/bin` and separate project-specific scripts still need
 individual application/environment review.
+
+## xps applications and command-line tools
+
+`hosts/xps/applications.nix` owns xps's additional user applications through the
+existing `nixpkgs-unstable` input. It declares Git and Git LFS, curl/wget/rsync,
+FFmpeg, Pandoc, htop, PostgreSQL 14 client tools, SQLite, Python yq, network/file-watching
+utilities, ZIP tools, Meson/Ninja, Codex and Cursor CLI. PostgreSQL is kept on the
+installed major version; declaring its package does not enable a database service.
+The selected packages do not change the Mac profile or its Homebrew policy.
+
+Cursor's existing `agent` and `cursor` shims use the managed `cursor-agent` link.
+Update these CLI applications through the flake pin and rebuild, rather than their
+self-updaters. Credentials, histories and project dependencies are not put in the
+Nix store. A development npm link such as `@liqwid-labs/lucid` belongs to its
+project rather than this global application list.
+
+On an existing installation, an unmanaged `~/.local/bin/cursor-agent` link must be
+moved aside before the first activation; keep its target and user state for
+rollback. A clean installation needs no vendor installer or global Codex npm
+package. Ubuntu copies of these tools can coexist while their package dependencies
+are reviewed; Home Manager's commands take precedence in the user's shell.
+Do not remove Ubuntu packages merely because the user-facing command now uses Nix.
+
+The following portability work remains separate:
+
+- Confirm which extra desktop applications and old user-Python CLIs are still used,
+  then declare their packages and any required isolated Python environments.
+- Validate Alacritty, Picom and Polybar against Ubuntu's graphics/session stack
+  before replacing the working Ubuntu builds. The existing Nix i3 session still
+  uses Ubuntu's fingerprint-enabled i3lock and GNOME screenshot command.
+- Keep Ubuntu's hardware support, networking, authentication, SSH server and
+  Docker daemon under system package management. These need a host provisioning
+  layer, rather than only a Home Manager package list, for full OS recovery.
+- Review the custom `/usr/local/bin/nsntrace` build and the inactive imperative
+  KMonad installation separately. Declaring a keyboard daemon requires an explicit
+  decision; the configured Caps/Escape behavior does not use KMonad.
 
 ## Package pins
 
@@ -61,8 +97,8 @@ The consolidation preserves the previously different package sets:
 
 All are pinned in the single `flake.lock`. Update a particular input intentionally
 with `nix flake update INPUT`; consolidating the sources does not update packages.
-The Mac's full Homebrew list is retained. The Codex package source in `codex/`
-is preserved from the Mac checkout, but is not re-enabled on Linux.
+The Mac's full Homebrew list is retained. xps installs Codex from the existing
+`nixpkgs-unstable` input. The older custom source in `codex/` remains unused.
 
 ## Apply on xps
 
