@@ -17,6 +17,7 @@ let
   '';
   scripts = pkgs.runCommand "restic-backup-scripts" { } ''
     mkdir -p "$out/lib/restic-backup"
+    cp ${./cleanup.py} "$out/lib/restic-backup/cleanup.py"
     cp ${./runner.py} "$out/lib/restic-backup/runner.py"
     cp ${./backup-guard.py} "$out/lib/restic-backup/backup-guard.py"
     cp ${./home-manager-excludes.py} "$out/lib/restic-backup/home-manager-excludes.py"
@@ -33,6 +34,7 @@ let
   );
   settings = pkgs.writeText "restic-backup.json" (builtins.toJSON {
     protectedExport = protected;
+    retentionKeepTags = cfg.retention.keepTags;
     inherit (cfg) paths environmentFile hostname requiredMounts intervalHours requireAC;
     thresholdGB = toString cfg.thresholdGB;
     stateDirectory = "${config.xdg.cacheHome}/restic-backup";
@@ -45,6 +47,9 @@ let
   });
   command = pkgs.writeShellScriptBin "restic-backup" ''
     exec ${pkgs.python3}/bin/python3 ${scripts}/lib/restic-backup/runner.py --config ${settings} "$@"
+  '';
+  cleanupCommand = pkgs.writeShellScriptBin "restic-backup-cleanup" ''
+    exec ${pkgs.python3}/bin/python3 ${scripts}/lib/restic-backup/cleanup.py --config ${settings} "$@"
   '';
 in {
   options.services.restic-backup = {
@@ -65,6 +70,11 @@ in {
     thresholdGB = lib.mkOption { type = lib.types.ints.unsigned; default = 20; };
     intervalHours = lib.mkOption { type = lib.types.ints.positive; default = 24; };
     requireAC = lib.mkOption { type = lib.types.bool; default = true; };
+    retention.keepTags = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ "archive" ];
+      description = "Tags retained indefinitely by restic-backup-cleanup. Must include archive; future cleanup jobs must use this command.";
+    };
     protectedSources = lib.mkOption {
       type = lib.types.listOf lib.types.attrs;
       default = [ ];
@@ -74,6 +84,10 @@ in {
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
       assertions = [ {
+        assertion = builtins.elem "archive" cfg.retention.keepTags
+          && lib.all (tag: tag != "" && !(lib.hasInfix "," tag)) cfg.retention.keepTags;
+        message = "Restic retention must preserve the archive tag; keepTags entries must be single, nonempty tags.";
+      } {
         assertion = cfg.paths != [ ] && lib.all (p: lib.hasPrefix "/" p) cfg.paths;
         message = "services.restic-backup.paths must contain absolute directories.";
       } {
@@ -82,10 +96,11 @@ in {
             && builtins.match "[a-z0-9-]+" s.name != null) cfg.protectedSources);
         message = "Protected exports require Linux, /vault coverage, and named sources inside the user's home.";
       } ];
-      home.packages = [ command ];
+      home.packages = [ command cleanupCommand ];
       # Also available when activating only the Home Manager portion of an
       # existing nix-darwin system; its root-owned package profile is untouched.
       home.file.".local/bin/restic-backup".source = "${command}/bin/restic-backup";
+      home.file.".local/bin/restic-backup-cleanup".source = "${cleanupCommand}/bin/restic-backup-cleanup";
       home.sessionPath = [ "${config.home.homeDirectory}/.local/bin" ];
     }
     (lib.mkIf (cfg.protectedSources != [ ]) {

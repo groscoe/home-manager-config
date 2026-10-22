@@ -70,6 +70,34 @@ from backups). A preview does not advance last-success. Failures and interrupted
 runs remain eligible for retry. Repeated large-change notices are limited to
 once per day. There is no automatic repository unlock or retention/prune job.
 
+## Archive retention and future cleanup
+
+`services.restic-backup.retention.keepTags` defaults to `[ "archive" ]`.
+The module rejects configurations that omit `archive`, and the cleanup command
+also refuses to run without this protection. Each tag is passed separately to
+Restic's `--keep-tag`, so any protected tag is sufficient.
+
+There is still **no automatic cleanup job**. If cleanup is added later, its
+scheduler must invoke `restic-backup-cleanup` rather than raw `restic forget`:
+
+```sh
+restic-backup-cleanup --keep-daily 30 --keep-monthly 12
+# Preview only. Actual deletion requires the explicit --apply option.
+```
+
+The helper always adds `--keep-tag archive`, accepts only positive numeric
+retention counts, and rejects positional snapshot IDs and arbitrary Restic
+flags. `--apply` performs forget/prune; it is never used by the current backup
+schedule. Manual raw Restic commands can bypass this protection and must not be
+used to delete archive snapshots.
+
+`backup-s22-bem` is retained in dedicated snapshot
+`4cd87cd1f1921b583278cbb82fb5958c09f1b4f25279be649ae5a70ad3af8945`, tagged
+`archive` and `archive-backup-s22-bem`, created October 22, 2026. A full restore
+and SHA-256 comparison of all 9,731 files passed before its local copy was
+moved to Trash. Preserve archive snapshots independently of ordinary backup
+age or whether the source folder still exists.
+
 On macOS, manual commands and launchd jobs have separate privacy contexts.
 For example, an interactive backup started in iTerm can report `operation not
 permitted` for `Photo Booth Library` or `Photos Library.photoslibrary` even
