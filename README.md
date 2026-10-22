@@ -125,11 +125,22 @@ VNC display guard if Picom restarts during sharing. Backlight blanking, DPMS,
 lock-screen capture and restoration remain in the existing desktop module.
 `/usr/bin/picom` remains available as an Ubuntu fallback.
 
+`hosts/xps/polybar.nix` manages the Material status bar as a single foreground
+user service. i3 starts it through `xps-start-polybar`; the existing theme launch
+script delegates to the same idempotent entry point. The layout and monitor
+fallback remain unchanged. `polybarFull` provides the native PulseAudio module,
+which follows the default audio device without loading Ubuntu's ALSA plugins.
+The active modules include the existing memory module and the network click
+opens the declared `rofi-wifi` menu. Font packages declare Fantasque Sans Mono
+and a hash-pinned Material Design Iconic Font 2.2.0, so a fresh installation does
+not depend on manually copied fonts. The icon font matches the old file exactly.
+The service keeps the profile commands in PATH for menu scripts and retains
+Ubuntu's existing lock/power integration. `/usr/bin/polybar` is kept as a fallback.
+
 The following portability work remains separate:
 
-- Validate Polybar against Ubuntu's graphics/session stack
-  before replacing the working Ubuntu builds. The existing Nix i3 session still
-  uses Ubuntu's fingerprint-enabled i3lock and GNOME screenshot command.
+- The existing Nix i3 session still uses Ubuntu's fingerprint-enabled i3lock
+  and GNOME screenshot command; migrate those through a host provisioning layer.
 - Keep Ubuntu's hardware support, networking, authentication, SSH server and
   Docker daemon under system package management. These need a host provisioning
   layer, rather than only a Home Manager package list, for full OS recovery.

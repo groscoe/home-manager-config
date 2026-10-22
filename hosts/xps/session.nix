@@ -22,6 +22,7 @@ in {
     fi
   '';
   home.file.".config/i3/config".source = pkgs.replaceVars ../../i3/config/i3/config {
+    xpsPolybar = "${config.home.profileDirectory}/bin/xps-start-polybar";
     xpsPicom = "${config.home.profileDirectory}/bin/xps-start-picom";
     xpsXSettings = "${xSettings}/bin/xps-x-settings";
   };

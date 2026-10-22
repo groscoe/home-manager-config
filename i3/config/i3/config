@@ -177,7 +177,7 @@ gaps inner 15
 exec_always --no-startup-id xps-apply-hidpi
 
 # Polybar
-exec --no-startup-id ~/.config/polybar/material/launch.sh
+exec --no-startup-id @xpsPolybar@
 
 # Plasma specific settings
 for_window [class="plasmashell"] floating enable

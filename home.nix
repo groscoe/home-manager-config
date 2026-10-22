@@ -127,9 +127,6 @@ let
 
 
     polybar = ifNotDarwin {
-      # NOTE: weird inconsistencies.
-      # packages = [ pkgs.polybar ];
-
       files = { ".config/polybar" = ./polybar/config/polybar; };
     };
 
