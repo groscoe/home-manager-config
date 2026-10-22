@@ -83,8 +83,10 @@ It also makes KDE Connect's D-Bus activation select the Nix daemon. Dropbox's of
 launcher; the vendor daemon still updates itself in `~/.dropbox-dist`.
 
 `hosts/xps/jupyter.nix` declares an isolated notebook environment: JupyterLab,
-Notebook, console/Qt console, widgets/LSP, NumPy, pandas, Matplotlib, OpenPyXL,
-Selenium, PDF tools, SQLite-utils and HTTPX. Its Python kernel uses an absolute Nix interpreter and
+Notebook, console/Qt console, widgets/LSP, NumPy/pandas/SciPy,
+Matplotlib/Seaborn/Plotly, Beautiful Soup/lxml, PyArrow, DuckDB, RapidFuzz,
+tqdm, OpenPyXL, Selenium, PDF tools, SQLite-utils and HTTPX. Anywidget supplies
+Plotly's FigureWidget integration. Its Python kernel uses an absolute Nix interpreter and
 ignores user site-packages. Its Python/pip pair is independent of the shell's
 interpreter and Neovim's absolute-path provider. The module also exports its
 desktop launchers and icons; it does not start a notebook server. Existing

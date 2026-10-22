@@ -20,7 +20,17 @@ let
         jupyter-lsp
         numpy
         pandas
+        scipy
         matplotlib
+        seaborn
+        plotly
+        anywidget # Plotly FigureWidget support in JupyterLab.
+        beautifulsoup4
+        lxml
+        pyarrow
+        duckdb
+        rapidfuzz
+        tqdm
         openpyxl
         selenium
         pdfplumber
