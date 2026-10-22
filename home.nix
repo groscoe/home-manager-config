@@ -125,7 +125,6 @@ let
       ] ++ ifNotDarwin [ pkgs.calibre ];
     };
 
-    picom = ifNotDarwin { files = { ".config/picom/picom.conf" = ./picom/config/picom/picom.conf; }; };
 
     polybar = ifNotDarwin {
       # NOTE: weird inconsistencies.

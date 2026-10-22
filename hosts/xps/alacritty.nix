@@ -1,4 +1,4 @@
-{ config, pkgs, nixGLPackages, ... }:
+{ config, pkgs, ... }:
 let
   wrapped = config.lib.nixGL.wrap pkgs.alacritty;
   childEnv = pkgs.writeScript "alacritty-child-env" (
@@ -20,11 +20,5 @@ let
     '';
   };
 in {
-  # Match Mesa libraries to Alacritty's existing Nixpkgs pin. The kernel and
-  # X server remain Ubuntu's; the child helper prevents NixGL leaking to shells.
-  targets.genericLinux.nixGL = {
-    packages = nixGLPackages;
-    defaultWrapper = "mesa";
-  };
   home.packages = [ terminal ];
 }

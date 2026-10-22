@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 let
   xSettings = pkgs.writeShellApplication {
     name = "xps-x-settings";
@@ -22,6 +22,7 @@ in {
     fi
   '';
   home.file.".config/i3/config".source = pkgs.replaceVars ../../i3/config/i3/config {
+    xpsPicom = "${config.home.profileDirectory}/bin/xps-start-picom";
     xpsXSettings = "${xSettings}/bin/xps-x-settings";
   };
   xdg.configFile."fish/conf.d/90-persistent-ssh-agent.fish".source =

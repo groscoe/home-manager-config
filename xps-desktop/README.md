@@ -75,7 +75,8 @@ pixel comparison is always enabled to avoid retransmitting unchanged areas.
 While sharing, the service uses Picom's session-bus API to unredirect the desktop,
 disabling compositor effects that substantially slow remote redraws. Picom stays
 running. Its original mode is restored on service stop; manual mode changes or a
-new Picom process take precedence. The managed Picom configuration enables this
+new Picom process take precedence. The Home Manager Picom service reapplies this bypass if the compositor is
+restarted while sharing. The managed Picom configuration enables this
 per-user D-Bus interface. No system-bus access or new network listener is added.
 The accompanying Picom configuration enables fullscreen unredirection so i3lock
 is captured correctly; otherwise the compositor can leave the desktop visible

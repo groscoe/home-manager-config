@@ -114,9 +114,20 @@ For a future host using proprietary Nvidia drivers, choose the appropriate host
 wrapper explicitly. `/usr/bin/alacritty` remains available as a local fallback
 until its Ubuntu package is retired separately.
 
+`hosts/xps/graphics.nix` selects the shared Mesa wrapper for the xps graphics
+applications. `hosts/xps/picom.nix` declares the compositor and its user service.
+It uses the same pinned Mesa/NixGL wrapper and established appearance settings.
+i3 imports its X11 environment and starts the service idempotently, so an i3
+reload cannot spawn a second compositor. VNC still forces compositor redirection
+off through Picom's session-bus API and restores its previous mode on disconnect.
+The service's post-start hook waits for that API and reapplies the existing
+VNC display guard if Picom restarts during sharing. Backlight blanking, DPMS,
+lock-screen capture and restoration remain in the existing desktop module.
+`/usr/bin/picom` remains available as an Ubuntu fallback.
+
 The following portability work remains separate:
 
-- Validate Picom and Polybar against Ubuntu's graphics/session stack
+- Validate Polybar against Ubuntu's graphics/session stack
   before replacing the working Ubuntu builds. The existing Nix i3 session still
   uses Ubuntu's fingerprint-enabled i3lock and GNOME screenshot command.
 - Keep Ubuntu's hardware support, networking, authentication, SSH server and
