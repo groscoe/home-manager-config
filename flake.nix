@@ -80,6 +80,9 @@
         groscoe-darwin = homeProfiles.mbp;
       };
       darwinConfigurations = { mbp = macSystem; groscoe-macos = macSystem; };
+      devShells.x86_64-linux = import ./hosts/xps/dev-shells.nix {
+        pkgs = import nixpkgs-unstable { system = hosts.xps.system; };
+      };
       packages = {
         x86_64-linux = {
           default = homeProfiles.xps.activationPackage;

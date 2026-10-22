@@ -11,7 +11,7 @@ let
     ${config.systemd.user.systemctlPath} --user start xsettingsd.service
   '';
 in {
-  imports = [ ./graphics.nix ./alacritty.nix ./picom.nix ./polybar.nix ./applications.nix ./python.nix ./ssh.nix ./session.nix ../../clamav-scan ../../rofi/connections.nix ../../secure-boot-tools ];
+  imports = [ ./graphics.nix ./alacritty.nix ./picom.nix ./polybar.nix ./applications.nix ./development.nix ./python.nix ./ssh.nix ./session.nix ../../clamav-scan ../../rofi/connections.nix ../../secure-boot-tools ];
 
   assertions = [{
     assertion = pkgs.stdenv.hostPlatform.system == "x86_64-linux";

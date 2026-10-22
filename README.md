@@ -59,6 +59,26 @@ utilities, ZIP tools, Meson/Ninja and Cursor CLI. PostgreSQL is kept on the
 installed major version; declaring its package does not enable a database service.
 The selected packages do not change the Mac profile or its Homebrew policy.
 
+`hosts/xps/development.nix` declares Make and GDB as user commands. Complete
+C/C++ environments live in `hosts/xps/dev-shells.nix`, using the same unstable
+pin: `c` selects GCC and `c-clang` selects Clang. Both supply Make, CMake,
+Ninja, Meson, Autoconf, Automake, Libtool, pkgconf (`pkg-config`) and GDB.
+Autotools' macro paths and the compiler's headers/linker are set by the shell.
+From any working directory, use either:
+
+```sh
+nix develop ~/Projects/home-manager-config#c
+nix develop ~/Projects/home-manager-config#c-clang
+```
+
+These are general scratch environments. Projects with their own flakes should
+use their own pinned shells and declare required libraries in `buildInputs`.
+Keep compiler versions and library search paths out of global shell variables.
+Outside these shells, Ubuntu's compiler and pkg-config remain available; a pure
+Nix pkg-config does not automatically discover libraries installed through APT.
+The Ubuntu development packages remain installed pending a separate dependency
+review. This does not change the Mac's tools or its Homebrew policy.
+
 Cursor's existing `agent` and `cursor` shims use the managed `cursor-agent` link.
 Update the declared CLI applications through the flake pin and rebuild, rather
 than their self-updaters. Credentials, histories and project dependencies are not put in the
