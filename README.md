@@ -144,9 +144,11 @@ The following portability work remains separate:
 - Keep Ubuntu's hardware support, networking, authentication, SSH server and
   Docker daemon under system package management. These need a host provisioning
   layer, rather than only a Home Manager package list, for full OS recovery.
-- Review the custom `/usr/local/bin/nsntrace` build and the inactive imperative
-  KMonad installation separately. Declaring a keyboard daemon requires an explicit
-  decision; the configured Caps/Escape behavior does not use KMonad.
+
+The unused nsntrace, KMonad and Syncthing installations have been retired on xps.
+Syncthing's saved settings and synchronized folders are retained as user data.
+The physical keyboard's Caps/Escape mapping remains in `hosts/xps/x-settings.sh`;
+it requires no keyboard daemon or input-device group membership.
 
 ## Package pins
 

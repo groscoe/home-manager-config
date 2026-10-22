@@ -76,10 +76,6 @@ let
       };
     };
 
-    # kmonad = ifNotDarwin {
-    #   packages = [ pkgs.kmonad ];
-    # };
-
     i3 = ifNotDarwin {
       packages = [ pkgs.i3 ];
     };
