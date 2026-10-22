@@ -47,8 +47,8 @@ per-login agent spawning and unavailable `wal` command are retired.
 The unused Teams coffee-break automation and old audio, webcam, speech,
 mouse-movement and lock/suspend helpers were retired after private backups.
 Their Teams shell shortcuts are removed as well. The notebook/PDF/SQL tools now
-use the isolated environment described below; the existing OpenAI CLI and
-project-specific scripts remain outside Home Manager.
+use the isolated environment described below; project-specific scripts remain
+project-owned, and Codex remains managed by npm.
 
 ## xps applications and command-line tools
 
@@ -83,19 +83,44 @@ It also makes KDE Connect's D-Bus activation select the Nix daemon. Dropbox's of
 launcher; the vendor daemon still updates itself in `~/.dropbox-dist`.
 
 `hosts/xps/jupyter.nix` declares an isolated notebook environment: JupyterLab,
-Notebook, console/Qt console, widgets/LSP, OpenPyXL, Selenium, PDF tools,
-SQLite-utils and HTTPX. Its Python kernel uses an absolute Nix interpreter and
-ignores the old user site-packages. Its CLI wrappers leave the global Python and
-Neovim provider unchanged. The module does not start a notebook server. Existing
+Notebook, console/Qt console, widgets/LSP, NumPy, pandas, Matplotlib, OpenPyXL,
+Selenium, PDF tools, SQLite-utils and HTTPX. Its Python kernel uses an absolute Nix interpreter and
+ignores user site-packages. Its Python/pip pair is independent of the shell's
+interpreter and Neovim's absolute-path provider. The module also exports its
+desktop launchers and icons; it does not start a notebook server. Existing
 notebooks and Jupyter settings stay in place. On an existing installation, move
 an unmanaged `~/.local/share/jupyter/kernels/python3/kernel.json` aside before the
 first activation; the generated kernel definition then becomes Home Manager's.
 Project virtual environments remain project-owned.
 
+`hosts/xps/python.nix` declares the shell's matching Python, `pip` and `pip3`.
+The current baseline is Python 3.15.1 and pip 26.2.2, with source/wheel checksums
+from Python.org and PyPI. These small overrides stop applying once the existing
+unstable input includes those releases; no extra flake input is needed.
+Jupyter uses the unstable pin's default Python (currently 3.14) with the same
+updated pip, keeping its notebook libraries together. Each interpreter ignores
+the old user site, and Ubuntu's `/usr/bin/python3` remains available for OS tools.
+
+Install project dependencies in a virtual environment or declare them in that
+project's Nix environment. For example, in Fish:
+
+```fish
+python3 -m venv .venv
+source .venv/bin/activate.fish
+python -m pip install -r requirements.txt
+```
+
+An activated virtual environment supplies its own matching Python/pip. Avoid
+`sudo pip`, global `pip install --user`, and a global `PYTHONPATH`. Add shared
+notebook libraries to `hosts/xps/jupyter.nix` and rebuild. The old Python 3.10
+user installation, obsolete command shims and pip-installed Jupyter assets were
+retired with a private rollback copy; notebooks, settings and project
+environments were preserved. A fresh installation needs no legacy user site.
+
 Codex remains an intentional npm exception (`npm install -g @openai/codex`),
-with the user-owned `~/.npm` prefix and `~/.npm/bin` session path declared on xps. The existing
-Python `openai` command and its dependencies are left alone. The unused `llm` /
-GPT4All application is not added to the new notebook environment. Credentials and
+with the user-owned `~/.npm` prefix and `~/.npm/bin` session path declared on xps.
+The obsolete Python `openai`, `llm` and GPT4All installation was retired with the
+old user site; these applications are not added to the notebook environment. Credentials and
 API keys remain outside this repository.
 
 `hosts/xps/alacritty.nix` declares Alacritty with Home Manager's Mesa/NixGL
