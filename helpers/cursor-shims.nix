@@ -23,7 +23,7 @@ let
     exec "$HOME/.local/bin/cursor-agent" "$@"
   '';
 in {
-  # The vendor-updated agent binary and its login state remain outside the store.
+  # The xps application module supplies the agent binary; login state stays local.
   home.file.".local/bin/agent".source = agent;
   home.file.".local/bin/cursor".source = cursor;
 }

@@ -46,36 +46,60 @@ per-login agent spawning and unavailable `wal` command are retired.
 
 The unused Teams coffee-break automation and old audio, webcam, speech,
 mouse-movement and lock/suspend helpers were retired after private backups.
-Their Teams shell shortcuts are removed as well. Third-party Python CLI
-entrypoints in `~/.local/bin` and separate project-specific scripts still need
-individual application/environment review.
+Their Teams shell shortcuts are removed as well. The notebook/PDF/SQL tools now
+use the isolated environment described below; the existing OpenAI CLI and
+project-specific scripts remain outside Home Manager.
 
 ## xps applications and command-line tools
 
 `hosts/xps/applications.nix` owns xps's additional user applications through the
 existing `nixpkgs-unstable` input. It declares Git and Git LFS, curl/wget/rsync,
 FFmpeg, Pandoc, htop, PostgreSQL 14 client tools, SQLite, Python yq, network/file-watching
-utilities, ZIP tools, Meson/Ninja, Codex and Cursor CLI. PostgreSQL is kept on the
+utilities, ZIP tools, Meson/Ninja and Cursor CLI. PostgreSQL is kept on the
 installed major version; declaring its package does not enable a database service.
 The selected packages do not change the Mac profile or its Homebrew policy.
 
 Cursor's existing `agent` and `cursor` shims use the managed `cursor-agent` link.
-Update these CLI applications through the flake pin and rebuild, rather than their
-self-updaters. Credentials, histories and project dependencies are not put in the
+Update the declared CLI applications through the flake pin and rebuild, rather
+than their self-updaters. Credentials, histories and project dependencies are not put in the
 Nix store. A development npm link such as `@liqwid-labs/lucid` belongs to its
 project rather than this global application list.
 
 On an existing installation, an unmanaged `~/.local/bin/cursor-agent` link must be
 moved aside before the first activation; keep its target and user state for
-rollback. A clean installation needs no vendor installer or global Codex npm
-package. Ubuntu copies of these tools can coexist while their package dependencies
+rollback. A clean installation needs no Cursor vendor installer. Ubuntu copies of these tools can coexist while their package dependencies
 are reviewed; Home Manager's commands take precedence in the user's shell.
 Do not remove Ubuntu packages merely because the user-facing command now uses Nix.
 
+The same module declares Chrome, LibreOffice, Krita, Transmission, Rhythmbox,
+Shotwell, Dropbox, KDE Connect and KTouch. Chrome temporarily overrides the pin's
+older version with the installed 155.0.8059.84 release and its checksum from
+Google's signed APT index. Remove the override once the pin catches up. Existing
+browser profiles, photo/music databases, office settings, torrent data, Dropbox
+state and KDE Connect pairings stay in the home directory; Nix does not contain
+or recreate them. `hosts/xps/application-discovery.nix` exposes the Nix desktop
+entries to Rofi immediately and declares the data search path for future sessions.
+It also makes KDE Connect's D-Bus activation select the Nix daemon. Dropbox's official Nix package declares the CLI and daemon
+launcher; the vendor daemon still updates itself in `~/.dropbox-dist`.
+
+`hosts/xps/jupyter.nix` declares an isolated notebook environment: JupyterLab,
+Notebook, console/Qt console, widgets/LSP, OpenPyXL, Selenium, PDF tools,
+SQLite-utils and HTTPX. Its Python kernel uses an absolute Nix interpreter and
+ignores the old user site-packages. Its CLI wrappers leave the global Python and
+Neovim provider unchanged. The module does not start a notebook server. Existing
+notebooks and Jupyter settings stay in place. On an existing installation, move
+an unmanaged `~/.local/share/jupyter/kernels/python3/kernel.json` aside before the
+first activation; the generated kernel definition then becomes Home Manager's.
+Project virtual environments remain project-owned.
+
+Codex remains an intentional npm exception (`npm install -g @openai/codex`),
+with the user-owned `~/.npm` prefix and `~/.npm/bin` session path declared on xps. The existing
+Python `openai` command and its dependencies are left alone. The unused `llm` /
+GPT4All application is not added to the new notebook environment. Credentials and
+API keys remain outside this repository.
+
 The following portability work remains separate:
 
-- Confirm which extra desktop applications and old user-Python CLIs are still used,
-  then declare their packages and any required isolated Python environments.
 - Validate Alacritty, Picom and Polybar against Ubuntu's graphics/session stack
   before replacing the working Ubuntu builds. The existing Nix i3 session still
   uses Ubuntu's fingerprint-enabled i3lock and GNOME screenshot command.
@@ -97,8 +121,8 @@ The consolidation preserves the previously different package sets:
 
 All are pinned in the single `flake.lock`. Update a particular input intentionally
 with `nix flake update INPUT`; consolidating the sources does not update packages.
-The Mac's full Homebrew list is retained. xps installs Codex from the existing
-`nixpkgs-unstable` input. The older custom source in `codex/` remains unused.
+The Mac's full Homebrew list is retained. Codex stays npm-managed on xps by
+choice; the older custom source in `codex/` remains unused.
 
 ## Apply on xps
 
