@@ -205,7 +205,7 @@ let
 
     terminals = {
       packages = with pkgs; [
-        # alacritty # NOTE: GPU acceleration issues
+        # Alacritty is declared by the Linux host with its NixGL wrapper.
         tmux
       ] ++ ifNotDarwin [ pkgs.mosh pkgs.tdrop ];
 

@@ -6,6 +6,10 @@
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-stable.url = "flake:nixpkgs";
+    nixgl = {
+      url = "github:nix-community/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -39,6 +43,7 @@
         hostName = host;
         pkgs-stable = nixpkgs-stable.legacyPackages.${hosts.${host}.system};
       } // nixpkgs.lib.optionalAttrs (host == "xps") {
+        nixGLPackages = inputs.nixgl.packages;
         pkgs-unstable = import nixpkgs-unstable {
           system = hosts.xps.system;
           config.allowUnfree = true;

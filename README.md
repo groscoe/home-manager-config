@@ -98,9 +98,25 @@ Python `openai` command and its dependencies are left alone. The unused `llm` /
 GPT4All application is not added to the new notebook environment. Credentials and
 API keys remain outside this repository.
 
+`hosts/xps/alacritty.nix` declares Alacritty with Home Manager's Mesa/NixGL
+wrapper. Unwrapped Nix Alacritty could not create a GL configuration on this
+Ubuntu X server. The wrapper supplies matching userspace graphics libraries for
+this application; it keeps Intel hardware acceleration and leaves the kernel
+driver, X server and global graphics environment alone. The launcher restores the original graphics environment before starting the
+PTY child. This covers the default declared Fish shell and explicit `-e` /
+`--command` programs, so Ubuntu applications launched inside the terminal keep
+using their own compatible graphics libraries. Pre-existing caller variables
+are restored exactly. The existing Alacritty TOML and X11 scaling policy remain
+shared and unchanged. This terminal uses the
+XPS base package pin (0.16.1 when introduced), close to the existing Ubuntu build.
+The `nixgl` input follows that same `nixpkgs` input so its libraries update together.
+For a future host using proprietary Nvidia drivers, choose the appropriate host
+wrapper explicitly. `/usr/bin/alacritty` remains available as a local fallback
+until its Ubuntu package is retired separately.
+
 The following portability work remains separate:
 
-- Validate Alacritty, Picom and Polybar against Ubuntu's graphics/session stack
+- Validate Picom and Polybar against Ubuntu's graphics/session stack
   before replacing the working Ubuntu builds. The existing Nix i3 session still
   uses Ubuntu's fingerprint-enabled i3lock and GNOME screenshot command.
 - Keep Ubuntu's hardware support, networking, authentication, SSH server and
@@ -118,6 +134,7 @@ The consolidation preserves the previously different package sets:
 - `nixpkgs-darwin`: Mac base revision `0921fdb3e13e40fe25fbc52b89661a9d6d32ac68`.
 - `nixpkgs-unstable`: the existing selected Linux packages.
 - `nixpkgs-stable`: the existing auxiliary package set, including Fish on macOS.
+- `nixgl`: Linux application graphics wrappers, following the XPS base package set.
 
 All are pinned in the single `flake.lock`. Update a particular input intentionally
 with `nix flake update INPUT`; consolidating the sources does not update packages.
