@@ -56,6 +56,7 @@
         extraSpecialArgs = argsFor host;
       };
       homeProfiles = { xps = homeFor "xps"; mbp = homeFor "mbp"; };
+      xpsHost = (pkgsFor "xps").callPackage ./hosts/xps/ubuntu { };
       macSystem = darwin.lib.darwinSystem {
         system = hosts.mbp.system;
         modules = [
@@ -83,10 +84,16 @@
       devShells.x86_64-linux = import ./hosts/xps/dev-shells.nix {
         pkgs = import nixpkgs-unstable { system = hosts.xps.system; };
       };
+      apps.x86_64-linux.xps-host = {
+        type = "app";
+        program = "${xpsHost}/bin/xps-host";
+      };
+      checks.x86_64-linux.xps-host = xpsHost.tests;
       packages = {
         x86_64-linux = {
           default = homeProfiles.xps.activationPackage;
           home-manager-activation = homeProfiles.xps.activationPackage;
+          xps-host = xpsHost;
         };
         aarch64-darwin = {
           default = homeProfiles.mbp.activationPackage;

@@ -1,0 +1,125 @@
+"""Read-only host inspection and candidate SSH validation for xps-host."""
+
+import argparse
+import difflib
+import json
+import pathlib
+import platform
+import stat
+import subprocess
+import sys
+import tempfile
+
+SOURCE = pathlib.Path(__file__).resolve().parent
+
+
+def policies(source=SOURCE):
+    return json.loads((source / 'policies.json').read_text())
+
+
+def guarded_path(path, uid=0):
+    """Refuse symlink traversal and writable/untrusted ancestors."""
+    for entry in reversed([path, *path.parents]):
+        if not entry.exists() and not entry.is_symlink():
+            continue
+        metadata = entry.lstat()
+        if stat.S_ISLNK(metadata.st_mode):
+            raise ValueError(f'Refusing symlink: {entry}')
+        if metadata.st_uid != uid or metadata.st_mode & 0o022:
+            raise ValueError(f'Unexpected owner or writable path: {entry}')
+    if path.exists() and not path.is_file():
+        raise ValueError(f'Expected a regular file: {path}')
+
+
+def compare(source=SOURCE, root=pathlib.Path('/'), uid=0, gid=0, guard=True):
+    result = []
+    for item in policies(source):
+        target = root / item['path'].lstrip('/')
+        if guard:
+            guarded_path(target, uid)
+        expected = (source / 'files' / item['source']).read_bytes()
+        actual = target.read_bytes() if target.exists() else None
+        metadata = target.stat() if target.exists() else None
+        mode = stat.S_IMODE(metadata.st_mode) if metadata else None
+        match = actual == expected and mode == int(item['mode'], 8)
+        match = match and metadata.st_uid == uid and metadata.st_gid == gid
+        result.append({
+            'path': item['path'], 'matches': bool(match), 'exists': actual is not None,
+            'mode': f'{mode:04o}' if mode is not None else None,
+            'diff': ''.join(difflib.unified_diff(
+                (actual or b'').decode().splitlines(keepends=True),
+                expected.decode().splitlines(keepends=True),
+                fromfile=item['path'], tofile=item['path'] + ' (declared)',
+            )),
+        })
+    return result
+
+
+def run(*args):
+    return subprocess.run(args, text=True, capture_output=True, check=True).stdout
+
+
+def ssh_preflight(source=SOURCE):
+    main = pathlib.Path('/etc/ssh/sshd_config')
+    guarded_path(main)
+    text = main.read_text()
+    include = 'Include /etc/ssh/sshd_config.d/*.conf'
+    if text.count(include) != 1:
+        raise ValueError('Expected one Ubuntu SSH drop-in Include; review this host first')
+    with tempfile.TemporaryDirectory(prefix='xps-host-ssh-') as scratch:
+        directory = pathlib.Path(scratch)
+        key = directory / 'host-key'
+        run('/usr/bin/ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-f', str(key))
+        includes = directory / 'sshd_config.d'
+        includes.mkdir()
+        for path in pathlib.Path('/etc/ssh/sshd_config.d').glob('*.conf'):
+            guarded_path(path)
+            (includes / path.name).write_bytes(path.read_bytes())
+        policy = next(p for p in policies(source) if p['name'] == 'ssh')
+        (includes / pathlib.Path(policy['path']).name).write_bytes(
+            (source / 'files' / policy['source']).read_bytes())
+        candidate = directory / 'sshd_config'
+        candidate.write_text(text.replace(include, 'Include ' + str(includes / '*.conf')))
+
+        def effective(config):
+            output = run('/usr/sbin/sshd', '-T', '-f', str(config), '-h', str(key))
+            return dict(line.split(' ', 1) for line in output.splitlines())
+
+        before = effective(main)
+        after = effective(candidate)
+        if after != dict(before, x11forwarding='no'):
+            raise ValueError('Candidate changes SSH policy beyond X11 forwarding; review required')
+        return {key: after[key] for key in [
+            'port', 'permitrootlogin', 'passwordauthentication',
+            'kbdinteractiveauthentication', 'allowagentforwarding',
+            'allowtcpforwarding', 'x11forwarding',
+        ]}
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--preflight', action='store_true')
+    args = parser.parse_args()
+    release = {}
+    for line in pathlib.Path('/etc/os-release').read_text().splitlines():
+        if '=' in line:
+            key, value = line.split('=', 1)
+            release[key] = value.strip('"')
+    if release.get('ID') != 'ubuntu' or release.get('VERSION_ID') != '22.04' or platform.machine() != 'x86_64':
+        raise ValueError('This profile is reviewed for Ubuntu 22.04 on x86_64; review before extending it')
+    result = compare()
+    effective = ssh_preflight()
+    print(json.dumps({'files': result, 'ssh_candidate_policy': effective}, indent=2))
+    if not args.preflight and any(not item['matches'] for item in result):
+        raise SystemExit(1)
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except subprocess.CalledProcessError as error:
+        print('xps-host: native validation failed: ' + error.stderr.strip(), file=sys.stderr)
+        raise SystemExit(2)
+    except (OSError, ValueError) as error:
+        print('xps-host: ' + str(error), file=sys.stderr)
+        raise SystemExit(2)

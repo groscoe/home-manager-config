@@ -1,0 +1,14 @@
+[
+  {
+    "name": "ssh",
+    "path": "/etc/ssh/sshd_config.d/00-xps-disable-x11-forwarding.conf",
+    "source": "ssh.conf",
+    "mode": "0644"
+  },
+  {
+    "name": "journal",
+    "path": "/etc/systemd/journald.conf.d/60-xps-retention.conf",
+    "source": "journal.conf",
+    "mode": "0644"
+  }
+]

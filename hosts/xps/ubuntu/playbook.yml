@@ -1,0 +1,81 @@
+---
+- name: Apply the declared Ubuntu host policies
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    xps_root: ""
+    xps_owner: root
+    xps_group: root
+    xps_fixture: false
+    xps_policies: "{{ lookup('ansible.builtin.file', playbook_dir + '/policies.json') | from_json }}"
+
+  pre_tasks:
+    - name: Limit fixture overrides to a disposable test directory
+      ansible.builtin.assert:
+        that:
+          - (not xps_fixture and xps_root == '' and xps_owner == 'root' and xps_group == 'root') or (xps_fixture and xps_root is match('^/tmp/xps-host-test-[A-Za-z0-9_-]+$'))
+        quiet: true
+
+    - name: Validate the current SSH configuration before changing files
+      ansible.builtin.command:
+        argv: [/usr/sbin/sshd, -t]
+      changed_when: false
+      when: not xps_fixture and not ansible_check_mode
+
+  tasks:
+    - name: Ensure policy directories exist
+      ansible.builtin.file:
+        path: "{{ xps_root }}{{ item.path | dirname }}"
+        state: directory
+        owner: "{{ xps_owner }}"
+        group: "{{ xps_group }}"
+        mode: '0755'
+      loop: "{{ xps_policies }}"
+      loop_control:
+        label: "{{ item.path | dirname }}"
+
+    - name: Install the declared policy files with backups
+      ansible.builtin.copy:
+        src: "files/{{ item.source }}"
+        dest: "{{ xps_root }}{{ item.path }}"
+        owner: "{{ xps_owner }}"
+        group: "{{ xps_group }}"
+        mode: "{{ item.mode }}"
+        backup: true
+        follow: false
+        validate: "{{ '/usr/sbin/sshd -t -f %s' if item.name == 'ssh' and not xps_fixture else omit }}"
+      loop: "{{ xps_policies }}"
+      loop_control:
+        label: "{{ item.path }}"
+      register: policy_copies
+
+    - name: Validate the complete SSH configuration after a policy change
+      ansible.builtin.command:
+        argv: [/usr/sbin/sshd, -t]
+      changed_when: false
+      when:
+        - not xps_fixture and not ansible_check_mode
+        - policy_copies.results | selectattr('item.name', 'equalto', 'ssh') | selectattr('changed') | list | length > 0
+
+    - name: Reload SSH only when its policy changed
+      ansible.builtin.command:
+        argv: [/usr/bin/systemctl, reload, ssh.service]
+      when:
+        - not xps_fixture and not ansible_check_mode
+        - policy_copies.results | selectattr('item.name', 'equalto', 'ssh') | selectattr('changed') | list | length > 0
+
+    - name: Restart journald only when its policy changed
+      ansible.builtin.command:
+        argv: [/usr/bin/systemctl, restart, systemd-journald.service]
+      when:
+        - not xps_fixture and not ansible_check_mode
+        - policy_copies.results | selectattr('item.name', 'equalto', 'journal') | selectattr('changed') | list | length > 0
+
+    - name: Report retained copies of replaced files
+      ansible.builtin.debug:
+        msg: "Previous file: {{ item.backup_file }}"
+      loop: "{{ policy_copies.results }}"
+      loop_control:
+        label: "{{ item.item.path }}"
+      when: item.backup_file is defined
