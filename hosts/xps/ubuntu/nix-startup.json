@@ -1,0 +1,38 @@
+[
+  {
+    "path": "/etc/systemd/system/nix-daemon.service",
+    "kind": "file",
+    "source": "nix-daemon.service",
+    "legacy_targets": [
+      "/nix/var/nix/profiles/default/lib/systemd/system/nix-daemon.service"
+    ]
+  },
+  {
+    "path": "/etc/systemd/system/nix-daemon.socket",
+    "kind": "file",
+    "source": "nix-daemon.socket",
+    "legacy_targets": [
+      "/nix/var/nix/profiles/default/lib/systemd/system/nix-daemon.socket"
+    ]
+  },
+  {
+    "path": "/etc/systemd/system/sockets.target.wants/nix-daemon.socket",
+    "kind": "link",
+    "target": "/etc/systemd/system/nix-daemon.socket",
+    "legacy_targets": [
+      "/nix/var/nix/profiles/default/lib/systemd/system/nix-daemon.socket"
+    ]
+  },
+  {
+    "path": "/etc/systemd/system/custom-start-nix-in-other-partition.service",
+    "kind": "absent",
+    "legacy_sha256": "ea1addb4eda1e93cf89bdf820f2b5d9f32871722f03dba89f809aa9eec557f8c"
+  },
+  {
+    "path": "/etc/systemd/system/multi-user.target.wants/custom-start-nix-in-other-partition.service",
+    "kind": "absent",
+    "legacy_targets": [
+      "/etc/systemd/system/custom-start-nix-in-other-partition.service"
+    ]
+  }
+]

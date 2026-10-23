@@ -15,6 +15,9 @@ SOURCE = pathlib.Path(__file__).resolve().parent
 SPEC = importlib.util.spec_from_file_location('xps_pam_check', SOURCE / 'pam_check.py')
 pam_check = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(pam_check)
+STARTUP_SPEC = importlib.util.spec_from_file_location('xps_nix_startup', SOURCE / 'nix_startup.py')
+nix_startup = importlib.util.module_from_spec(STARTUP_SPEC)
+STARTUP_SPEC.loader.exec_module(nix_startup)
 
 
 def policies(source=SOURCE):
@@ -120,9 +123,11 @@ def main():
     result = compare()
     effective = ssh_preflight()
     authentication = authentication_preflight()
+    startup = nix_startup.inspect()
+    startup['validation'] = nix_startup.native_validation()
     print(json.dumps({'files': result, 'ssh_candidate_policy': effective,
-                      'authentication': authentication}, indent=2))
-    if not args.preflight and any(not item['matches'] for item in result):
+                      'authentication': authentication, 'nix_startup': startup}, indent=2))
+    if not args.preflight and (any(not item['matches'] for item in result) or startup['would_change']):
         raise SystemExit(1)
 
 

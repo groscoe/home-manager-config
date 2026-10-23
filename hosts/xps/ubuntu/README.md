@@ -15,6 +15,7 @@ The declared scope is:
 | systemd journal | At most 1 GiB of persistent journals and a maximum retention of 30 days |
 | i3lock and SDDM | Fingerprint authentication with the existing password fallback and login/account restrictions |
 | Sugar Candy 1.6 | Existing theme, image and fingerprint instructions, action, waiting and retry feedback |
+| Nix startup | Persistent unit definitions in `/etc`, mount ordering and socket activation at boot |
 
 `policies.json` lists the destination files. Their contents are in `files/`.
 This profile is reviewed for Ubuntu 22.04 on x86_64. Review and test it before
@@ -37,6 +38,9 @@ change system configuration or services; its temporary key is removed afterward.
 It also checks authentication package prerequisites and exercises the declared
 PAM control flow using synthetic modules and an isolated PAM configuration
 directory. No password, fingerprint template or enrollment is read by this test.
+Nix startup inspection checks the two regular unit files, the socket enablement
+link and the absence of the retired boot workaround. Native systemd verifies
+the declared candidate units before any application.
 
 To apply the reviewed policy:
 
@@ -56,6 +60,10 @@ invokes this privileged command automatically.
 PAM and theme changes request no SDDM restart, logout or lock. They are read at
 the next authentication or login screen. Keep an existing authenticated session
 open when applying an intentional authentication policy change.
+The Nix startup step creates a private rollback backup before replacing a unit
+or link. It reloads systemd's definitions only when that step changes files;
+it does not start, stop or restart the Nix daemon/socket. A matching startup
+configuration creates no backup and requests no systemd reload.
 
 To restore a replaced file, copy the reported backup to its original destination
 with sudo, retaining root ownership and mode 0644. Validate with
@@ -125,10 +133,57 @@ The PAM tests can also run against Ubuntu's native library without sudo:
 /usr/bin/python3 -I hosts/xps/ubuntu/pam_check.py
 ```
 
+## Nix startup and bootstrap recovery
+
+`nix-units/` contains the exact startup definitions used on xps. They live as
+regular root-owned files in `/etc/systemd/system`, so systemd can read them before
+the separate `/nix` volume is mounted. `RequiresMountsFor` orders socket/daemon
+activation after the necessary Nix paths become available. The daemon executable
+uses the multi-user default profile, so ordinary Nix version upgrades retain the
+same service definition. Only the socket enablement link is managed; the daemon
+service itself remains socket-activated.
+
+`nix-startup.json` also describes the original Nix installer's unit/enablement
+links. These specific links can be adopted without following or modifying their
+targets in the Nix profile/store. Any different link target is refused for review.
+The old `custom-start-nix-in-other-partition.service` workaround is removed only
+if it matches the previously reviewed content/link; unknown custom content is
+refused. Replaced regular files and link targets, ownership and permissions are
+saved in a root-only `/var/backups/xps-nix-startup-*` directory. The printed
+rollback command restores the exact previous objects, and refuses to overwrite
+subsequent administrator changes. An application failure restores the prior
+files automatically. New empty parent directories can remain after rollback.
+
+Nix itself must already be installed in its multi-user default profile. Existing
+mount/encryption configuration must make its paths available. This module does
+not install Nix, declare disks or mounts, copy credentials, edit Nix settings,
+change trusted users or update GRUB, EFI, kernels or initrds.
+
+If startup is broken and `nix run` is unavailable, the same bounded helper can
+run from an ordinary checkout using Ubuntu's Python, without a running Nix daemon:
+
+```sh
+cd ~/Projects/home-manager-config
+/usr/bin/python3 -I hosts/xps/ubuntu/nix_startup.py check
+sudo /usr/bin/python3 -I hosts/xps/ubuntu/nix_startup.py apply
+```
+
+Have `/nix` mounted/unlocked first. Application enables the socket for future
+boots but preserves its current running/stopped state. If recovering an inactive
+socket, explicitly start it afterward with `sudo systemctl start nix-daemon.socket`,
+then verify with `nix store info --store daemon`. The helper prints the private
+backup path and its standalone rollback command. The backup includes the rollback
+helper, so restoration does not depend on this checkout or on a Nix store path.
+
+The Nix check runs additional disposable startup fixtures for fresh installation,
+read-only inspection, exact backups, idempotence, permission repair, known installer
+links, obsolete-workaround retirement, partial-write failure recovery and rollback.
+The fixtures never call systemd or alter real startup definitions.
+
 This is the first host-policy module, not a complete OS bootstrap. Ubuntu and Nix
 must already be installed, along with OpenSSH server, systemd and a sudo-capable
 account. Firewall/UFW policy, package sources,
-Nix daemon setup, mounts, service masks and protected hardware/export setup are
+Nix installation/settings, mounts, service masks and protected hardware/export setup are
 separate migration work. Host keys, authorized keys, passwords and fingerprint
 enrollment remain state to restore or enroll separately. Neither these secrets
 nor disk/encryption identifiers are included in the Nix source.

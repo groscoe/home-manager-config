@@ -187,11 +187,14 @@ Ubuntu's existing lock/power integration. `/usr/bin/polybar` is kept as a fallba
 `hosts/xps/ubuntu/` begins the companion Ubuntu host-provisioning layer. Run
 `nix run .#xps-host -- check` on xps to inspect SSH X11 forwarding,
 journal retention, fingerprint login/unlock and the Sugar Candy theme without
-root or system changes. The explicit
+root or system changes. It also checks Nix's persistent startup units and socket
+enablement, including their mount ordering. The explicit
 `apply` command prompts for sudo, backs up replaced files and requests service
 actions only after a change. Home Manager does not invoke it automatically.
 See [the host-policy instructions](hosts/xps/ubuntu/README.md) for scope, tests,
 prerequisites and restoration. This does not yet recreate the entire Ubuntu host.
+The bounded Nix startup helper can also run directly with Ubuntu's Python when
+the Nix daemon is unavailable; the host instructions describe that recovery path.
 
 The following portability work remains separate:
 

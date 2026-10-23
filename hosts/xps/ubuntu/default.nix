@@ -60,6 +60,7 @@ tool.overrideAttrs (old: {
           export ANSIBLE_CONFIG=${source}/ansible.cfg
           ${python3}/bin/python3 -I ${source}/pam_check.py \
             --library ${pam}/lib/libpam.so.0 --modules ${pam}/lib/security
+          ${python3}/bin/python3 -I ${source}/tests/test_nix_startup.py
           ${python3}/bin/python3 -I ${source}/tests/test_host.py \
             --ansible ${ansible}/bin/ansible-playbook \
             --python ${python3}/bin/python3

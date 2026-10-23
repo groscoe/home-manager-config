@@ -31,6 +31,29 @@
       check_mode: false
 
   tasks:
+    - name: Inspect Nix startup changes in Ansible check mode
+      ansible.builtin.command:
+        argv: [/usr/bin/python3, -I, "{{ playbook_dir }}/nix_startup.py", plan]
+      check_mode: false
+      register: nix_startup_plan
+      changed_when: (nix_startup_plan.stdout | from_json).would_change
+      when: not xps_fixture and ansible_check_mode
+
+    - name: Restore the Nix startup definitions and socket enablement
+      ansible.builtin.command:
+        argv: [/usr/bin/python3, -I, "{{ playbook_dir }}/nix_startup.py", apply]
+      register: nix_startup_result
+      changed_when: (nix_startup_result.stdout | from_json).changed
+      when: not xps_fixture and not ansible_check_mode
+
+    - name: Report a Nix startup rollback backup
+      ansible.builtin.debug:
+        msg: "{{ (nix_startup_result.stdout | from_json).rollback }}"
+      when:
+        - not xps_fixture
+        - not ansible_check_mode
+        - (nix_startup_result.stdout | from_json).rollback is defined
+
     - name: Ensure policy directories exist
       ansible.builtin.file:
         path: "{{ xps_root }}{{ item.path | dirname }}"
