@@ -47,7 +47,7 @@ class ArchiveRetentionTests(unittest.TestCase):
             envfile.write_text(f'export RESTIC_REPOSITORY={root / "repo"}\n'
                                f'export RESTIC_PASSWORD_FILE={password}\n')
             envfile.chmod(0o600)
-            config = {'restic': shutil.which('restic'), 'bash': '/bin/bash',
+            config = {'restic': shutil.which('restic'), 'bash': shutil.which('bash'),
                       'stateDirectory': str(root / 'state'), 'environmentFile': str(envfile),
                       'retentionKeepTags': ['archive']}
             (root / 'state').mkdir()

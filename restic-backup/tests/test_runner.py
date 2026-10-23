@@ -37,7 +37,7 @@ class ScheduledBackupTests(unittest.TestCase):
         rules = self.root / 'exclude.txt'
         rules.write_text('.cache\n')
         self.config = {
-            'restic': shutil.which('restic'), 'bash': '/bin/bash',
+            'restic': shutil.which('restic'), 'bash': shutil.which('bash'),
             'environmentFile': str(self.envfile), 'homeDirectory': str(self.home),
             'stateDirectory': str(self.state), 'paths': [str(self.home), str(self.vault)],
             'requiredMounts': [], 'hostname': 'synthetic-host', 'tags': ['test'],

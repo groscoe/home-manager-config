@@ -88,7 +88,18 @@
         type = "app";
         program = "${xpsHost}/bin/xps-host";
       };
-      checks.x86_64-linux.xps-host = xpsHost.tests;
+      checks = {
+        x86_64-linux = {
+          home-profile = homeProfiles.xps.activationPackage;
+          personal-scripts = (pkgsFor "xps").callPackage ./validation { };
+          xps-host = xpsHost.tests;
+        };
+        aarch64-darwin = {
+          home-profile = homeProfiles.mbp.activationPackage;
+          system-profile = macSystem.system;
+          personal-scripts = (pkgsFor "mbp").callPackage ./validation { };
+        };
+      };
       packages = {
         x86_64-linux = {
           default = homeProfiles.xps.activationPackage;

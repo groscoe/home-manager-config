@@ -269,13 +269,14 @@ without checking the active profile.
 ## Validate without activating
 
 ```sh
-nix eval .#homeConfigurations.xps.activationPackage.drvPath
-nix eval .#homeConfigurations.mbp.activationPackage.drvPath
-nix eval .#darwinConfigurations.mbp.system.drvPath
+nix flake check --no-update-lock-file --show-trace
 ```
 
-Build the appropriate home activation package on its native host before applying
-it. Building produces an artifact; only activation changes the running setup.
+Run this on each native host. It builds its full home profile (plus nix-darwin
+on mbp) and runs the declared regression checks without activating anything.
+See [validation and restore rehearsal](validation/README.md) for coverage,
+read-only host checks, the planned fresh Ubuntu VM restore and hardware tests.
+Passing builds alone do not demonstrate recovery onto a fresh OS.
 
 Legacy targets `groscoe`, `groscoe-linux`, `groscoe-darwin` and `groscoe-macos`
 remain aliases for compatibility. The per-platform default packages remain.
