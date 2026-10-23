@@ -1,0 +1,11 @@
+# Fingerprint or password authentication for the i3lock screen locker.
+# Keep the original login policy for password authentication.
+
+# Preserve login's maintenance restriction for both authentication methods.
+auth requisite pam_nologin.so
+
+# A valid local password skips only the fingerprint module, then passes
+# through the existing login stack. Empty input starts fingerprint scanning.
+auth [success=1 default=ignore] pam_unix.so nodelay
+auth sufficient pam_fprintd.so max-tries=3 timeout=10
+auth include login

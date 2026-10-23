@@ -1,0 +1,10 @@
+[
+  "fprintd",
+  "libpam-fprintd",
+  "i3lock",
+  "sddm",
+  "qml-module-qtquick-layouts",
+  "qml-module-qtquick-controls2",
+  "qml-module-qtgraphicaleffects",
+  "libqt5svg5"
+]

@@ -3,6 +3,7 @@
 import argparse
 import difflib
 import json
+import importlib.util
 import pathlib
 import platform
 import stat
@@ -11,6 +12,9 @@ import sys
 import tempfile
 
 SOURCE = pathlib.Path(__file__).resolve().parent
+SPEC = importlib.util.spec_from_file_location('xps_pam_check', SOURCE / 'pam_check.py')
+pam_check = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(pam_check)
 
 
 def policies(source=SOURCE):
@@ -43,14 +47,20 @@ def compare(source=SOURCE, root=pathlib.Path('/'), uid=0, gid=0, guard=True):
         mode = stat.S_IMODE(metadata.st_mode) if metadata else None
         match = actual == expected and mode == int(item['mode'], 8)
         match = match and metadata.st_uid == uid and metadata.st_gid == gid
+        diff = ''
+        if actual != expected:
+            try:
+                diff = ''.join(difflib.unified_diff(
+                    (actual or b'').decode().splitlines(keepends=True),
+                    expected.decode().splitlines(keepends=True),
+                    fromfile=item['path'], tofile=item['path'] + ' (declared)',
+                ))
+            except UnicodeDecodeError:
+                diff = 'Binary asset differs from the declared file.\n'
         result.append({
             'path': item['path'], 'matches': bool(match), 'exists': actual is not None,
             'mode': f'{mode:04o}' if mode is not None else None,
-            'diff': ''.join(difflib.unified_diff(
-                (actual or b'').decode().splitlines(keepends=True),
-                expected.decode().splitlines(keepends=True),
-                fromfile=item['path'], tofile=item['path'] + ' (declared)',
-            )),
+            'diff': diff,
         })
     return result
 
@@ -109,9 +119,35 @@ def main():
         raise ValueError('This profile is reviewed for Ubuntu 22.04 on x86_64; review before extending it')
     result = compare()
     effective = ssh_preflight()
-    print(json.dumps({'files': result, 'ssh_candidate_policy': effective}, indent=2))
+    authentication = authentication_preflight()
+    print(json.dumps({'files': result, 'ssh_candidate_policy': effective,
+                      'authentication': authentication}, indent=2))
     if not args.preflight and any(not item['matches'] for item in result):
         raise SystemExit(1)
+
+
+def authentication_preflight(source=SOURCE):
+    requirements = json.loads((source / 'authentication-packages.json').read_text())
+    installed = {}
+    for package in requirements:
+        value = run('/usr/bin/dpkg-query', '-W', '-f=${db:Status-Status}\t${Version}', package)
+        state, version = value.split('\t')
+        if state != 'installed':
+            raise ValueError(f'Install the documented prerequisite first: {package}')
+        installed[package] = version
+    for name in ['login', 'common-auth', 'common-account', 'common-session', 'common-password']:
+        path = pathlib.Path('/etc/pam.d') / name
+        guarded_path(path)
+        if not path.is_file():
+            raise ValueError(f'Missing standard PAM include: {path}')
+    module = pathlib.Path('/lib/x86_64-linux-gnu/security/pam_fprintd.so')
+    # /lib is Ubuntu's normal usr-merge symlink; guard its resolved location.
+    guarded_path(module.resolve())
+    if not module.is_file():
+        raise ValueError('libpam-fprintd must provide pam_fprintd.so')
+    cases = pam_check.verify(source / 'files')
+    return {'packages': installed, 'synthetic_pam_cases_passed': cases,
+            'biometric_enrollment': 'not read or changed; enroll separately with fprintd-enroll'}
 
 
 if __name__ == '__main__':

@@ -10,5 +10,161 @@
     "path": "/etc/systemd/journald.conf.d/60-xps-retention.conf",
     "source": "journal.conf",
     "mode": "0644"
+  },
+  {
+    "name": "i3lock",
+    "path": "/etc/pam.d/i3lock",
+    "source": "i3lock.pam",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm",
+    "path": "/etc/pam.d/sddm",
+    "source": "sddm.pam",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-config",
+    "path": "/etc/sddm.conf.d/kde_settings.conf",
+    "source": "sddm.conf",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/AUTHORS",
+    "source": "sugar-candy/AUTHORS",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Assets/Hibernate.svgz",
+    "source": "sugar-candy/Assets/Hibernate.svgz",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Assets/Reboot.svgz",
+    "source": "sugar-candy/Assets/Reboot.svgz",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Assets/Shutdown.svgz",
+    "source": "sugar-candy/Assets/Shutdown.svgz",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Assets/Suspend.svgz",
+    "source": "sugar-candy/Assets/Suspend.svgz",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Assets/User.svgz",
+    "source": "sugar-candy/Assets/User.svgz",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Backgrounds/Mountain.jpg",
+    "source": "sugar-candy/Backgrounds/Mountain.jpg",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Backgrounds/Undraw.svg",
+    "source": "sugar-candy/Backgrounds/Undraw.svg",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/CHANGELOG.md",
+    "source": "sugar-candy/CHANGELOG.md",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/COPYING",
+    "source": "sugar-candy/COPYING",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Components/Clock.qml",
+    "source": "sugar-candy/Components/Clock.qml",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Components/Input.qml",
+    "source": "sugar-candy/Components/Input.qml",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Components/LoginForm.qml",
+    "source": "sugar-candy/Components/LoginForm.qml",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Components/SessionButton.qml",
+    "source": "sugar-candy/Components/SessionButton.qml",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Components/SystemButtons.qml",
+    "source": "sugar-candy/Components/SystemButtons.qml",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Components/UserList.qml",
+    "source": "sugar-candy/Components/UserList.qml",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Components/VirtualKeyboard.qml",
+    "source": "sugar-candy/Components/VirtualKeyboard.qml",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Main.qml",
+    "source": "sugar-candy/Main.qml",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/Previews/PartialBlur.png",
+    "source": "sugar-candy/Previews/PartialBlur.png",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/README.md",
+    "source": "sugar-candy/README.md",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/metadata.desktop",
+    "source": "sugar-candy/metadata.desktop",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/theme.conf",
+    "source": "sugar-candy/theme.conf",
+    "mode": "0644"
+  },
+  {
+    "name": "sddm-theme",
+    "path": "/usr/share/sddm/themes/sugar-candy/theme.conf.user",
+    "source": "sugar-candy/theme.conf.user",
+    "mode": "0644"
   }
 ]

@@ -4,6 +4,7 @@
   python3,
   python3Packages,
   runCommand,
+  pam,
 }:
 let
   source = lib.cleanSource ./.;
@@ -25,10 +26,10 @@ let
       export ANSIBLE_CONFIG=${source}/ansible.cfg
       case "$mode" in
         check)
-          exec ${python3}/bin/python3 -I ${source}/check.py
+          exec /usr/bin/python3 -I ${source}/check.py
           ;;
         apply)
-          ${python3}/bin/python3 -I ${source}/check.py --preflight
+          /usr/bin/python3 -I ${source}/check.py --preflight
           exec ${ansible}/bin/ansible-playbook \
             --inventory localhost, --connection local \
             --become --ask-become-pass --diff ${source}/playbook.yml
@@ -57,6 +58,8 @@ tool.overrideAttrs (old: {
           export PYTHONDONTWRITEBYTECODE=1
           export ANSIBLE_NOCOLOR=1
           export ANSIBLE_CONFIG=${source}/ansible.cfg
+          ${python3}/bin/python3 -I ${source}/pam_check.py \
+            --library ${pam}/lib/libpam.so.0 --modules ${pam}/lib/security
           ${python3}/bin/python3 -I ${source}/tests/test_host.py \
             --ansible ${ansible}/bin/ansible-playbook \
             --python ${python3}/bin/python3

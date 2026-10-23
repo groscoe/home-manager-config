@@ -23,6 +23,13 @@
       changed_when: false
       when: not xps_fixture and not ansible_check_mode
 
+    - name: Validate authentication prerequisites and candidate control flow
+      ansible.builtin.command:
+        argv: [/usr/bin/python3, -I, "{{ playbook_dir }}/check.py", --preflight]
+      changed_when: false
+      when: not xps_fixture
+      check_mode: false
+
   tasks:
     - name: Ensure policy directories exist
       ansible.builtin.file:
@@ -44,7 +51,7 @@
         mode: "{{ item.mode }}"
         backup: true
         follow: false
-        validate: "{{ '/usr/sbin/sshd -t -f %s' if item.name == 'ssh' and not xps_fixture else omit }}"
+        validate: "{{ '/usr/sbin/sshd -t -f %s' if item.name == 'ssh' and not xps_fixture else '/usr/bin/python3 -I ' + playbook_dir + '/pam_check.py --policy ' + item.name + ' --candidate %s' if item.name in ['i3lock', 'sddm'] and not xps_fixture else omit }}"
       loop: "{{ xps_policies }}"
       loop_control:
         label: "{{ item.path }}"

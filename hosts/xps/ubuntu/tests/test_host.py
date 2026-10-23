@@ -56,20 +56,29 @@ def main():
         dry_run = ansible('--check', '--diff')
         assert snapshot(root) == before, 'Dry-run changed fixture files or made backups'
         assert 'X11Forwarding no' in dry_run and 'SystemMaxUse=1G' in dry_run, dry_run
+        assert 'pam_fprintd.so' in dry_run and 'Use fingerprint' in dry_run, dry_run
         assert any(not p['matches'] for p in check.compare(root=root, uid=os.getuid(), gid=os.getgid(), guard=False))
 
         first = ansible('--diff')
         assert 'changed=0' not in first, first
         assert all(p['matches'] for p in check.compare(root=root, uid=os.getuid(), gid=os.getgid(), guard=False))
+
         for item in check.policies():
             target = root / item['path'].lstrip('/')
-            backups = list(target.parent.glob(target.name + '.*~'))
+            backups = list(target.parent.glob(target.name + '.[0-9]*.*~'))
             assert len(backups) == 1, (target, backups)
             assert hashlib.sha256(backups[0].read_bytes()).hexdigest() == before[str(target.relative_to(root))][0]
         converged = snapshot(root)
         second = ansible()
         assert 'changed=0' in second, second
         assert snapshot(root) == converged, 'Second application changed files or generated new backups'
+        image = next(p for p in check.policies() if p['source'].endswith('Mountain.jpg'))
+        target = root / image['path'].lstrip('/')
+        target.write_bytes(b'not the wallpaper')
+        changed = next(p for p in check.compare(root=root, uid=os.getuid(), gid=os.getgid(), guard=False) if p['path'] == image['path'])
+        assert not changed['matches'] and 'Binary asset differs' in changed['diff']
+        ansible()
+        assert all(p['matches'] for p in check.compare(root=root, uid=os.getuid(), gid=os.getgid(), guard=False))
         one = root / check.policies()[0]['path'].lstrip('/')
         one.chmod(0o600)
         ansible()
@@ -85,6 +94,7 @@ def main():
             'convergence': 'passed', 'backups_match_originals': 'passed',
             'second_run_unchanged': 'passed', 'permission_repair': 'passed',
             'fixture_escape_rejected': 'passed', 'calls': calls,
+            'binary_theme_drift_and_repair': 'passed',
         }, indent=2))
 
 

@@ -4,7 +4,7 @@ One source tree serves two explicit hosts:
 
 | Host | Platform | Home profile | System profile |
 | --- | --- | --- | --- |
-| `xps` | `x86_64-linux` (Ubuntu) | `homeConfigurations.xps` | Existing Ubuntu configuration, outside this flake |
+| `xps` | `x86_64-linux` (Ubuntu) | `homeConfigurations.xps` | Selected Ubuntu policies via `xps-host`; existing OS installation remains a prerequisite |
 | `mbp` | `aarch64-darwin` | `homeConfigurations.mbp` | `darwinConfigurations.mbp` |
 
 `home.nix` contains shared user settings. `hosts/xps/home.nix` owns the XPS
@@ -185,8 +185,9 @@ The service keeps the profile commands in PATH for menu scripts and retains
 Ubuntu's existing lock/power integration. `/usr/bin/polybar` is kept as a fallback.
 
 `hosts/xps/ubuntu/` begins the companion Ubuntu host-provisioning layer. Run
-`nix run .#xps-host -- check` on xps to inspect the declared SSH X11-forwarding
-and journal-retention policies without root or system changes. The explicit
+`nix run .#xps-host -- check` on xps to inspect SSH X11 forwarding,
+journal retention, fingerprint login/unlock and the Sugar Candy theme without
+root or system changes. The explicit
 `apply` command prompts for sudo, backs up replaced files and requests service
 actions only after a change. Home Manager does not invoke it automatically.
 See [the host-policy instructions](hosts/xps/ubuntu/README.md) for scope, tests,
@@ -194,8 +195,9 @@ prerequisites and restoration. This does not yet recreate the entire Ubuntu host
 
 The following portability work remains separate:
 
-- The existing Nix i3 session still uses Ubuntu's fingerprint-enabled i3lock
-  and GNOME screenshot command; migrate those through a host provisioning layer.
+- The existing Nix i3 session uses Ubuntu's i3lock and GNOME screenshot command.
+  Its fingerprint policy is now declared in the companion host layer; package
+  prerequisites still require separate provisioning.
 - Keep Ubuntu's hardware support, networking, authentication, SSH server and
   Docker daemon under system package management. These need a host provisioning
   layer, rather than only a Home Manager package list, for full OS recovery.

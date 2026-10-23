@@ -1,0 +1,37 @@
+{
+  "name": "Sugar Candy",
+  "version": "1.6",
+  "upstream": "https://framagit.org/MarianArlt/sddm-sugar-candy",
+  "license": "GPL-3.0-or-later",
+  "source": "Public theme installed on xps, captured 2026-10-23; preserves the known working version. Upstream revision is not known.",
+  "local_changes": [
+    "Components/Input.qml: fingerprint action, instructions, waiting/retry feedback and password path for groscoe.",
+    "Components/LoginForm.qml: fit the fingerprint controls without overlap.",
+    "theme.conf.user: retained image setting."
+  ],
+  "files": {
+    "AUTHORS": "f7afb6c41435ddbe1f2d82e4f58d9cf52fd8e9f5173317b9dfd429ae3ec71b46",
+    "Assets/Hibernate.svgz": "3021520c33c0c283c5ee079139af2beca395224dd33deb34df15ceefcc1d4367",
+    "Assets/Reboot.svgz": "e7137b09e1575869a1ad71e481749354ebc4e112c17722382c291b9fbebff0ef",
+    "Assets/Shutdown.svgz": "96b2b237b7514fe2378b444de4cd074c25b1d82e5a6a58f535051cc59bd47399",
+    "Assets/Suspend.svgz": "a2e8ebefd55519689d6c66b7b9c7a9724de7d6faeba8e88bf2950d1d9c27ecfe",
+    "Assets/User.svgz": "b806f1f640dab0fdcac78a390d8e73cdf4d115e20a6fd36466e70bbb0b2e1317",
+    "Backgrounds/Mountain.jpg": "fb9a2d1251844b2cee4099615312d1a9347cddbf772c4d4dc72c43c2f86f954c",
+    "Backgrounds/Undraw.svg": "1d6d9e6227a1ea673e6677a2d3d9f6fdc0562ca8ce85ddf2231732f14267e8be",
+    "CHANGELOG.md": "08056631b555e40ced69179f37e585e29c1082232c81d3620e73da0a2517600d",
+    "COPYING": "2ba5dc560b61baa7d0d5588eeb3edb487ff028023f4de036b92ea07aef523811",
+    "Components/Clock.qml": "bb7c83884f3976a7c7af343a8c93df799339fbf212fa37c1dd9d5722b03e4ebb",
+    "Components/Input.qml": "a77a8998cf6ee2572c902bcea027ff469b91ef5e7a2905f8b291bac73cc47539",
+    "Components/LoginForm.qml": "cd9bbfd46ca1da048d23654757f0459bf78f36a438012bfdb9eee6e083f12278",
+    "Components/SessionButton.qml": "76ca64ef9e04b1b0f666d22631a52267f4b04950becc4b2464c7acfdbaac1981",
+    "Components/SystemButtons.qml": "4153697985917808ec39c6d1fb7e3d3cbe9f0b96a5d63764bc535dbd550fcc4b",
+    "Components/UserList.qml": "98a7e368292cdddd71264b30019041487ee1cc6b7a3740d869efa32213fdaa1a",
+    "Components/VirtualKeyboard.qml": "34896d52d9662b6ebc5ee4d16fddf36f8a9ba744538ba32ef67af1a722475126",
+    "Main.qml": "b4108da4705bd16f62d24850256b3e43c070f1a02fda7409f8f5c470ae5975ce",
+    "Previews/PartialBlur.png": "db50783ac28932797377b5a3bdba7b8111040fa2ad3971e7050b3d52d63ee335",
+    "README.md": "c499cbc7c9d4d37ac5c179a328e53d11f162f00805dbafa7d6f7e9f64b42d743",
+    "metadata.desktop": "758e9580b9097e6842f8a80237d5b6dc9510005eb7425f093d55e40c1b92b700",
+    "theme.conf": "e88eaf9d47dfb320f8d4e21470b64f2a0590aa8746366896b8a2c8e230f2ee5a",
+    "theme.conf.user": "16530ba474424bff9aec5bcb859c086bc3b2ba72e80478b3865ce261904be448"
+  }
+}
