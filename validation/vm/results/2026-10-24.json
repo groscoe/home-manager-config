@@ -1,0 +1,941 @@
+{
+  "date": "2026-10-24",
+  "status": "passed",
+  "baselineCommit": "4c41de134709a73ae7fce0fce81f45d0a36f1580",
+  "lockSha256": "15138e7def3305caed4708d1e7484def88e4f92c6f7355df8e67aff4c476bd6a",
+  "ubuntuImage": {
+    "url": "https://cloud-images.ubuntu.com/jammy/20261020/jammy-server-cloudimg-amd64.img",
+    "sha256": "2099e63da0b822ef8e05e3d596c1b402eaaae658fc08ab919cb8495bfcdc488b",
+    "gpgSigner": "D2EB44626FDDC30B513D5BB71A5D6C4C7DB87C81"
+  },
+  "nixVersion": "2.34.9",
+  "profile": "/nix/store/pzypf3nmk94p18v4zyk9xhjhswan51wp-home-manager-generation",
+  "nativeChecks": {
+    "xps": "passed",
+    "mbp": "passed",
+    "allSystemsEvaluation": "passed",
+    "personalTestsLinux": 58,
+    "pamCases": 17,
+    "nixStartupCases": 16,
+    "runnerBoundaryTests": 11
+  },
+  "hostStoreShared": false,
+  "productionCredentialsOrDataUsed": false,
+  "physicalHostActivationPerformed": false,
+  "externalSsdWritten": false,
+  "guestResources": {
+    "vcpus": 4,
+    "ramGiB": 8,
+    "virtualDiskGiB": [
+      24,
+      96,
+      8
+    ]
+  },
+  "runs": {
+    "9489ba04": [
+      {
+        "name": "activation-initial",
+        "phase": "activation-initial",
+        "attempt": 1,
+        "returncode": 1,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 1.06
+      },
+      {
+        "name": "activation-with-backup",
+        "phase": "activation-with-backup",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 33.64
+      },
+      {
+        "name": "backup-os-prerequisites",
+        "phase": "backup-os-prerequisites",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 22.52
+      },
+      {
+        "name": "backup-restore",
+        "phase": "backup-restore",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 16.36
+      },
+      {
+        "name": "bootstrap-attempt2",
+        "phase": "bootstrap",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1.09
+      },
+      {
+        "name": "bootstrap",
+        "phase": "bootstrap",
+        "attempt": 1,
+        "returncode": 255,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 8.02
+      },
+      {
+        "name": "desktop-applications-attempt2",
+        "phase": "desktop-applications",
+        "attempt": 2,
+        "returncode": 1,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 1.71
+      },
+      {
+        "name": "desktop-applications-attempt3",
+        "phase": "desktop-applications",
+        "attempt": 3,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.45
+      },
+      {
+        "name": "desktop-applications",
+        "phase": "desktop-applications",
+        "attempt": 1,
+        "returncode": 127,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 1.47
+      },
+      {
+        "name": "desktop-processes",
+        "phase": "desktop-processes",
+        "attempt": 1,
+        "returncode": 1,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 0.49
+      },
+      {
+        "name": "desktop-session-setup",
+        "phase": "desktop-session-setup",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1.58
+      },
+      {
+        "name": "desktop-terminal",
+        "phase": "desktop-terminal",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 3.83
+      },
+      {
+        "name": "development-c-clang",
+        "phase": "development-c-clang",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 37.19
+      },
+      {
+        "name": "development-c",
+        "phase": "development-c",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 11.54
+      },
+      {
+        "name": "fixtures-attempt2",
+        "phase": "fixtures",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 431.14
+      },
+      {
+        "name": "fixtures",
+        "phase": "fixtures",
+        "attempt": 1,
+        "returncode": 1,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 287.83
+      },
+      {
+        "name": "full-flake-check",
+        "phase": "full-flake-check",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 31.84
+      },
+      {
+        "name": "home-build",
+        "phase": "home-build",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1449.78
+      },
+      {
+        "name": "home-manager-rollback",
+        "phase": "home-manager-rollback",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 36.51
+      },
+      {
+        "name": "jupyter-notebook",
+        "phase": "jupyter-notebook",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 28.85
+      },
+      {
+        "name": "login-shell",
+        "phase": "login-shell",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1.0
+      },
+      {
+        "name": "nix-native-rollback",
+        "phase": "nix-native-rollback",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1.8
+      },
+      {
+        "name": "policy-apply",
+        "phase": "policy-apply",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 42.82
+      },
+      {
+        "name": "policy-before-attempt2",
+        "phase": "policy-before",
+        "attempt": 2,
+        "returncode": 1,
+        "expected": [
+          0,
+          1
+        ],
+        "passed": true,
+        "durationSeconds": 6.43
+      },
+      {
+        "name": "policy-before",
+        "phase": "policy-before",
+        "attempt": 1,
+        "returncode": 2,
+        "expected": [
+          0,
+          1
+        ],
+        "passed": false,
+        "durationSeconds": 11.94
+      },
+      {
+        "name": "policy-check",
+        "phase": "policy-check",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 3.42
+      },
+      {
+        "name": "policy-second-apply",
+        "phase": "policy-second-apply",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 31.58
+      },
+      {
+        "name": "post-reboot-acceptance",
+        "phase": "post-reboot-acceptance",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.24
+      },
+      {
+        "name": "sddm-theme-mock",
+        "phase": "sddm-theme-mock",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 7.72
+      },
+      {
+        "name": "shell-and-python",
+        "phase": "shell-and-python",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 5.14
+      },
+      {
+        "name": "source",
+        "phase": "source",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 0.88
+      },
+      {
+        "name": "startup-reboot-check",
+        "phase": "startup-reboot-check",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.19
+      },
+      {
+        "name": "virtual-monitor-adaptation-attempt2",
+        "phase": "virtual-monitor-adaptation",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.7
+      },
+      {
+        "name": "virtual-monitor-adaptation-attempt3",
+        "phase": "virtual-monitor-adaptation",
+        "attempt": 3,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 3.02
+      },
+      {
+        "name": "virtual-monitor-adaptation-attempt4",
+        "phase": "virtual-monitor-adaptation",
+        "attempt": 4,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.71
+      },
+      {
+        "name": "virtual-monitor-adaptation",
+        "phase": "virtual-monitor-adaptation",
+        "attempt": 1,
+        "returncode": 1,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 0.96
+      }
+    ],
+    "90069639": [
+      {
+        "name": "backup-os-prerequisites",
+        "phase": "backup-os-prerequisites",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 20.6
+      },
+      {
+        "name": "backup-restore",
+        "phase": "backup-restore",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 21.08
+      },
+      {
+        "name": "bootstrap",
+        "phase": "bootstrap",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 95.92
+      },
+      {
+        "name": "desktop-applications-attempt2",
+        "phase": "desktop-applications",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.36
+      },
+      {
+        "name": "desktop-applications",
+        "phase": "desktop-applications",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.6
+      },
+      {
+        "name": "desktop-lock-attempt2",
+        "phase": "desktop-lock",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1.53
+      },
+      {
+        "name": "desktop-lock",
+        "phase": "desktop-lock",
+        "attempt": 1,
+        "returncode": 1,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 0.52
+      },
+      {
+        "name": "desktop-password-unlock",
+        "phase": "desktop-password-unlock",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.56
+      },
+      {
+        "name": "desktop-session-setup-attempt2",
+        "phase": "desktop-session-setup",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.15
+      },
+      {
+        "name": "desktop-session-setup-attempt3",
+        "phase": "desktop-session-setup",
+        "attempt": 3,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1.5
+      },
+      {
+        "name": "desktop-session-setup",
+        "phase": "desktop-session-setup",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1.58
+      },
+      {
+        "name": "desktop-terminal-attempt2",
+        "phase": "desktop-terminal",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 3.51
+      },
+      {
+        "name": "desktop-terminal",
+        "phase": "desktop-terminal",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 3.54
+      },
+      {
+        "name": "development-c-clang",
+        "phase": "development-c-clang",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 42.36
+      },
+      {
+        "name": "development-c",
+        "phase": "development-c",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 12.41
+      },
+      {
+        "name": "full-flake-check",
+        "phase": "full-flake-check",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 318.96
+      },
+      {
+        "name": "home-build",
+        "phase": "home-build",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1359.38
+      },
+      {
+        "name": "home-manager-rollback",
+        "phase": "home-manager-rollback",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 35.87
+      },
+      {
+        "name": "jupyter-notebook",
+        "phase": "jupyter-notebook",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 29.25
+      },
+      {
+        "name": "login-shell",
+        "phase": "login-shell",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 0.58
+      },
+      {
+        "name": "nix-native-rollback",
+        "phase": "nix-native-rollback",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.12
+      },
+      {
+        "name": "offline-network-and-activation",
+        "phase": "offline-network-and-activation",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 5.55
+      },
+      {
+        "name": "policy-apply",
+        "phase": "policy-apply",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 45.11
+      },
+      {
+        "name": "policy-before",
+        "phase": "policy-before",
+        "attempt": 1,
+        "returncode": 1,
+        "expected": [
+          0,
+          1
+        ],
+        "passed": true,
+        "durationSeconds": 32.32
+      },
+      {
+        "name": "policy-check",
+        "phase": "policy-check",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 3.06
+      },
+      {
+        "name": "policy-second-apply",
+        "phase": "policy-second-apply",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 31.19
+      },
+      {
+        "name": "post-reboot-acceptance-attempt2",
+        "phase": "post-reboot-acceptance",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 1.43
+      },
+      {
+        "name": "post-reboot-acceptance",
+        "phase": "post-reboot-acceptance",
+        "attempt": 1,
+        "returncode": 1,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 6.86
+      },
+      {
+        "name": "repeat-activation",
+        "phase": "repeat-activation",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 13.85
+      },
+      {
+        "name": "root-policy-empty-become-prompt",
+        "phase": "root-policy-empty-become-prompt",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 35.59
+      },
+      {
+        "name": "sddm-theme-mock-attempt2",
+        "phase": "sddm-theme-mock",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 6.62
+      },
+      {
+        "name": "sddm-theme-mock",
+        "phase": "sddm-theme-mock",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 7.32
+      },
+      {
+        "name": "shell-and-python",
+        "phase": "shell-and-python",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 5.32
+      },
+      {
+        "name": "source",
+        "phase": "source",
+        "attempt": 1,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 0.9
+      },
+      {
+        "name": "virtual-monitor-adaptation-attempt2",
+        "phase": "virtual-monitor-adaptation",
+        "attempt": 2,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.93
+      },
+      {
+        "name": "virtual-monitor-adaptation-attempt3",
+        "phase": "virtual-monitor-adaptation",
+        "attempt": 3,
+        "returncode": 0,
+        "expected": [
+          0
+        ],
+        "passed": true,
+        "durationSeconds": 2.72
+      },
+      {
+        "name": "virtual-monitor-adaptation",
+        "phase": "virtual-monitor-adaptation",
+        "attempt": 1,
+        "returncode": 1,
+        "expected": [
+          0
+        ],
+        "passed": false,
+        "durationSeconds": 0.76
+      }
+    ]
+  },
+  "recipeCodeSha256": {
+    "notebook-smoke.py": "9396c8ac96c5a145b3d9d8ac0a1da1cc5ed3cc184d928e24c08b4f2d5b3cced6",
+    "guest-bootstrap.py": "d659e7255b6d03b8174f259976c25019807008bfe18b5ccf8bf57b4c781fd1f3",
+    "vm.py": "83b0a8f02eaf06e50cb609e671c82585311244d21f1ba8475e4cb6e3db2b49d6",
+    "test_vm.py": "f4cb8b5cc59b32245c92b2a637d394f1682e563c43ae1a58bda7dc14eb324c0f",
+    "exercise.py": "3bc6e410189a2b899d5091f6e72b4865c91fc61516f721675d255b9c24ce25c1",
+    "default.nix": "12600a4eaf80bfdc849eb27a92e71052b3c16df87baeb1954f491d566d97d7f7",
+    "scenarios.json": "2979ead73f2d1fea8849446b992086a6c29b395976cb6441f5839fc7701e2332",
+    "backup-smoke.py": "26c612fafe2947545b8df80514c6e8b42d9f0e195e7dbde7209579683af6cb41"
+  },
+  "fixtureTimeoutPatchFileSha256": "771fa306145f17636408b01ad9493dea09e204b34167b3b414e75da5b1f786d2",
+  "additionalUbuntuPackages": [
+    [
+      "runc",
+      "1.3.4-0ubuntu1~22.04.1"
+    ],
+    [
+      "containerd",
+      "2.2.1-0ubuntu1~22.04.2"
+    ],
+    [
+      "docker.io",
+      "29.1.3-0ubuntu3~22.04.2"
+    ]
+  ],
+  "limits": [
+    "Synthetic cold database bytes only; no real PostgreSQL restore",
+    "No production Restic repository accessed",
+    "No real fingerprint/camera/backlight/Wi-Fi/Bluetooth/Intel acceleration/VNC latency acceptance",
+    "No real tailnet enrollment or firewall reachability test",
+    "No disk encryption or LTS migration test",
+    "No fresh macOS recovery",
+    "Offline reboot/activation used a populated guest store"
+  ],
+  "cleanup": {
+    "records": [
+      {
+        "instance": "5e30f02c",
+        "removedDisposableFiles": [
+          "root.qcow2",
+          "nix.qcow2",
+          "vault.qcow2",
+          "seed.img",
+          "uefi-vars.fd",
+          "client-key",
+          "client-key.pub",
+          "host-key",
+          "host-key.pub",
+          "guest-login.txt",
+          "user-data"
+        ],
+        "evidenceRetained": true
+      },
+      {
+        "instance": "9489ba04",
+        "removedDisposableFiles": [
+          "root.qcow2",
+          "nix.qcow2",
+          "vault.qcow2",
+          "seed.img",
+          "uefi-vars.fd",
+          "client-key",
+          "client-key.pub",
+          "host-key",
+          "host-key.pub",
+          "guest-login.txt",
+          "user-data"
+        ],
+        "evidenceRetained": true
+      },
+      {
+        "instance": "90069639",
+        "removedDisposableFiles": [
+          "root.qcow2",
+          "nix.qcow2",
+          "vault.qcow2",
+          "seed.img",
+          "uefi-vars.fd",
+          "client-key",
+          "client-key.pub",
+          "host-key",
+          "host-key.pub",
+          "guest-login.txt",
+          "user-data"
+        ],
+        "evidenceRetained": true
+      }
+    ],
+    "allocatedBytesRemoved": 96479940608,
+    "homeFreeBytesBefore": 45130444800,
+    "homeFreeBytesAfter": 141610323968,
+    "externalSsdTouched": false,
+    "baseImageAndEvidenceRetained": true
+  }
+}

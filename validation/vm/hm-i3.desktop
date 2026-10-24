@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Home Manager i3
+Comment=Declared user i3 session through Ubuntu Xsession
+Exec=/usr/local/bin/hm-i3-session
+TryExec=/usr/local/bin/hm-i3-session
+Type=Application
+DesktopNames=i3;

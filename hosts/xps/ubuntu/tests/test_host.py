@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 import subprocess
+import sys
 import tempfile
 
 SOURCE = pathlib.Path(__file__).resolve().parents[1]
@@ -37,10 +38,19 @@ def main():
         calls = []
 
         def ansible(*flags, success=True):
-            proc = subprocess.run([
-                args.ansible, '--inventory', 'localhost,', '--connection', 'local',
-                '--extra-vars', json.dumps(variables), str(SOURCE / 'playbook.yml'), *flags,
-            ], text=True, capture_output=True, timeout=120)
+            try:
+                proc = subprocess.run([
+                    args.ansible, '--inventory', 'localhost,', '--connection', 'local',
+                    '--extra-vars', json.dumps(variables), str(SOURCE / 'playbook.yml'), *flags,
+                ], text=True, capture_output=True, timeout=300)
+            except subprocess.TimeoutExpired as error:
+                # A constrained restore VM can take longer than the daily driver.
+                # Retain partial fixture output when the bounded budget expires.
+                for output in (error.stdout, error.stderr):
+                    if output:
+                        print(output.decode(errors='replace') if isinstance(output, bytes) else output,
+                              file=sys.stderr)
+                raise
             calls.append({'flags': list(flags), 'returncode': proc.returncode})
             if success and proc.returncode:
                 raise AssertionError(proc.stdout + proc.stderr)

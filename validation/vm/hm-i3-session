@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /etc/X11/Xsession "$HOME/.nix-profile/bin/i3"

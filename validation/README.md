@@ -2,7 +2,8 @@
 
 The target is a reproducible working machine, including its private state. A
 successful Nix build proves only part of that. Use these four levels and record
-which actually passed; a fresh OS restore has not yet been demonstrated.
+which actually passed. The 2026-10-24 fresh Ubuntu rehearsal and recovery
+procedure are recorded in [RECOVERY.md](../RECOVERY.md).
 
 ## 1. Native builds and regression tests
 
@@ -20,6 +21,7 @@ This builds the current platform's `checks` without activating a generation:
 | `system-profile` | — | Yes | Full nix-darwin build; does not run its Homebrew activation |
 | `personal-scripts` | Yes | Yes | Existing Restic, XPS Desktop and Alacritty regression suites |
 | `xps-host` | Yes | — | Synthetic PAM authentication, Nix unit replacement/rollback and Ansible convergence tests |
+| `restore-vm` | Yes | — | Controller filesystem/identity/network boundaries; does not boot a VM |
 
 `personal-scripts` uses a private temporary home, synthetic local Restic
 repositories, fake display/backlight state and loopback sockets. No real
@@ -66,52 +68,22 @@ check Home Manager's collision checks first. Then activate deliberately and
 check the affected application/service. Building a package alone cannot prove
 that existing dotfiles, login hooks, or the desktop session work after activation.
 
-## 3. Disposable Ubuntu restore rehearsal — not yet run
+## 3. Disposable Ubuntu restore rehearsal
 
-Use an x86_64 Ubuntu 22.04 guest first, matching the current base OS. Keep the
-LTS migration separate so failures have a clear cause. This is a guest-only
-exercise; it must not be run against xps's disks.
+The 2026-10-24 test used a fresh signed Ubuntu 22.04 cloud image, synthetic
+separate `/nix` and `/vault` volumes, generated credentials and no shared host
+store/home. The cold xps profile build reproduced the physical machine's exact
+Home Manager generation. Activation, root-policy convergence, Nix startup repair,
+reboot, user-generation rollback, notebook/C tooling, virtual desktop and local
+synthetic backup/restore were exercised. Hardware-name adaptations and failures
+are recorded rather than hidden.
 
-1. Download the official cloud image and verify its signed checksum. Use a
-   disposable QCOW overlay and cloud-init seed, with a test `groscoe` account
-   (UID 1000), fresh SSH key and throwaway passwords. Bind guest SSH forwarding
-   to `127.0.0.1` and use a separate known-hosts file. Do not attach host block
-   devices, the real home/vault, biometric data, SSH/GPG private keys, Tailscale
-   identities or backup credentials.
-2. Install multi-user Nix and explicitly record the required Ubuntu packages,
-   repositories and services. Clone the exact reviewed commit and keep its
-   `flake.lock`. Mount a synthetic `/vault`; exercise a separate synthetic
-   `/nix` filesystem when testing Nix's mount ordering. Do not reuse real disk
-   identifiers, encrypted volumes or their unlock configuration.
-3. Run the native flake checks in the guest. Inspect `xps-host check`, apply its
-   policies **inside the guest**, then apply again. The second apply must report
-   no changes. Test the documented rollback and converge again. Save the logs.
-4. Activate the xps home profile **inside the guest** from an empty home. Check
-   that there are no unowned-file collisions and the declared commands resolve.
-   Start i3 with a virtual display and exercise the terminal, Rofi menus, status
-   bar, notification server and fonts. Check generated SSH settings without
-   connecting to production hosts.
-5. Use synthetic files to exercise backup, preflight refusal, scheduled retry,
-   sample restore and protected exports. Use a guest-only stopped database
-   fixture; never import the production database or Restic credentials.
-6. Reboot the guest. Check the Nix socket/daemon and their mount ordering, login
-   environment, user services and expected timers. Confirm declared host files
-   still match and a second activation converges. Recreate the guest from
-   scratch with only these instructions and the recorded prerequisites.
-
-Record the source commit, lock-file hash, Ubuntu image checksum, installed
-package versions, commands, failures and logs. A successful rehearsal means the
-guest was rebuilt without borrowing undeclared files from the live laptop.
-Also perform an empty-store build to catch unavailable sources or credentials
-hidden by caches. The current repository is **not** yet a complete Ubuntu
-bootstrap: package/repository setup, Nix installation/settings, mounts, firewall,
-some privileged helpers and private-state recovery still need explicit coverage.
-Missing prerequisites found here should become declarations or documented
-intentional exceptions before claiming painless OS recovery.
-
-References: [Nix flake check](https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-flake-check),
-[Ubuntu QEMU images and overlays](https://ubuntu.com/docs/public-images/public-images-how-to/launch-qcow-with-qemu/),
-[signed image checksums](https://ubuntu.com/docs/public-images/public-images-reference/artifacts/).
+See [RECOVERY.md](../RECOVERY.md) for commands, measured results, private-state
+recovery and limitations. [The VM controller](vm/README.md) provides pinned tools
+and guarded repeatable stages. A full VM run is explicit, resource-intensive and
+separate from lightweight native flake checks. It does not install or activate
+anything on the physical host. Real secrets, databases, disk encryption, tailnet
+connectivity, hardware and a fresh macOS restore remain separate acceptance work.
 
 ## 4. Physical xps acceptance
 
@@ -126,7 +98,7 @@ device. Keep a working SSH session and known rollback generation while testing.
 | Hardware | Webcam preview, Sony stereo left/right, Wi-Fi and Bluetooth menus; real graphics acceleration |
 | Network | Both tailnets and DNS; SSH/Mosh/SSHFS from authorized LAN/tailnets; Jellyfin/Buzz access only from the intended networks |
 | Shell | Local versus SSH tmux prefix, clipboard on the Mac, persistent local agent and forwarded agent behavior |
-| Python and development | Run a synthetic Jupyter notebook that imports the declared data libraries, reads CSV/Excel and renders a chart; verify Python/pip pairing. Compile, link and run a tiny program in both declared C shells using temporary files. These application-level checks are not yet flake checks. |
+| Python and development | Run a synthetic Jupyter notebook that imports the declared data libraries, reads CSV/Excel and renders a chart; verify Python/pip pairing. Compile, link and run a tiny program in both declared C shells using temporary files. The synthetic VM checks these application behaviors; they remain separate from ordinary flake checks. |
 | Recovery | Restore representative private settings/data to a separate destination and compare contents/permissions; keep repository password independently recoverable |
 
 VMs cannot prove these hardware behaviors. Configuration tests also cannot

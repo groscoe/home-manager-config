@@ -57,6 +57,9 @@
       };
       homeProfiles = { xps = homeFor "xps"; mbp = homeFor "mbp"; };
       xpsHost = (pkgsFor "xps").callPackage ./hosts/xps/ubuntu { };
+      xpsRestore = (pkgsFor "xps").callPackage ./validation/vm {
+        qemu = (pkgsFor "xps").qemu.override { hostCpuOnly = true; };
+      };
       macSystem = darwin.lib.darwinSystem {
         system = hosts.mbp.system;
         modules = [
@@ -84,6 +87,10 @@
       devShells.x86_64-linux = import ./hosts/xps/dev-shells.nix {
         pkgs = import nixpkgs-unstable { system = hosts.xps.system; };
       };
+      apps.x86_64-linux.xps-restore-test = {
+        type = "app";
+        program = "${xpsRestore}/bin/xps-restore-test";
+      };
       apps.x86_64-linux.xps-host = {
         type = "app";
         program = "${xpsHost}/bin/xps-host";
@@ -93,6 +100,7 @@
           home-profile = homeProfiles.xps.activationPackage;
           personal-scripts = (pkgsFor "xps").callPackage ./validation { };
           xps-host = xpsHost.tests;
+          restore-vm = xpsRestore.tests;
         };
         aarch64-darwin = {
           home-profile = homeProfiles.mbp.activationPackage;
@@ -105,6 +113,7 @@
           default = homeProfiles.xps.activationPackage;
           home-manager-activation = homeProfiles.xps.activationPackage;
           xps-host = xpsHost;
+          xps-restore-test = xpsRestore;
         };
         aarch64-darwin = {
           default = homeProfiles.mbp.activationPackage;

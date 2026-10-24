@@ -1,5 +1,8 @@
 # Home Manager configuration
 
+See [RECOVERY.md](RECOVERY.md) for the tested xps restore procedure, private-state
+recovery, OS prerequisites and hardware acceptance limits.
+
 One source tree serves two explicit hosts:
 
 | Host | Platform | Home profile | System profile |
@@ -275,7 +278,7 @@ nix flake check --no-update-lock-file --show-trace
 Run this on each native host. It builds its full home profile (plus nix-darwin
 on mbp) and runs the declared regression checks without activating anything.
 See [validation and restore rehearsal](validation/README.md) for coverage,
-read-only host checks, the planned fresh Ubuntu VM restore and hardware tests.
+read-only host checks, the completed fresh Ubuntu VM rehearsal and hardware tests.
 Passing builds alone do not demonstrate recovery onto a fresh OS.
 
 Legacy targets `groscoe`, `groscoe-linux`, `groscoe-darwin` and `groscoe-macos`
