@@ -9,7 +9,7 @@ import unittest
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
-SUITES = ('restic-backup/tests', 'xps-desktop/tests', 'hosts/xps/tests')
+SUITES = ('restic-backup/tests', 'xps-desktop/tests', 'hosts/xps/tests', 'hardware-health/tests')
 
 
 def main():

@@ -801,3 +801,26 @@ The reusable controller and reproduction commands are in
 [`validation/vm/README.md`](validation/vm/README.md). Its generated credentials,
 cloud seed, private logs and VM disks belong only in the private excluded cache,
 never in Git. Keep the non-secret report alongside the exact source revision.
+
+## Hardware health tracking added after the VM rehearsal
+
+The monthly battery/NVMe tracker was added on 2026-10-27, after the
+2026-10-24 fresh-VM rehearsal above. Its synthetic regressions and native
+host checks are separate validation; the recorded VM-generation hashes above
+still describe the earlier rehearsal. See [hardware-health/README.md](hardware-health/README.md)
+for configuration, alert thresholds, notification delivery and history.
+
+On a recovered laptop, verify `services.hardware-health.devices` against the
+actual internal NVMe controller before enabling unattended reads. On Linux,
+install native smartmontools and explicitly run
+`~/.local/bin/install-hardware-health-access`; this grants only the declared
+identification/health query and prints a rollback path. macOS needs no root
+SMART helper. Run `hardware-health --record` and
+`hardware-health --test-notification` in the real login session, then check
+`hardware-health --status`. A blank VM has no physical battery/NVMe controller;
+exclude this hardware-only service when creating its dedicated profile.
+
+Restore `~/.local/state/hardware-health` with the user's home to preserve
+trends. Replacement hardware is identified separately, so previous-device
+readings do not create false decline alarms. The Mac's optional xps report
+relay needs its SSH destination/path updated if the address or username changes.

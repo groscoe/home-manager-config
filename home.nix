@@ -311,6 +311,7 @@ in {
     ./helpers
     ./xps-desktop
     ./restic-backup
+    ./hardware-health
     ./vim/nvim.nix
   ];
 

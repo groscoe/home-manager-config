@@ -9,6 +9,17 @@
   # Preserve the Mac's current Atuin setting and package selection.
   programs.atuin.settings.secrets_filter = "false";
 
+  services.hardware-health = {
+    enable = true;
+    devices = [ "/dev/disk0" ];
+    remoteReports = [ {
+      name = "xps";
+      host = "groscoe@192.168.1.2";
+      port = 2222;
+      command = "/home/groscoe/.local/bin/hardware-health";
+    } ];
+  };
+
   services.restic-backup = {
     enable = true;
     paths = [ config.home.homeDirectory ];

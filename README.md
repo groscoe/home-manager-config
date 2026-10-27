@@ -298,3 +298,15 @@ The 2026-10-21 consolidation retains XPS's existing commit history and both
 working trees' changes. Full pre-consolidation source/Git snapshots and the
 comparison results are kept outside this repository in the Codex audit workspace.
 Neither system is activated merely by synchronizing this source tree.
+
+## Battery and SSD trends
+
+Both host profiles enable the shared [hardware-health module](hardware-health/README.md).
+It records monthly battery capacity and internal NVMe health, retries missed
+readings, and notifies on rapid capacity/endurance changes or error conditions.
+mbp also relays saved xps alerts over the existing LAN SSH connection.
+`hardware-health --status` shows the local baseline and any pending alerts.
+The Linux profile needs one explicit `install-hardware-health-access` run for
+its exact read-only SMART query; macOS reads its counters without root.
+Device paths and thresholds are declared in Home Manager; private local
+history is backed up as ordinary home data.

@@ -23,6 +23,11 @@ in {
   programs.atuin.package = atuinModule.atuinPackage;
   programs.atuin.settings.secrets_filter = false;
 
+  services.hardware-health = {
+    enable = true;
+    devices = [ "/dev/nvme0" ];
+  };
+
   services.xps-desktop.enable = true;
   services.restic-backup = {
     enable = true;

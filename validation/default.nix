@@ -5,6 +5,7 @@ let
     fileset = lib.fileset.unions [
       ./run-tests.py
       ../restic-backup
+      ../hardware-health
       ../xps-desktop
       ../hosts/xps/alacritty-launcher.py
       ../hosts/xps/alacritty-child-env.py
