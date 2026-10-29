@@ -5,6 +5,11 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.home-manager.follows = "home-manager";
+    };
     nixpkgs-stable.url = "flake:nixpkgs";
     nixgl = {
       url = "github:nix-community/nixGL";
@@ -48,6 +53,7 @@
           system = hosts.xps.system;
           config.allowUnfree = true;
         };
+        zenPackage = inputs.zen-browser.packages.${hosts.xps.system}.beta;
       };
       modulesFor = host: [ ./home.nix (./hosts + "/${host}/home.nix") ];
       homeFor = host: home-manager.lib.homeManagerConfiguration {

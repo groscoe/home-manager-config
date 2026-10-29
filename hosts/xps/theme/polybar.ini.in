@@ -1,0 +1,128 @@
+[bar/main]
+monitor = ${env:MONITOR:eDP-1}
+monitor-strict = false
+bottom = true
+width = 100%
+height = 88
+background = @background@
+foreground = @foreground@
+border-top-size = 2
+border-top-color = @edge@
+line-size = 4
+line-color = @accent@
+padding-left = 2
+padding-right = 2
+module-margin = 1
+font-0 = Noto Sans:pixelsize=26;6
+font-1 = "Material\\-Design\\-Iconic\\-Font:pixelsize=30;6"
+modules-left = launcher workspaces
+modules-right = pulseaudio cpu memory battery network notices shortcuts date sysmenu
+enable-ipc = true
+cursor-click = pointer
+
+[settings]
+pseudo-transparency = false
+screenchange-reload = true
+
+[module/launcher]
+type = custom/text
+format = xps
+format-foreground = @accent@
+format-padding = 1
+click-left = @launcher@
+
+[module/workspaces]
+type = internal/i3
+pin-workspaces = true
+index-sort = true
+enable-click = true
+enable-scroll = true
+format = <label-state> <label-mode>
+label-focused = %name%
+label-focused-foreground = @accent@
+label-focused-background = @raised@
+label-focused-underline = @accent@
+label-focused-padding = 2
+label-unfocused = %name%
+label-unfocused-foreground = @muted@
+label-unfocused-padding = 2
+label-visible = %name%
+label-visible-padding = 2
+label-urgent = %name%
+label-urgent-foreground = @background@
+label-urgent-background = @red@
+label-urgent-padding = 2
+label-mode = %mode%
+label-mode-foreground = @accent@
+
+[module/pulseaudio]
+type = internal/pulseaudio
+use-ui-max = false
+interval = 5
+format-volume = <label-volume>
+label-volume = Audio %percentage%%
+label-muted = Muted
+label-muted-foreground = @muted@
+click-right = @audio@
+
+[module/cpu]
+type = internal/cpu
+interval = 5
+label = CPU %percentage%%
+label-foreground = @muted@
+
+[module/memory]
+type = internal/memory
+interval = 5
+label = RAM %percentage_used%%
+label-foreground = @muted@
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = AC
+poll-interval = 30
+format-charging = <label-charging>
+format-discharging = <label-discharging>
+format-full = <label-full>
+label-charging = AC %percentage%%
+label-discharging = Battery %percentage%%
+label-full = AC %percentage%%
+label-full-foreground = @muted@
+
+[module/network]
+type = internal/network
+interface = wlp0s20f3
+interval = 5
+format-connected = "%{A1:@wifi@ &:}<label-connected>%{A}"
+format-disconnected = "%{A1:@wifi@ &:}<label-disconnected>%{A}"
+label-connected = Wi-Fi %essid%
+label-connected-maxlen = 26
+label-disconnected = Wi-Fi offline
+label-disconnected-foreground = @muted@
+
+[module/notices]
+type = custom/text
+format = Notices
+format-foreground = @muted@
+click-left = @notices@ history-pop
+click-right = @notices@ set-paused toggle
+
+[module/shortcuts]
+type = custom/text
+format = Keys
+format-foreground = @lavender@
+click-left = @shortcuts@
+
+[module/date]
+type = internal/date
+interval = 30
+date = %a %d %b
+time = %H:%M
+label = %date%  %time%
+
+[module/sysmenu]
+type = custom/text
+format = 
+format-foreground = @accent@
+click-left = @power@

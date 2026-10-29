@@ -1,0 +1,17 @@
+{
+  "background": "#211b29",
+  "panel": "#292231",
+  "raised": "#342b3d",
+  "foreground": "#f4e8df",
+  "muted": "#c6b6cd",
+  "edge": "#67516f",
+  "accent": "#edb386",
+  "accentText": "#291d25",
+  "lavender": "#c7a6dc",
+  "selected": "#4a354b",
+  "green": "#aec5ad",
+  "red": "#ed9b9a",
+  "blue": "#a9b8df",
+  "cyan": "#9fc6c7",
+  "yellow": "#e9c38d"
+}

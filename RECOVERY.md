@@ -27,6 +27,14 @@ Python/Jupyter environments, development shells, personal helpers and user timer
 The Ubuntu companion declares SSH X11 forwarding, journal retention, the reviewed
 PAM/SDDM fingerprint/password policies, Sugar Candy and Nix startup units.
 
+The xps-only Lake Bled appearance, original licensed wallpaper and searchable
+shortcut reference are also declared in `hosts/xps/theme`. They require no
+manual theme download. The shortcut reference reads the restored i3 bindings;
+the existing VNC compositor and backlight policies remain separate. See that
+module's README for controls, attribution and its hardware-specific bar fields.
+This appearance module was added after the 2026-10-24 VM rehearsal; its build,
+packaged GTK runtime and live xps checks supplement that earlier rehearsal.
+
 Home Manager does not install Ubuntu, partition disks, restore data or secrets,
 install hardware drivers, choose the OS login shell/display manager, reproduce
 the entire SSH server/firewall/Docker setup, or join either Tailscale network.
@@ -80,6 +88,7 @@ Treat the following as private recovery material, outside Git and the Nix store:
 | Restic environment/password and backend credentials | Restore from independent storage; never print their values or put them in Nix expressions |
 | Both Tailscale identities | Restore before starting the corresponding daemons, or deliberately re-enroll as new devices |
 | Application data | Browser profiles, notebooks, photos/music, torrents, Dropbox and KDE Connect state need their backups |
+| Zen on xps | Home Manager reinstalls the browser; restore `~/.zen/` separately with Zen closed. See [Zen profile recovery](hosts/xps/ZEN.md) |
 | Protected archives | Work Tailscale state, the Desktop LUKS-header backup and stopped Onebus PostGIS files have separate export archives |
 | OS settings | Preserve reviewed `/etc/ssh`, `/etc/nix`, `/etc/ufw`, APT sources/keyrings, systemd/udev customizations, mount and encryption records |
 | Docker and databases outside the selected roots | Inventory and back up explicitly; a file backup is not automatically a consistent live-database backup |
