@@ -72,7 +72,7 @@ unredirecting rendering. The panel gamma/backlight and DPMS restoration logic
 remain in the existing sharing module. Activation refreshes that logic when
 sharing is active, after reloading the desktop.
 
-The bar retains the current xps display, Wi-Fi, battery and AC identifiers. These
-are hardware-specific: review them along with the existing host hardware profile
-when moving to another machine. This module does not theme SDDM or i3lock, or
+The bar and scaling use the selected [hardware profile](../../../hardware-profile/README.md).
+`hardware-profiles/xps.nix` preserves the current display, Wi-Fi, battery and AC
+identifiers; the VM profile omits unavailable device modules. This module does not theme SDDM or i3lock, or
 modify their fingerprint/password policies.

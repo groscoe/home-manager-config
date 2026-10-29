@@ -6,9 +6,7 @@
           # Remove this override once nixpkgs-unstable catches up.
           vscodium = let
             unstable = nixpkgs-unstable.legacyPackages.${prev.stdenv.hostPlatform.system};
-          in (unstable.vscodium.override {
-            commandLineArgs = "--force-device-scale-factor=2";
-          }).overrideAttrs (old: {
+          in unstable.vscodium.overrideAttrs (old: {
             version = "1.140.06880";
             src = unstable.fetchurl {
               url = "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/VSCodium-linux-x64-1.140.06880.tar.gz";

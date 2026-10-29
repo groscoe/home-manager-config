@@ -10,6 +10,10 @@ One source tree serves two explicit hosts:
 | `xps` | `x86_64-linux` (Ubuntu) | `homeConfigurations.xps` | Selected Ubuntu policies via `xps-host`; existing OS installation remains a prerequisite |
 | `mbp` | `aarch64-darwin` | `homeConfigurations.mbp` | `darwinConfigurations.mbp` |
 
+The physical Linux identifiers now live in `hardware-profiles/xps.nix`. See
+[hardware profiles](hardware-profile/README.md) for overrides, validation and the
+separate `homeConfigurations.xps-vm` guest profile.
+
 `home.nix` contains shared user settings. `hosts/xps/home.nix` owns the XPS
 scaling, Linux services, backup roots and protected exports. Its overlay retains
 the selected Firefox, VSCodium and signature-tool packages. `hosts/mbp/home.nix`

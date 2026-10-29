@@ -1,5 +1,6 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
+  hw = config.personal.hardware;
   xSettings = pkgs.writeShellApplication {
     name = "xps-x-settings";
     runtimeInputs = [
@@ -8,7 +9,20 @@ let
       pkgs.xf86_input_wacom
       pkgs.gnused
     ];
-    text = builtins.readFile ./x-settings.sh;
+    text = lib.replaceStrings
+      [ "@keyboardLayout@" "@keyboardOptions@" "@keyboardRemaps@" "@tablet@" ]
+      [
+        (lib.escapeShellArg hw.keyboardLayout)
+        (lib.escapeShellArgs (lib.concatMap (option: [ "-option" option ]) hw.keyboardOptions))
+        (lib.concatMapStringsSep "\n" (mapping: "xmodmap -e " + lib.escapeShellArg mapping) hw.keyboardRemaps)
+        (lib.optionalString (hw.tablet != null) ''
+          while IFS= read -r stylus_id; do
+            xsetwacom set "$stylus_id" rotate ${lib.escapeShellArg hw.tablet.rotation}
+            xsetwacom set "$stylus_id" area ${lib.escapeShellArgs (map toString hw.tablet.area)}
+          done < <(xsetwacom list devices | sed -nE 's/.*id: ([0-9]+).*STYLUS.*/\1/p')
+        '')
+      ]
+      (builtins.readFile ./x-settings.sh);
   };
 in {
   imports = [ ../../helpers/cursor-shims.nix ];

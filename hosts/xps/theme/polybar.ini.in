@@ -1,9 +1,9 @@
 [bar/main]
-monitor = ${env:MONITOR:eDP-1}
+monitor = ${env:MONITOR:@monitor@}
 monitor-strict = false
 bottom = true
 width = 100%
-height = 88
+height = @height@
 background = @background@
 foreground = @foreground@
 border-top-size = 2
@@ -13,10 +13,10 @@ line-color = @accent@
 padding-left = 2
 padding-right = 2
 module-margin = 1
-font-0 = Noto Sans:pixelsize=26;6
-font-1 = "Material\\-Design\\-Iconic\\-Font:pixelsize=30;6"
+font-0 = Noto Sans:pixelsize=@textPixels@;@baseline@
+font-1 = "Material\\-Design\\-Iconic\\-Font:pixelsize=@iconPixels@;@baseline@"
 modules-left = launcher workspaces
-modules-right = pulseaudio cpu memory battery network notices shortcuts date sysmenu
+modules-right = pulseaudio cpu memory @optionalModules@ notices shortcuts date sysmenu
 enable-ipc = true
 cursor-click = pointer
 
@@ -77,29 +77,9 @@ interval = 5
 label = RAM %percentage_used%%
 label-foreground = @muted@
 
-[module/battery]
-type = internal/battery
-battery = BAT0
-adapter = AC
-poll-interval = 30
-format-charging = <label-charging>
-format-discharging = <label-discharging>
-format-full = <label-full>
-label-charging = AC %percentage%%
-label-discharging = Battery %percentage%%
-label-full = AC %percentage%%
-label-full-foreground = @muted@
+@batteryModule@
 
-[module/network]
-type = internal/network
-interface = wlp0s20f3
-interval = 5
-format-connected = "%{A1:@wifi@ &:}<label-connected>%{A}"
-format-disconnected = "%{A1:@wifi@ &:}<label-disconnected>%{A}"
-label-connected = Wi-Fi %essid%
-label-connected-maxlen = 26
-label-disconnected = Wi-Fi offline
-label-disconnected-foreground = @muted@
+@networkModule@
 
 [module/notices]
 type = custom/text

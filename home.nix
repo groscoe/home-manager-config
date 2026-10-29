@@ -126,7 +126,7 @@ let
       files = { ".config/polybar" = ./polybar/config/polybar; };
     };
 
-    vscodium = ifNotDarwin { packages = [ pkgs.vscodium ]; };
+    vscodium = ifNotDarwin { packages = [ (pkgs.vscodium.override { commandLineArgs = "--force-device-scale-factor=${toString config.personal.hardware.scale}"; }) ]; };
 
     programming-tools = {
       packages = with pkgs; [

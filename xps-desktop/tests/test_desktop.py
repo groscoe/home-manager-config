@@ -111,18 +111,27 @@ class DesktopSecurityTests(unittest.TestCase):
                 backlight.assert_called_once()
 
     def test_backlight_rule_is_limited_to_one_attribute_and_private_group(self):
-        rule = installer.rule_for('groscoe')
+        rule = installer.rule_for('groscoe', 'intel_backlight')
         self.assertIn('KERNEL=="intel_backlight"', rule)
         self.assertEqual(rule.count('/sys%p/brightness'), 2)
         self.assertNotIn('/dev/', rule)
         self.assertNotIn('MODE=', rule)
         for group in ['groscoe other', '../root', 'groscoe;command']:
             with self.assertRaises(RuntimeError):
-                installer.rule_for(group)
+                installer.rule_for(group, 'intel_backlight')
+
+    def test_alternative_backlight_name_and_unsafe_names(self):
+        rule = installer.rule_for('groscoe', 'amdgpu_bl1')
+        self.assertIn('KERNEL=="amdgpu_bl1"', rule)
+        self.assertNotIn('intel_backlight', rule)
+        self.assertEqual(str(installer.device_path('amdgpu_bl1')), '/sys/class/backlight/amdgpu_bl1/brightness')
+        for device in ['../root', '/sys/devices', '.', '..', 'intel*', 'name"', 'name;command']:
+            with self.subTest(device=device), self.assertRaises(RuntimeError):
+                installer.rule_for('groscoe', device)
 
     def test_backlight_installer_refuses_conflicting_rule_and_symlinks(self):
         with tempfile.TemporaryDirectory() as name:
-            path = Path(name) / 'rule';expected = installer.rule_for('groscoe')
+            path = Path(name) / 'rule';expected = installer.rule_for('groscoe', 'intel_backlight')
             installer.check_rule(path, expected)
             path.write_text('unrelated rule\n')
             with self.assertRaises(RuntimeError):

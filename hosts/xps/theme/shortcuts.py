@@ -299,7 +299,7 @@ def reference(text, query="", keyboard="xps", category=None, tmux_tables=None):
     return filtered
 
 
-def run_window(config_path, palette, tmux_tables, tmux_status, check_ui=False):
+def run_window(config_path, palette, tmux_tables, tmux_status, check_ui=False, local_prefix="ç"):
     import gi
     gi.require_version("Gtk", "3.0")
     gi.require_version("Gdk", "3.0")
@@ -405,7 +405,7 @@ def run_window(config_path, palette, tmux_tables, tmux_status, check_ui=False):
 
         legend = Gtk.Box(spacing=6)
         prefix = Gtk.Box(spacing=6)
-        fill_key_line(prefix, [("tmux prefix:", False), ("ç", True), ("Local / VNC", False),
+        fill_key_line(prefix, [("tmux prefix:", False), (local_prefix, True), ("Local / VNC", False),
                               ("·", False), (";", True), ("SSH", False), ("·", False),
                               ("Prefix", True), ("then", False), ("[", True), ("copy mode", False)])
         note = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=7)
@@ -528,7 +528,7 @@ def run_window(config_path, palette, tmux_tables, tmux_status, check_ui=False):
                             found.extend(labels(child))
                         return found
                     assert "⌘" in labels(columns), "Mac modifier labels did not update"
-                    assert {"ç", ";", "[", "Prefix", "⌘", "Option"}.issubset(labels(note)), "Footer keycaps lost their literal characters"
+                    assert {local_prefix, ";", "[", "Prefix", "⌘", "Option"}.issubset(labels(note)), "Footer keycaps lost their literal characters"
                     assert len(columns.get_children()) == 2
                     print("Shortcut UI checks passed: tabs, global search, Mac labels, two columns")
                 except Exception:
@@ -553,6 +553,7 @@ def main():
     parser.add_argument("--tmux", type=Path, default=Path("tmux"))
     parser.add_argument("--category", choices=CATEGORIES)
     parser.add_argument("--search", default="")
+    parser.add_argument("--local-prefix", choices=("ç", ";"), default="ç")
     parser.add_argument("--keyboard", choices=("xps", "mac"), default="xps")
     parser.add_argument("--list", action="store_true", help="Print the reference without opening a window")
     parser.add_argument("--check-runtime", action="store_true", help="Check the packaged GTK runtime without opening a window")
@@ -566,13 +567,13 @@ def main():
         return 0
     if args.check_ui:
         return run_window(args.config, json.loads(args.palette.read_text()), DEFAULT_TMUX,
-                          "Synthetic tmux tables · isolated UI test", check_ui=True)
+                          "Synthetic tmux tables · isolated UI test", check_ui=True, local_prefix=args.local_prefix)
     if args.list:
         tables, _ = load_tmux(args.tmux)
         print(json.dumps(reference(args.config.read_text(), args.search, args.keyboard, args.category, tables), ensure_ascii=False, indent=2))
         return 0
     tables, status = load_tmux(args.tmux)
-    return run_window(args.config, json.loads(args.palette.read_text()), tables, status)
+    return run_window(args.config, json.loads(args.palette.read_text()), tables, status, local_prefix=args.local_prefix)
 
 
 if __name__ == "__main__":

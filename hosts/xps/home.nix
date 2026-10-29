@@ -1,22 +1,25 @@
 { config, pkgs, lib, ... }:
 let
+  hw = config.personal.hardware;
   atuinModule = import ../../atuin/atuin.nix { inherit pkgs lib; };
   hiDpiScript = pkgs.writeShellScriptBin "xps-apply-hidpi" ''
     set -eu
     [ -n "''${DISPLAY:-}" ] || exit 0
     ${pkgs.xorg.xrdb}/bin/xrdb -merge ${config.xresources.path}
     ${pkgs.xorg.xsetroot}/bin/xsetroot -xcf \
-      ${config.home.pointerCursor.package}/share/icons/breeze_cursors/cursors/left_ptr 48
+      ${config.home.pointerCursor.package}/share/icons/breeze_cursors/cursors/left_ptr ${toString config.home.pointerCursor.size}
     ${config.systemd.user.systemctlPath} --user import-environment DISPLAY XAUTHORITY
     ${config.systemd.user.systemctlPath} --user start xsettingsd.service
   '';
 in {
-  imports = [ ./graphics.nix ./alacritty.nix ./picom.nix ./polybar.nix ./applications.nix ./development.nix ./python.nix ./ssh.nix ./session.nix ./theme ./command-search ./zen.nix ../../clamav-scan ../../rofi/connections.nix ../../secure-boot-tools ];
+  imports = [ ../../hardware-profile ./graphics.nix ./alacritty.nix ./picom.nix ./polybar.nix ./applications.nix ./development.nix ./python.nix ./ssh.nix ./session.nix ./theme ./command-search ./zen.nix ../../clamav-scan ../../rofi/connections.nix ../../secure-boot-tools ];
 
   assertions = [{
     assertion = pkgs.stdenv.hostPlatform.system == "x86_64-linux";
     message = "The xps profile requires x86_64-linux; create a separate hardware profile for another machine.";
   }];
+
+  personal.hardware = lib.mkDefault (import ../../hardware-profiles/xps.nix);
 
   home.homeDirectory = "/home/${config.home.username}";
   home.packages = [ pkgs.xss-lock hiDpiScript ];
@@ -24,11 +27,16 @@ in {
   programs.atuin.settings.secrets_filter = false;
 
   services.hardware-health = {
-    enable = true;
-    devices = [ "/dev/nvme0" ];
+    enable = hw.battery != null || hw.nvmeDevices != [ ];
+    battery = hw.battery != null;
+    devices = hw.nvmeDevices;
   };
 
-  services.xps-desktop.enable = true;
+  services.xps-desktop = {
+    enable = hw.backlightDevice != null && hw.displayOutput != null;
+    backlightDevice = hw.backlightDevice;
+    panelOutput = hw.displayOutput;
+  };
   services.restic-backup = {
     enable = true;
     paths = [ config.home.homeDirectory "/vault" ];
@@ -56,19 +64,19 @@ in {
   home.pointerCursor = {
     package = pkgs.kdePackages.breeze;
     name = "breeze_cursors";
-    size = 48;
+    size = hw.cursorSize;
     x11.enable = true;
   };
   home.sessionVariables.QT_ENABLE_HIGHDPI_SCALING = "1";
-  xresources.properties."Xft.dpi" = 192;
+  xresources.properties."Xft.dpi" = hw.dpi;
   services.xsettingsd = {
     enable = true;
     settings = {
-      "Gdk/WindowScalingFactor" = 2;
-      "Gdk/UnscaledDPI" = 96 * 1024;
-      "Xft/DPI" = 192 * 1024;
+      "Gdk/WindowScalingFactor" = hw.scale;
+      "Gdk/UnscaledDPI" = (builtins.div hw.dpi hw.scale) * 1024;
+      "Xft/DPI" = hw.dpi * 1024;
       "Gtk/CursorThemeName" = "breeze_cursors";
-      "Gtk/CursorThemeSize" = 48;
+      "Gtk/CursorThemeSize" = hw.cursorSize;
     };
   };
   # Match Ubuntu's running systemd manager.
@@ -78,7 +86,7 @@ in {
     settings = {
       global = {
         font = "Noto Sans 10";
-        scale = 2;
+        scale = hw.scale;
         width = 300;
         offset = "(10,50)";
         padding = 8;

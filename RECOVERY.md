@@ -357,19 +357,21 @@ runs `/etc/X11/Xsession "$HOME/.nix-profile/bin/i3"`; Ubuntu's Xsession sources
 the declared `.xsessionrc`, importing the HiDPI/display environment before i3.
 The VM passed real SDDM password login through this bridge after reboot.
 
-Polybar's current theme selects `DP-1-8`, falling back to `eDP-1`. These are
-physical xps output names, not portable monitor identities. If neither exists,
-the bar exits. Check `xrandr --query` and update the two monitor values in
-`polybar/config/polybar/material/config.ini` for the new hardware, then build and
-activate. The VM used a separate test copy selecting `Virtual-1`; the physical
-profile was not silently changed. Battery/network modules can also need new
-device names. Missing virtual battery, Wi-Fi or audio devices are not evidence
-that their real hardware drivers work.
+The 2026-10-24 rehearsal needed a manual Polybar monitor override. Current
+configuration instead selects identifiers from `hardware-profiles/xps.nix`;
+review display, Wi-Fi, battery/AC, backlight, NVMe, scale and keyboard settings
+for replacement hardware. See [hardware profiles](hardware-profile/README.md).
+Do not edit the old copied Polybar assets: the Lake Bled module generates the
+active bar from the selected profile. `homeConfigurations.xps-vm` selects the
+separate QEMU descriptor, without physical-device modules or production backup/
+scan jobs. Confirm its actual output with `xrandr --query`. Use the normal xps
+profile for this physical laptop. Native profile/contract checks supplement the
+historical rehearsal; they are not another fresh-VM boot or hardware acceptance.
 
-The wallpaper is user data at
-`/home/groscoe/Pictures/Wallpapers/japan-temple-ultrawide.jpg`; restore it from
-the personal backup or deliberately choose a different image. An absent
-wallpaper is not repaired by installing the terminal or compositor.
+The current Lake Bled wallpaper is licensed and packaged in Home Manager;
+activation restores it without a separate download. The earlier rehearsal's
+Japan wallpaper was private user data; that historical requirement no longer
+applies to the current appearance module.
 
 The SSH agent's cached identities are memory state. Restore the private key,
 start the declared agent and run `ssh-add` interactively when needed. If boot

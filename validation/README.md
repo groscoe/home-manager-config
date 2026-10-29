@@ -20,6 +20,8 @@ This builds the current platform's `checks` without activating a generation:
 | `home-profile` | Yes | Yes | Full Home Manager activation package, applications and generated configuration |
 | `system-profile` | — | Yes | Full nix-darwin build; does not run its Homebrew activation |
 | `personal-scripts` | Yes | Yes | Existing Restic, XPS Desktop and Alacritty regression suites |
+| `vm-home-profile` | Yes | — | Complete guest profile with the explicit QEMU hardware descriptor |
+| `hardware-profiles` | Yes | — | Generated hardware wiring, optional device omission, virtual tmux prefix and isolated XRandR restoration |
 | `xps-host` | Yes | — | Synthetic PAM authentication, Nix unit replacement/rollback and Ansible convergence tests |
 | `restore-vm` | Yes | — | Controller filesystem/identity/network boundaries; does not boot a VM |
 

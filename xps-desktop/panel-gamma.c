@@ -10,6 +10,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifndef XPS_PANEL_OUTPUT
+#error "Build with an explicit XPS_PANEL_OUTPUT string"
+#endif
+
 struct header { uint32_t magic, size; uint64_t crtc; };
 
 static void fail(const char *message) {
@@ -28,14 +32,15 @@ int main(int argc, char **argv) {
     for (int i = 0; i < res->noutput; ++i) {
         XRROutputInfo *out = XRRGetOutputInfo(d, res, res->outputs[i]);
         if (out && out->connection == RR_Connected && out->crtc &&
-            out->nameLen >= 4 && !strncmp(out->name, "eDP-", 4)) {
+            out->nameLen == (int)strlen(XPS_PANEL_OUTPUT) &&
+            !memcmp(out->name, XPS_PANEL_OUTPUT, out->nameLen)) {
             if (crtc) fail("more than one active built-in panel");
             crtc = out->crtc;
         }
         if (out) XRRFreeOutputInfo(out);
     }
     XRRFreeScreenResources(res);
-    if (!crtc) fail("no active built-in panel");
+    if (!crtc) fail("no active configured built-in panel");
     XRRCrtcGamma *current = XRRGetCrtcGamma(d, crtc);
     if (!current || current->size < 1 || current->size > 65536) fail("invalid panel lookup table");
     struct header h = {0x58504731, (uint32_t)current->size, (uint64_t)crtc};

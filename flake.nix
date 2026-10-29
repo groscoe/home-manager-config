@@ -62,6 +62,15 @@
         extraSpecialArgs = argsFor host;
       };
       homeProfiles = { xps = homeFor "xps"; mbp = homeFor "mbp"; };
+      vmHome = home-manager.lib.homeManagerConfiguration {
+        pkgs = pkgsFor "xps";
+        modules = modulesFor "xps" ++ [ ./hardware-profile/vm.nix ];
+        extraSpecialArgs = argsFor "xps";
+      };
+      hardwareChecks = (pkgsFor "xps").callPackage ./hardware-profile/check.nix {
+        physical = homeProfiles.xps;
+        virtual = vmHome;
+      };
       xpsHost = (pkgsFor "xps").callPackage ./hosts/xps/ubuntu { };
       xpsRestore = (pkgsFor "xps").callPackage ./validation/vm {
         qemu = (pkgsFor "xps").qemu.override { hostCpuOnly = true; };
@@ -84,6 +93,7 @@
       };
     in {
       homeConfigurations = homeProfiles // {
+        xps-vm = vmHome;
         # Keep existing commands working while making the host names canonical.
         groscoe = homeProfiles.xps;
         groscoe-linux = homeProfiles.xps;
@@ -104,6 +114,8 @@
       checks = {
         x86_64-linux = {
           home-profile = homeProfiles.xps.activationPackage;
+          vm-home-profile = vmHome.activationPackage;
+          hardware-profiles = hardwareChecks;
           personal-scripts = (pkgsFor "xps").callPackage ./validation { };
           xps-host = xpsHost.tests;
           restore-vm = xpsRestore.tests;

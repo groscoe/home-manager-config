@@ -11,7 +11,7 @@ let
     nativeBuildInputs = [ pkgs.pkg-config ];
     buildInputs = [ pkgs.xorg.libX11 pkgs.xorg.libXrandr ];
     buildPhase = ''
-      $CC -O2 -Wall -Wextra ${./panel-gamma.c} -o xps-desktop-panel-gamma $(pkg-config --cflags --libs x11 xrandr)
+      $CC -O2 -Wall -Wextra ${lib.escapeShellArg ("-DXPS_PANEL_OUTPUT=" + builtins.toJSON cfg.panelOutput)} ${./panel-gamma.c} -o xps-desktop-panel-gamma $(pkg-config --cflags --libs x11 xrandr)
     '';
     installPhase = ''
       install -Dm755 xps-desktop-panel-gamma "$out/bin/xps-desktop-panel-gamma"
@@ -24,14 +24,14 @@ let
     systemctl = config.systemd.user.systemctlPath;
     xset = "/usr/bin/xset";
     dbusSend = "/usr/bin/dbus-send";
-    backlightDevice = "intel_backlight";
+    backlightDevice = cfg.backlightDevice;
     panelGamma = "${panelGamma}/bin/xps-desktop-panel-gamma";
   });
   server = pkgs.writeShellScriptBin "xps-desktop-control" ''
     exec ${python}/bin/python3 -I ${./server.py} ${serverConfig} "$@"
   '';
   backlightAccessInstaller = pkgs.writeShellScriptBin "install-xps-backlight-access" ''
-    exec /usr/bin/sudo /usr/bin/python3 -I ${./install-backlight-access.py} --user ${lib.escapeShellArg config.home.username} "$@"
+    exec /usr/bin/sudo /usr/bin/python3 -I ${./install-backlight-access.py} --user ${lib.escapeShellArg config.home.username} --device ${lib.escapeShellArg cfg.backlightDevice} "$@"
   '';
   clientConfig = pkgs.writeText "xps-desktop-client.json" (builtins.toJSON {
     inherit (cfg) sshHost sshPort localPort;
@@ -70,6 +70,8 @@ let
 in {
   options.services.xps-desktop = {
     enable = lib.mkEnableOption "SSH-only sharing of xps's existing i3 desktop";
+    backlightDevice = lib.mkOption { type = lib.types.nullOr (lib.types.strMatching "[A-Za-z0-9][A-Za-z0-9_.-]*"); default = null; };
+    panelOutput = lib.mkOption { type = lib.types.nullOr (lib.types.strMatching "[A-Za-z0-9][A-Za-z0-9_.-]*"); default = null; };
     sshHost = lib.mkOption { type = lib.types.str; default = "192.168.1.2"; };
     sshPort = lib.mkOption { type = lib.types.port; default = 2222; };
     localPort = lib.mkOption { type = lib.types.port; default = 59320; };
@@ -78,6 +80,10 @@ in {
   };
   config = lib.mkIf cfg.enable (lib.mkMerge [
     (lib.mkIf linux {
+      assertions = [ {
+        assertion = cfg.backlightDevice != null && cfg.panelOutput != null;
+        message = "Linux XPS Desktop needs explicit backlightDevice and panelOutput values.";
+      } ];
       home.packages = [ server pkgs.tigervnc backlightAccessInstaller ];
       home.activation.xpsDesktopDisplay = lib.hm.dag.entryAfter [ "applyHiDpi" "reloadSystemd" ] ''
         if ${config.systemd.user.systemctlPath} --user is-active --quiet xps-desktop.service; then

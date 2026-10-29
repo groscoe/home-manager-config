@@ -5,6 +5,7 @@
   ...
 }:
 let
+  hw = config.personal.hardware;
   c = builtins.fromJSON (builtins.readFile ./palette.json);
   profile = config.home.profileDirectory;
   rofi = "${config.programs.rofi.finalPackage}/bin/rofi";
@@ -24,7 +25,8 @@ let
       mkdir -p "$out/bin" "$out/share/xps-shortcuts"
       cp ${./shortcuts.py} "$out/share/xps-shortcuts/shortcuts.py"
       makeWrapper ${python}/bin/python3 "$out/bin/xps-shortcuts" \
-        --add-flags "-I $out/share/xps-shortcuts/shortcuts.py --palette ${palette} --tmux ${pkgs.tmux}/bin/tmux"
+        --add-flags "-I $out/share/xps-shortcuts/shortcuts.py --palette ${palette} --tmux ${pkgs.tmux}/bin/tmux" \
+        --add-flags ${lib.escapeShellArg ("--local-prefix " + lib.escapeShellArg hw.localTmuxPrefix)}
     '';
     doInstallCheck = true;
     nativeInstallCheckInputs = [ pkgs.xvfb-run ];
@@ -114,7 +116,7 @@ let
     + ''
 
       # The reference is a normal, non-modal window; it never runs listed actions.
-      for_window [class="XpsShortcuts"] floating enable, resize set 1800 px 1720 px, move position center
+      for_window [class="XpsShortcuts"] floating enable, resize set ${toString (900 * hw.scale)} px ${toString (860 * hw.scale)} px, move position center
 
       # Use the slash symbol on ABNT-2 and Mac/VNC layouts, regardless of keycode.
       bindsym --release $mod+Shift+slash exec --no-startup-id ${profile}/bin/xps-command-search
@@ -181,6 +183,41 @@ let
     button selected { background-color: ${c.selected}; text-color: ${c.accent}; }
   '';
   barVariables = c // {
+    monitor = if hw.displayOutput == null then "" else hw.displayOutput;
+    height = toString (44 * hw.scale);
+    textPixels = toString (13 * hw.scale);
+    iconPixels = toString (15 * hw.scale);
+    baseline = toString (3 * hw.scale);
+    optionalModules = lib.concatStringsSep " " (
+      lib.optional (hw.battery != null) "battery"
+      ++ lib.optional (hw.wifiInterface != null) "network"
+    );
+    batteryModule = lib.optionalString (hw.battery != null) ''
+[module/battery]
+type = internal/battery
+battery = ${hw.battery}
+adapter = ${hw.acAdapter}
+poll-interval = 30
+format-charging = <label-charging>
+format-discharging = <label-discharging>
+format-full = <label-full>
+label-charging = AC %percentage%%
+label-discharging = Battery %percentage%%
+label-full = AC %percentage%%
+label-full-foreground = ${c.muted}
+    '';
+    networkModule = lib.optionalString (hw.wifiInterface != null) ''
+[module/network]
+type = internal/network
+interface = ${hw.wifiInterface}
+interval = 5
+format-connected = "%{A1:${profile}/bin/rofi-wifi &:}<label-connected>%{A}"
+format-disconnected = "%{A1:${profile}/bin/rofi-wifi &:}<label-disconnected>%{A}"
+label-connected = Wi-Fi %essid%
+label-connected-maxlen = 26
+label-disconnected = Wi-Fi offline
+label-disconnected-foreground = ${c.muted}
+    '';
     launcher = "${rofi} -show combi";
     wifi = "${profile}/bin/rofi-wifi";
     shortcuts = "${shortcuts}/bin/xps-shortcuts";
@@ -210,6 +247,25 @@ in
     pkgs.adwaita-icon-theme
   ];
   home.file = {
+    ".config/tmux/client-prefix.conf".source = lib.mkForce (
+      if hw.localTmuxPrefix == "ç" then ../../../terminals/client-prefix.conf
+      else pkgs.writeText "tmux-semicolon-prefix.conf" ''
+        # This keyboard uses the same prefix locally and over SSH.
+        unbind-key -q -T root ç
+        unbind-key -q -T root \;
+        unbind-key -q -T copy-mode ç
+        unbind-key -q -T copy-mode-vi ç
+        unbind-key -q -T copy-mode \;
+        unbind-key -q -T copy-mode-vi \;
+        set-hook -gu client-attached[900]
+        set-hook -gu after-new-session[900]
+        set-hook -gu client-detached[900]
+        set-option -g prefix \;
+        set-option -g prefix2 None
+        unbind-key -q C-b
+        bind-key -T prefix \; send-prefix
+      ''
+    );
     ".tmux.conf".source = lib.mkForce (
       pkgs.writeText "tmux-xps.conf" (
         builtins.readFile ../../../terminals/tmux.conf + "\nsource-file ${tmuxTheme}\n"
