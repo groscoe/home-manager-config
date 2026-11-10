@@ -314,3 +314,10 @@ The Linux profile needs one explicit `install-hardware-health-access` run for
 its exact read-only SMART query; macOS reads its counters without root.
 Device paths and thresholds are declared in Home Manager; private local
 history is backed up as ordinary home data.
+
+### Webcam access indicator (xps)
+
+[Camera monitoring](camera-monitor/README.md) provides a Polybar label, Rofi process details and notifications. It observes current-user camera handles without capturing frames or changing camera permissions. An optional read-only protected collector extends coverage to system/root processes; fallback coverage is explicit.
+
+KDE Connect startup, the Rofi device menu, and LAN/Tailscale network prerequisites
+are documented in [the xps KDE Connect guide](hosts/xps/kdeconnect/README.md).

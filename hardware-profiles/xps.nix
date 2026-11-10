@@ -6,6 +6,13 @@
   battery = "BAT0";
   acAdapter = "AC";
   backlightDevice = "intel_backlight";
+  cameraController = {
+    address = "0000:00:05.0";
+    driver = "intel-ipu6";
+    virtualCameraName = "Intel MIPI Camera";
+    vendor = "0x8086";
+    device = "0x465d";
+  };
   nvmeDevices = [ "/dev/nvme0" ];
   dpi = 192;
   scale = 2;

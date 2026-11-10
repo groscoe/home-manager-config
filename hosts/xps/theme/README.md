@@ -76,3 +76,5 @@ The bar and scaling use the selected [hardware profile](../../../hardware-profil
 `hardware-profiles/xps.nix` preserves the current display, Wi-Fi, battery and AC
 identifiers; the VM profile omits unavailable device modules. This module does not theme SDDM or i3lock, or
 modify their fingerprint/password policies.
+
+The **Cam** indicator opens read-only [camera access details](../../../camera-monitor/README.md). It reports current-user device handles, with explicit incomplete-coverage and stale-monitor states.

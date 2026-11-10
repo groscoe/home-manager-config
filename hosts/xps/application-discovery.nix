@@ -19,8 +19,6 @@ in {
     source = entries;
     recursive = true;
   };
-  xdg.dataFile."dbus-1/services/org.kde.kdeconnect.service".source =
-    "${config.home.path}/share/dbus-1/services/org.kde.kdeconnect.service";
   home.activation.updateXpsDesktopDatabase = lib.hm.dag.entryAfter [ "installPackages" ] ''
     run ${pkgs.desktop-file-utils}/bin/update-desktop-database ${lib.escapeShellArg (config.xdg.dataHome + "/applications")}
   '';

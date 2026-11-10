@@ -10,14 +10,17 @@ let
       ${config.home.pointerCursor.package}/share/icons/breeze_cursors/cursors/left_ptr ${toString config.home.pointerCursor.size}
     ${config.systemd.user.systemctlPath} --user import-environment DISPLAY XAUTHORITY
     ${config.systemd.user.systemctlPath} --user start xsettingsd.service
+    ${pkgs.python3}/bin/python3 ${./kdeconnect/session.py} ${config.systemd.user.systemctlPath}
   '';
 in {
-  imports = [ ../../hardware-profile ./graphics.nix ./alacritty.nix ./picom.nix ./polybar.nix ./applications.nix ./development.nix ./python.nix ./ssh.nix ./session.nix ./theme ./command-search ./zen.nix ../../clamav-scan ../../rofi/connections.nix ../../secure-boot-tools ];
+  imports = [ ../../camera-monitor ../../hardware-profile ./graphics.nix ./alacritty.nix ./picom.nix ./polybar.nix ./applications.nix ./kdeconnect ./development.nix ./python.nix ./ssh.nix ./session.nix ./theme ./command-search ./zen.nix ../../clamav-scan ../../rofi/connections.nix ../../secure-boot-tools ];
 
   assertions = [{
     assertion = pkgs.stdenv.hostPlatform.system == "x86_64-linux";
     message = "The xps profile requires x86_64-linux; create a separate hardware profile for another machine.";
   }];
+
+  services.camera-monitor.enable = true;
 
   personal.hardware = lib.mkDefault (import ../../hardware-profiles/xps.nix);
 

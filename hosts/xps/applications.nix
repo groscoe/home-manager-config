@@ -42,7 +42,6 @@ in {
     rhythmbox
     shotwell
     dropbox-cli
-    kdePackages.kdeconnect-kde
     kdePackages.ktouch
   ];
 

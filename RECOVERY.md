@@ -835,3 +835,23 @@ Restore `~/.local/state/hardware-health` with the user's home to preserve
 trends. Replacement hardware is identified separately, so previous-device
 readings do not create false decline alarms. The Mac's optional xps report
 relay needs its SSH destination/path updated if the address or username changes.
+
+### Camera access monitoring
+
+The xps Home Manager profile includes the Polybar/Rofi camera indicator and
+notifications. After restoring the profile, run `install-camera-monitor-access`
+to install the optional root-owned metadata collector. It requires sudo, changes
+no camera permissions or drivers, and cannot open camera devices under its
+systemd device policy. Repeat after changing collector code. Without a fresh
+collector the interface explicitly reports limited current-user coverage.
+See [camera-monitor/README.md](camera-monitor/README.md) for status meanings,
+privacy limits and diagnostic commands. This is not a camera blocking mechanism.
+
+For built-in-camera blocking, the physical hardware profile also declares
+`cameraController`. Run `install-camera-controls` after activation to install the
+fixed control backend, exact-action sudo policy and persistent block guards. It
+leaves the camera's current state unchanged. Re-run after changing those sources.
+Use `--self-test` only with no other camera application active; it briefly tests
+stream interruption, blocking and restoration without saving video. VM profiles
+leave this hardware descriptor null. See the camera monitoring guide for recovery
+and verification of `Cam BLOCKED` versus an unverified/failed block.

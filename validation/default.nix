@@ -5,12 +5,14 @@ let
     fileset = lib.fileset.unions [
       ./run-tests.py
       ../restic-backup
+      ../camera-monitor
       ../hardware-health
       ../xps-desktop
       ../hosts/xps/alacritty-launcher.py
       ../hosts/xps/alacritty-child-env.py
       ../hosts/xps/theme/shortcuts.py
       ../hosts/xps/command-search/search.py
+      ../hosts/xps/kdeconnect
       ../hosts/xps/tests
     ];
   };

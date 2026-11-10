@@ -71,3 +71,8 @@ use temporary homes, sockets and X displays, with no real secrets or hardware.
 The Ubuntu companion, encrypted mounts, backup exports and network/firewall
 policies still have OS/site-specific requirements. This change parameterizes
 the user configuration; it does not establish support for another distribution.
+
+`cameraController` optionally names a dedicated PCI camera controller by address,
+driver and vendor/device ID. Only declare it after inspecting the target machine.
+The xps VM leaves it null and exposes monitoring without privileged camera controls.
+The controls installer refuses changed hardware IDs or a conflicting driver policy.

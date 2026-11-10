@@ -218,6 +218,7 @@ label-connected-maxlen = 26
 label-disconnected = Wi-Fi offline
 label-disconnected-foreground = ${c.muted}
     '';
+    camera = "${profile}/bin/camera-monitor";
     launcher = "${rofi} -show combi";
     wifi = "${profile}/bin/rofi-wifi";
     shortcuts = "${shortcuts}/bin/xps-shortcuts";
