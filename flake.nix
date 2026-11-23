@@ -47,6 +47,9 @@
       argsFor = host: {
         hostName = host;
         pkgs-stable = nixpkgs-stable.legacyPackages.${hosts.${host}.system};
+        whereami = (pkgsFor host).callPackage ./whereami {
+          zig = nixpkgs-unstable.legacyPackages.${hosts.${host}.system}.zig_0_16;
+        };
       } // nixpkgs.lib.optionalAttrs (host == "xps") {
         nixGLPackages = inputs.nixgl.packages;
         pkgs-unstable = import nixpkgs-unstable {
@@ -71,7 +74,9 @@
         physical = homeProfiles.xps;
         virtual = vmHome;
       };
-      xpsHost = (pkgsFor "xps").callPackage ./hosts/xps/ubuntu { };
+      xpsHost = (pkgsFor "xps").callPackage ./hosts/xps/ubuntu {
+        geoclue2 = nixpkgs-unstable.legacyPackages.${hosts.xps.system}.geoclue2;
+      };
       xpsRestore = (pkgsFor "xps").callPackage ./validation/vm {
         qemu = (pkgsFor "xps").qemu.override { hostCpuOnly = true; };
       };

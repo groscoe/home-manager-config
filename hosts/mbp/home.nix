@@ -1,10 +1,11 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, whereami, ... }: {
   imports = [ ./ssh.nix ];
   assertions = [{
     assertion = pkgs.stdenv.hostPlatform.system == "aarch64-darwin";
     message = "The mbp profile requires aarch64-darwin.";
   }];
   home.homeDirectory = "/Users/${config.home.username}";
+  home.packages = [ whereami ];
 
   # Preserve the Mac's current Atuin setting and package selection.
   programs.atuin.settings.secrets_filter = "false";

@@ -151,9 +151,8 @@ def main():
         # Cloud-init's 0600 SSH fragment requires privileged inspection. Execute
         # the immutable built tool; keep the fragment's permissions unchanged.
         phase(directory, 'policy-before', prefix + 'sudo -n "$tool/bin/xps-host" check\n', (0, 1))
-        password = (directory / 'guest-login.txt').read_text().split('Password: ', 1)[1].strip() + '\n'
         for name in ('policy-apply', 'policy-second-apply'):
-            latest = phase(directory, name, prefix + 'sudo -n "$tool/bin/xps-host" apply\n', stdin=password)
+            latest = phase(directory, name, prefix + 'sudo -n "$tool/bin/xps-host" apply\n')
         text = latest.read_text()
         assert re.search(r'changed=0\b', text), 'Second host-policy apply did not converge'
         phase(directory, 'policy-check', prefix + 'sudo -n "$tool/bin/xps-host" check\n')

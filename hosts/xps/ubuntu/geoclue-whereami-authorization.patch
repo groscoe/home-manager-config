@@ -1,0 +1,34 @@
+diff --git a/src/gclue-service-client.c b/src/gclue-service-client.c
+--- a/src/gclue-service-client.c
++++ b/src/gclue-service-client.c
+@@ -601,7 +601,13 @@ gclue_service_client_handle_start (GClueDBusClient       *client,
+         data->accuracy_level = ensure_valid_accuracy_level
+                 (data->accuracy_level, GCLUE_ACCURACY_LEVEL_EXACT);
+ 
+-        /* No agent == No authorization */
+         if (priv->agent_proxy == NULL) {
++                /* On xps the administrator grants the CLI access via geoclue.conf. */
++                if (app_perm == GCLUE_APP_PERM_ALLOWED &&
++                    g_strcmp0 (desktop_id, "whereami") == 0) {
++                        complete_start (data);
++                        return TRUE;
++                }
++
+                 /* Already a pending Start()? Denied! */
+                 if (priv->pending_auth_start_data) {
+diff --git a/src/gclue-service-manager.c b/src/gclue-service-manager.c
+--- a/src/gclue-service-manager.c
++++ b/src/gclue-service-manager.c
+@@ -347,7 +347,11 @@
+         user_id = gclue_client_info_get_user_id (info);
+         agent_proxy = g_hash_table_lookup (priv->agents,
+                                            GINT_TO_POINTER (user_id));
+-        if (agent_proxy == NULL) {
++        /* Create the client so the explicitly authorized CLI can set DesktopId.
++         * Client.Start still decides whether this ID can obtain a location. */
++        if (agent_proxy == NULL &&
++            gclue_config_get_app_perm (gclue_config_get_singleton (),
++                                      "whereami", info) != GCLUE_APP_PERM_ALLOWED) {
+                 /* Its possible that geoclue was just launched on GetClient
+                  * call, in which case agents need some time to register
+                  * themselves to us.

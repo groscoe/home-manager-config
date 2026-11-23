@@ -12,6 +12,18 @@
     "mode": "0644"
   },
   {
+    "name": "geoclue",
+    "path": "/etc/geoclue/geoclue.conf",
+    "source": "geoclue.conf",
+    "mode": "0644"
+  },
+  {
+    "name": "geoclue-service",
+    "path": "/etc/systemd/system/geoclue.service.d/60-xps-daemon.conf",
+    "source": "geoclue-service.conf",
+    "mode": "0644"
+  },
+  {
     "name": "i3lock",
     "path": "/etc/pam.d/i3lock",
     "source": "i3lock.pam",

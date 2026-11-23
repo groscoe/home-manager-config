@@ -67,7 +67,7 @@ def main():
         'python3-pyqt5', 'python3-pyqt5.qtquick', 'fprintd', 'libpam-fprintd',
         'i3lock', 'sddm', 'qml-module-qtquick-layouts', 'qml-module-qtquick-controls2',
         'qml-module-qtgraphicaleffects', 'libqt5svg5', 'network-manager', 'bluez',
-        'pulseaudio', 'policykit-1', 'gnome-screenshot', 'fonts-dejavu-core',
+        'pulseaudio', 'policykit-1', 'gnome-screenshot', 'fonts-dejavu-core', 'geoclue-2.0',
     ]
     env = os.environ.copy()
     env['DEBIAN_FRONTEND'] = 'noninteractive'

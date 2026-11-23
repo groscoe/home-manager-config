@@ -12,6 +12,7 @@ import sys
 import tempfile
 
 SOURCE = pathlib.Path(__file__).resolve().parent
+GEOCLUE_ROOT = pathlib.Path('/nix/var/nix/gcroots/xps-geoclue')
 SPEC = importlib.util.spec_from_file_location('xps_pam_check', SOURCE / 'pam_check.py')
 pam_check = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(pam_check)
@@ -112,6 +113,7 @@ def ssh_preflight(source=SOURCE):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--preflight', action='store_true')
+    parser.add_argument('--geoclue', required=True, type=pathlib.Path)
     args = parser.parse_args()
     release = {}
     for line in pathlib.Path('/etc/os-release').read_text().splitlines():
@@ -120,14 +122,19 @@ def main():
             release[key] = value.strip('"')
     if release.get('ID') != 'ubuntu' or release.get('VERSION_ID') != '22.04' or platform.machine() != 'x86_64':
         raise ValueError('This profile is reviewed for Ubuntu 22.04 on x86_64; review before extending it')
+    if not pathlib.Path('/usr/libexec/geoclue').is_file():
+        raise ValueError('Install the Ubuntu geoclue-2.0 package before applying xps host policies')
     result = compare()
     effective = ssh_preflight()
     authentication = authentication_preflight()
     startup = nix_startup.inspect()
     startup['validation'] = nix_startup.native_validation()
+    geoclue_matches = GEOCLUE_ROOT.is_symlink() and GEOCLUE_ROOT.readlink() == args.geoclue
     print(json.dumps({'files': result, 'ssh_candidate_policy': effective,
-                      'authentication': authentication, 'nix_startup': startup}, indent=2))
-    if not args.preflight and (any(not item['matches'] for item in result) or startup['would_change']):
+                      'authentication': authentication, 'nix_startup': startup,
+                      'geoclue_daemon_matches': geoclue_matches}, indent=2))
+    if not args.preflight and (any(not item['matches'] for item in result)
+                               or startup['would_change'] or not geoclue_matches):
         raise SystemExit(1)
 
 

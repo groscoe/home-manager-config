@@ -5,10 +5,14 @@
   python3Packages,
   runCommand,
   pam,
+  geoclue2,
 }:
 let
   source = lib.cleanSource ./.;
   ansible = python3Packages.ansible-core;
+  geoclue = geoclue2.overrideAttrs (old: {
+    patches = old.patches ++ [ ./geoclue-whereami-authorization.patch ];
+  });
   tool = writeShellApplication {
     name = "xps-host";
     runtimeInputs = [
@@ -26,13 +30,17 @@ let
       export ANSIBLE_CONFIG=${source}/ansible.cfg
       case "$mode" in
         check)
-          exec /usr/bin/python3 -I ${source}/check.py
+          exec /usr/bin/python3 -I ${source}/check.py --geoclue ${geoclue}
           ;;
         apply)
-          /usr/bin/python3 -I ${source}/check.py --preflight
+          if (( EUID != 0 )); then
+            exec /usr/bin/sudo -- "$0" apply
+          fi
+          /usr/bin/python3 -I ${source}/check.py --preflight --geoclue ${geoclue}
           exec ${ansible}/bin/ansible-playbook \
             --inventory localhost, --connection local \
-            --become --ask-become-pass --diff ${source}/playbook.yml
+            --extra-vars "xps_geoclue=${geoclue}" \
+            --diff ${source}/playbook.yml
           ;;
         *)
           echo "Usage: xps-host [check|apply]" >&2

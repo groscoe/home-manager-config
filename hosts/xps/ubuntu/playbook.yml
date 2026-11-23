@@ -25,7 +25,7 @@
 
     - name: Validate authentication prerequisites and candidate control flow
       ansible.builtin.command:
-        argv: [/usr/bin/python3, -I, "{{ playbook_dir }}/check.py", --preflight]
+        argv: [/usr/bin/python3, -I, "{{ playbook_dir }}/check.py", --preflight, --geoclue, "{{ xps_geoclue }}"]
       changed_when: false
       when: not xps_fixture
       check_mode: false
@@ -65,6 +65,17 @@
       loop_control:
         label: "{{ item.path | dirname }}"
 
+    - name: Keep the GeoClue daemon in the Nix store for systemd
+      ansible.builtin.file:
+        src: "{{ xps_geoclue }}"
+        path: /nix/var/nix/gcroots/xps-geoclue
+        state: link
+        owner: root
+        group: root
+        follow: false
+      register: geoclue_root
+      when: not xps_fixture
+
     - name: Install the declared policy files with backups
       ansible.builtin.copy:
         src: "files/{{ item.source }}"
@@ -101,6 +112,20 @@
       when:
         - not xps_fixture and not ansible_check_mode
         - policy_copies.results | selectattr('item.name', 'equalto', 'journal') | selectattr('changed') | list | length > 0
+
+    - name: Reload systemd when the GeoClue service override changed
+      ansible.builtin.command:
+        argv: [/usr/bin/systemctl, daemon-reload]
+      when:
+        - not xps_fixture and not ansible_check_mode
+        - policy_copies.results | selectattr('item.name', 'equalto', 'geoclue-service') | selectattr('changed') | list | length > 0
+
+    - name: Restart GeoClue if it is running and its package or configuration changed
+      ansible.builtin.command:
+        argv: [/usr/bin/systemctl, try-restart, geoclue.service]
+      when:
+        - not xps_fixture and not ansible_check_mode
+        - geoclue_root.changed or (policy_copies.results | selectattr('item.name', 'in', ['geoclue', 'geoclue-service']) | selectattr('changed') | list | length > 0)
 
     - name: Report retained copies of replaced files
       ansible.builtin.debug:

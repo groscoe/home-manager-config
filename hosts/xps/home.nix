@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, whereami, ... }:
 let
   hw = config.personal.hardware;
   atuinModule = import ../../atuin/atuin.nix { inherit pkgs lib; };
@@ -25,7 +25,7 @@ in {
   personal.hardware = lib.mkDefault (import ../../hardware-profiles/xps.nix);
 
   home.homeDirectory = "/home/${config.home.username}";
-  home.packages = [ pkgs.xss-lock hiDpiScript ];
+  home.packages = [ pkgs.xss-lock hiDpiScript whereami ];
   programs.atuin.package = atuinModule.atuinPackage;
   programs.atuin.settings.secrets_filter = false;
 

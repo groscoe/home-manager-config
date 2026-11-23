@@ -16,10 +16,19 @@ The declared scope is:
 | i3lock and SDDM | Fingerprint authentication with the existing password fallback and login/account restrictions |
 | Sugar Candy 1.6 | Existing theme, image and fingerprint instructions, action, waiting and retry feedback |
 | Nix startup | Persistent unit definitions in `/etc`, mount ordering and socket activation at boot |
+| GeoClue | BeaconDB Wi-Fi lookups with crowdsourcing disabled, using a Nix-pinned GeoClue daemon |
 
 `policies.json` lists the destination files. Their contents are in `files/`.
 This profile is reviewed for Ubuntu 22.04 on x86_64. Review and test it before
 extending it to a different Ubuntu release or hardware profile.
+
+Install Ubuntu's `geoclue-2.0` package before applying the policy. It provides
+the service, D-Bus policy and system account. The systemd override uses the
+Nix-pinned daemon, which supplies the Wi-Fi names (SSIDs) and access point
+identifiers BeaconDB needs for a Wi-Fi fix. GeoClue still supports IP fallback
+through BeaconDB. The local authorization rule allows the `whereami` desktop ID
+for UID 1000 when a desktop authorization agent is absent. GeoClue trusts the
+client-supplied desktop ID within that account.
 
 From the repository on xps, inspect the current host:
 
@@ -48,13 +57,15 @@ To apply the reviewed policy:
 nix run .#xps-host -- apply
 ```
 
-Run this as your normal user. Ansible asks for the sudo password in your terminal.
+Run this as your normal user. If authentication is required, sudo prompts for
+your xps account password before Ansible starts.
 The same preflight runs first. Application creates the policy directories if
 needed, sets root:root ownership with mode 0644, and saves timestamped backups of
 existing files when their contents are replaced. The backup paths are printed.
 The SSH fragment is validated before replacement and the complete SSH
 configuration is checked before reload. SSH reloads only after a content or
 metadata change to its file. Journald restarts only after its file changes.
+GeoClue restarts if it is already running and its package or policy changes.
 A matching host requests neither service action. Home Manager activation never
 invokes this privileged command automatically.
 PAM and theme changes request no SDDM restart, logout or lock. They are read at
@@ -71,6 +82,10 @@ with sudo, retaining root ownership and mode 0644. Validate with
 `sudo systemctl restart systemd-journald.service` for journal changes. If the tool
 created a previously absent file, removing that specific managed drop-in restores
 the earlier layering; validate SSH before reloading it.
+To roll back GeoClue, restore the configuration backup, remove the managed
+`60-xps-daemon.conf` drop-in, then run
+`sudo systemctl daemon-reload` and `sudo systemctl try-restart geoclue.service`.
+The `/nix/var/nix/gcroots/xps-geoclue` link can then be removed.
 For PAM/theme files, restore the printed backups to their original paths with
 root:root ownership and mode 0644. Restore a changed authentication policy from
 the still-open session before logging out. If a package update replaces a managed
