@@ -78,3 +78,8 @@ identifiers; the VM profile omits unavailable device modules. This module does n
 modify their fingerprint/password policies.
 
 The **Cam** indicator opens read-only [camera access details](../../../camera-monitor/README.md). It reports current-user device handles, with explicit incomplete-coverage and stale-monitor states.
+
+**Super+P** opens the unified XPS action palette; **Super+Shift+A** opens audio
+controls. The bar’s **xps** button opens the palette, output right-click opens
+audio, and the microphone label shows mute/capture state. See
+[the audio/action guide](../actions/README.md). VNC/Picom policy is unchanged.

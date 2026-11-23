@@ -219,12 +219,14 @@ label-disconnected = Wi-Fi offline
 label-disconnected-foreground = ${c.muted}
     '';
     camera = "${profile}/bin/camera-monitor";
-    launcher = "${rofi} -show combi";
+    launcher = "${profile}/bin/xps-actions";
     wifi = "${profile}/bin/rofi-wifi";
     shortcuts = "${shortcuts}/bin/xps-shortcuts";
     notices = "${config.services.dunst.package}/bin/dunstctl";
     power = "${sessionMenu}/bin/xps-session-menu";
-    audio = "${pkgs.pavucontrol}/bin/pavucontrol";
+    audio = "${profile}/bin/xps-audio menu";
+    micStatus = "${profile}/bin/xps-audio mic-status";
+    micToggle = "${profile}/bin/xps-audio mic-mute";
   };
   barConfig = pkgs.replaceVars ./polybar.ini.in (
     lib.filterAttrs (

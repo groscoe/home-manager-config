@@ -12,6 +12,7 @@ CATEGORIES = ("Desktop", "tmux", "Copy mode", "Advanced")
 GROUPS = (
     ("Open and navigate", (
         ("Terminal", "$mod+Return"), ("Launcher", "$mod+space"),
+        ("XPS action palette", "$mod+p"), ("Audio controls", "$mod+Shift+a"),
         ("Application command search", "$mod+Shift+slash"),
         ("Drop-down terminal", "$mod+g"), ("Focus left", "$mod+h"),
         ("Focus down", "$mod+j"), ("Focus up", "$mod+k"),
@@ -30,6 +31,10 @@ GROUPS = (
         ("Tabbed layout", "$mod+Shift+w"), ("Stacked layout", "$mod+Shift+s"),
         ("Toggle split layout", "$mod+Shift+e"),
         ("Resize mode", "$mod+r"), ("Close window", "$mod+Shift+q"),
+    )),
+    ("Audio", (
+        ("Volume up", "XF86AudioRaiseVolume"), ("Volume down", "XF86AudioLowerVolume"),
+        ("Toggle output mute", "XF86AudioMute"), ("Toggle all microphone mute", "XF86AudioMicMute"),
     )),
     ("Session and capture", (
         ("Lock screen", "$mod+Shift+x"), ("Screenshot tool", "Ctrl+Print"),
@@ -158,7 +163,9 @@ def key_labels(binding, keyboard="xps", workspace_range=False):
     aliases = {"$mod": "⌘" if keyboard == "mac" else "Super", "return": "Enter",
                "space": "Space", "shift": "Shift", "ctrl": "Ctrl",
                "print": "Print", "minus": "−", "left": "←", "right": "→",
-               "up": "↑", "down": "↓", "escape": "Esc", "slash": "/"}
+               "up": "↑", "down": "↓", "escape": "Esc", "slash": "/",
+               "xf86audioraisevolume": "Volume ↑", "xf86audiolowervolume": "Volume ↓",
+               "xf86audiomute": "Mute", "xf86audiomicmute": "Mic mute"}
     keys = [aliases.get(key.lower(), key.upper()) for key in binding.split("+")]
     if workspace_range:
         keys[-1] = "1…0"

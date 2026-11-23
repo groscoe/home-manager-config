@@ -321,3 +321,11 @@ history is backed up as ordinary home data.
 
 KDE Connect startup, the Rofi device menu, and LAN/Tailscale network prerequisites
 are documented in [the xps KDE Connect guide](hosts/xps/kdeconnect/README.md).
+
+The xps [audio controls and unified action palette](hosts/xps/actions/README.md)
+provide Super+Shift+A and Super+P, microphone state, device/profile selection and
+links to the existing desktop, connectivity, privacy and saved system reports.
+
+The [bounded ClamAV policy](clamav-scan/README.md) manages incremental daily
+coverage and a small persistent document-rescan queue, with explicit resource
+limits and incomplete-coverage reporting.

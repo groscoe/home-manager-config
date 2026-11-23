@@ -13,7 +13,7 @@ let
     ${pkgs.python3}/bin/python3 ${./kdeconnect/session.py} ${config.systemd.user.systemctlPath}
   '';
 in {
-  imports = [ ../../camera-monitor ../../hardware-profile ./graphics.nix ./alacritty.nix ./picom.nix ./polybar.nix ./applications.nix ./kdeconnect ./development.nix ./python.nix ./ssh.nix ./session.nix ./theme ./command-search ./zen.nix ../../clamav-scan ../../rofi/connections.nix ../../secure-boot-tools ];
+  imports = [ ../../camera-monitor ../../hardware-profile ./graphics.nix ./alacritty.nix ./picom.nix ./polybar.nix ./applications.nix ./actions ./kdeconnect ./development.nix ./python.nix ./ssh.nix ./session.nix ./theme ./command-search ./zen.nix ../../clamav-scan ../../rofi/connections.nix ../../secure-boot-tools ];
 
   assertions = [{
     assertion = pkgs.stdenv.hostPlatform.system == "x86_64-linux";

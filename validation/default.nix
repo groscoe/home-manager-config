@@ -4,6 +4,7 @@ let
     root = ../.;
     fileset = lib.fileset.unions [
       ./run-tests.py
+      ../clamav-scan
       ../restic-backup
       ../camera-monitor
       ../hardware-health
@@ -12,6 +13,7 @@ let
       ../hosts/xps/alacritty-child-env.py
       ../hosts/xps/theme/shortcuts.py
       ../hosts/xps/command-search/search.py
+      ../hosts/xps/actions
       ../hosts/xps/kdeconnect
       ../hosts/xps/tests
     ];
